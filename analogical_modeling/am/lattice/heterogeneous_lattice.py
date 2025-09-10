@@ -50,9 +50,6 @@ class HeterogeneousLattice(Lattice):
      * <p>
      * In terms of processing power, more is required to use sublattices. However,
      * using threads the processing of each can be done in parallel.
-     *
-     * @author Nate Glenn
-     * @author Nathan Glenn
     """
     def __init__(self, partition_index: int):
         """

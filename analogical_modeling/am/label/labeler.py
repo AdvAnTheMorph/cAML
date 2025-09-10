@@ -8,8 +8,6 @@ boolean vector.
 
 This class is used to assign context labels to training instances by
 comparison with the instance being classified.
-
-@author Nathan Glenn
  """
 
 from math import ceil, floor
@@ -213,6 +211,7 @@ class Labeler:
 
         :return: A label with all mismatches
         """
+        bottom = "1" * self.get_cardinality()
         return Label(-1, self.get_cardinality())  # TODO: doesn't work, as no fixed size
         # 	@Override
         # 	public Label getLatticeBottom() {

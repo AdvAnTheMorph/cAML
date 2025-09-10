@@ -10,10 +10,7 @@ from .basic_lattice import BasicLattice
 
 
 class LatticeFactory(ABC):
-    """"Factory for creating Lattices.
-
-    @author Nathan Glenn
-    """
+    """"Factory for creating Lattices."""
 
     @abstractmethod
     def create_lattice(self) -> Lattice:

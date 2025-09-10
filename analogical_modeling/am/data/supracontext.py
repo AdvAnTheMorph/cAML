@@ -9,8 +9,6 @@
  * {@link BigInteger} object and starts out as {@link BigInteger#ONE one} and is
  * never allowed to fall below {@link BigInteger#ZERO zero}, which indicates
  * that the object should be discarded.
- *
- * @author Nathan Glenn
 """
 
 from abc import ABC, abstractmethod

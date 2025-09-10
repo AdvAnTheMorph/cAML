@@ -26,10 +26,8 @@ class ClassifiedSupra(Supracontext):
     This supracontext is called "classified" because it keeps track of its
     outcome (or "class") at all times by inspecting the outcomes of the
     subcontexts added to it. It also provides special methods for determining
-    it's heterogeneity, and for determining if the addition of a subcontext would
+    its heterogeneity, and for determining if the addition of a subcontext would
     lead to heterogeneity.
-
-    @author Nathan Glenn
     """
 
     def __init__(self):
@@ -122,7 +120,7 @@ class ClassifiedSupra(Supracontext):
     def __eq__(self, other) -> bool:
         if self is other:
             return True
-        if not other:
+        if other is None:
             return False
         return self.supra == other
 

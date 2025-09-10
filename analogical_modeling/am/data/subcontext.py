@@ -29,10 +29,7 @@ class Subcontext:
     which belong to it, along with their shared Label and common outcome.
     If the contained instances do not have the same outcome, then the outcome is
     set to AMUtils.NONDETERMINISTIC.
-
-    @author Nathan Glenn
     """
-    hash: int = -1
     SEED = 37
 
 
@@ -46,6 +43,7 @@ class Subcontext:
         self.display_label: str = display_label
         self.data: set[Instance] = set()
         self.outcome: float = 0.0
+        self.hash: int = -1
 
     def add(self, other):
         """
@@ -58,7 +56,7 @@ class Subcontext:
                 self.outcome = am_utils.NONDETERMINISTIC
             else:
                 self.outcome = other.class_value()
-            self.data.add(self.outcome)
+        self.data.add(other)
 
     def get_outcome(self) -> float:
         return self.outcome

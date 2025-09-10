@@ -1,0 +1,231 @@
+"""weka.classifiers.lazy.AM.label"""
+
+import unittest
+
+from analogical_modeling.tests.am.test_utils import mock_instance
+from analogical_modeling.am.label.label import Label
+from analogical_modeling.am.label.labeler import Labeler
+from analogical_modeling.am.label.missing_data_compare import MissingDataCompare
+
+
+class TestLabel(unittest.TestCase):
+	def test_equivalence(self):
+		"""test that __eq__() and __hash__() work correctly and agree"""
+		def assert_label_equals(first_label: Label, second_label: Label):
+			self.assertEqual(first_label, second_label)
+			self.assertEqual(second_label, first_label)
+			self.assertEqual(hash(first_label), hash(second_label))
+
+		def assert_label_not_equivalent(first_label: Label, second_label: Label):
+			self.assertNotEqual(first_label, second_label)
+			self.assertNotEqual(second_label, first_label)
+			# technically not always true, but it's a good test on our small set
+			self.assertTrue(hash(first_label) != hash(second_label))
+
+		labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+
+		first_label = labeler.from_bits(0b001)
+		second_label = labeler.from_bits(0b001)
+		third_label = labeler.from_bits(0b101)
+
+		assert_label_equals(first_label, second_label)
+		assert_label_equals(first_label, first_label)
+		assert_label_equals(second_label, second_label)
+
+		assert_label_not_equivalent(first_label, third_label)
+		assert_label_not_equivalent(second_label, third_label)
+
+	def test_get_cardinality(self):
+		labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+		test_label = labeler.from_bits(0b001)
+		self.assertEqual(test_label.get_cardinality(), 3)
+
+	def test_matches(self):
+		labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+		test_label = labeler.from_bits(0b001)
+		matches = [False, True, True]
+		for i in range(len(matches)):
+			self.assertEqual(test_label.matches(i), matches[i])
+
+		matches = [False, True, False]
+		test_label = labeler.from_bits(0b101)
+		for i in range(len(matches)):
+			self.assertEqual(test_label.matches(i), matches[i])
+
+	def test_intersect(self):
+		labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+
+		label1 = labeler.from_bits(0b001)
+		label2 = labeler.from_bits(0b100)
+		matches = [False, True, False]
+		intersected = label1.intersect(label2)
+		for i in range(len(matches)):
+			self.assertEqual(intersected.matches(i), matches[i])
+
+	def test_union(self):
+		labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+
+		label1 = labeler.from_bits(0b001)
+		label2 = labeler.from_bits(0b100)
+		unioned = label1.union(label2)
+		for i in range(unioned.get_cardinality()):
+			self.assertTrue(unioned.matches(i))
+
+	def test_all_matching(self):
+		labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+		self.assertTrue(labeler.from_bits(0b000).all_matching())
+		for bits in [0b100, 0b010, 0b111]:
+			self.assertFalse(labeler.from_bits(bits).all_matching())
+
+	def test_matches_throws_exception_for_index_too_low(self):
+		labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+		test_label = labeler.from_bits(0b001)
+		with self.assertRaises(ValueError):
+			test_label.matches(-10)
+
+	def test_matches_throws_exception_for_index_too_high(self):
+		labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+		test_label = labeler.from_bits(0b001)
+		with self.assertRaises(ValueError):
+			test_label.matches(3)
+
+	def test_descendant_iterator(self):
+		labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+		label = labeler.from_bits(0b100)
+
+		expected_labels = {labeler.from_bits(0b101), labeler.from_bits(0b111), labeler.from_bits(0b110)}
+		actual_labels = {el for el in label.descendant_iterator()}
+		self.assertEqual(expected_labels, actual_labels)
+
+		# comparing:
+		# V , O , V , I , 0 , ? , O , T , T , A , A
+		# V , U , V , O , 0 , ? , 0 , ? , L , E , A
+		labeler = Labeler(mock_instance(10), False, MissingDataCompare.VARIABLE)
+		label = labeler.from_bits(0b0101001111) # FIXME: empty set
+
+		expected_labels = {labeler.from_bits(0b0101011111), labeler.from_bits(0b0101111111), labeler.from_bits(0b0101101111),
+						   labeler.from_bits(0b0111101111), labeler.from_bits(0b0111111111), labeler.from_bits(0b0111011111),
+						   labeler.from_bits(0b0111001111), labeler.from_bits(0b1111001111), labeler.from_bits(0b1111011111),
+						   labeler.from_bits(0b1111111111), labeler.from_bits(0b1111101111), labeler.from_bits(0b1101101111),
+						   labeler.from_bits(0b1101111111), labeler.from_bits(0b1101011111), labeler.from_bits(0b1101001111)}
+		actual_labels = {el for el in label.descendant_iterator()}
+		self.assertEqual(expected_labels, actual_labels)
+
+	def test_is_descendant_of(self):
+		labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+		parent_label = labeler.from_bits(0b100)
+		descendant_label = labeler.from_bits(0b101)
+		self.assertTrue(descendant_label.is_descendant_of(parent_label))
+
+		non_descendant_label = labeler.from_bits(0b001)
+		self.assertFalse(non_descendant_label.is_descendant_of(parent_label))
+
+	def test_to_string(self):
+		label_bits = 0b1010101000111
+		labeler = Labeler(mock_instance(13), False, MissingDataCompare.MATCH)
+		label = labeler.from_bits(label_bits)
+		self.assertEqual(bin(label_bits)[2:], str(label))
+
+	#     public void testToString() {
+	#         BitSet bs = new BitSet(100);
+	#         bs.set(0, 50);
+	#         Label label = new BitSetLabel(bs, 100);
+	#         assertEquals(
+	#             "Should be 0000...1111...",
+	#             "00000000000000000000000000000000000000000000000000" +
+	#                 "11111111111111111111111111111111111111111111111111",
+	#             label.toString());
+	#
+	#         bs = new BitSet(100);
+	#         bs.set(50, 100);
+	#         label = new BitSetLabel(bs, 100);
+	#         assertEquals(
+	#             "Should be 1111...0000...",
+	#             "11111111111111111111111111111111111111111111111111" +
+	#                 "00000000000000000000000000000000000000000000000000",
+	#             label.toString()
+	#         );
+	#
+	#         bs = new BitSet(100);
+	#         bs.set(50, 100);
+	#         bs.set(150, 200);
+	#         label = new BitSetLabel(bs, 200);
+	#         assertEquals(
+	#             "Should be 1111...0000...1111...000...",
+	#             "11111111111111111111111111111111111111111111111111" +
+	#                 "00000000000000000000000000000000000000000000000000" +
+	#                 "11111111111111111111111111111111111111111111111111" +
+	#                 "00000000000000000000000000000000000000000000000000",
+	#             label.toString()
+	#         );
+	#
+	#         bs = new BitSet(100);
+	#         label = new BitSetLabel(bs, 100);
+	#         assertEquals(
+	#             "Should be 000...",
+	#             "00000000000000000000000000000000000000000000000000" +
+	#                 "00000000000000000000000000000000000000000000000000",
+	#             label.toString()
+	#         );
+	#     }
+
+	def test_to_string_all_zeroes(self):
+		labeler = Labeler(mock_instance(13), False, MissingDataCompare.MATCH)
+		label = labeler.from_bits(0)
+		self.assertEqual("0000000000000", str(label))
+
+	def test_to_string_no_attributes(self):
+		labeler = Labeler(mock_instance(0), False, MissingDataCompare.MATCH)
+		label = labeler.from_bits(0)
+		self.assertEqual("", str(label))
+
+	def test_constructor(self):
+		label = Label(0b101, 3)
+		self.assertEqual(3, label.get_cardinality())
+		self.assertFalse(label.matches(0))
+		self.assertTrue(label.matches(1))
+		self.assertFalse(label.matches(2))
+
+		label = Label(0b100000000000000000000000000000101, 33)
+		self.assertEqual(33, label.get_cardinality())
+		self.assertFalse(label.matches(0))
+		self.assertTrue(label.matches(1))
+		self.assertFalse(label.matches(2))
+		for i in range (3, 32):
+			self.assertTrue(label.matches(i))
+		self.assertFalse(label.matches(32))
+
+	def test_label_bits(self):
+		label = Label(0b0011, 4)
+		self.assertEqual(0b0011, label.label_bits())
+
+		label = Label(0b100000000000000000000000000000101, 33)
+		self.assertEqual(0b100000000000000000000000000000101, label.label_bits())
+
+	def test_copy_constructor(self):
+		first_label = Label(0b100, 3)
+		second_label = Label(first_label)
+		self.assertEqual(second_label, first_label)
+
+#         BitSet bitset = new BitSet();
+#         bitset.set(0);
+#         bitset.set(5);
+#         IntLabel thirdLabel = new IntLabel(new BitSetLabel(bitset, 6));
+#         assertEquals(new IntLabel(0b100001, 6), thirdLabel);
+
+#
+#         BitSet bitset = new BitSet();
+#         bitset.set(0);
+#         bitset.set(2);
+#         bitset.set(32);
+#         LongLabel thirdLabel = new LongLabel(new BitSetLabel(bitset, 33));
+#         assertEquals(new LongLabel(testLong, 33), thirdLabel);
+
+#         BitSet bitset = new BitSet();
+#         bitset.set(0);
+#         bitset.set(2);
+#         BitSetLabel label = new BitSetLabel(bitset, 3);
+#         assertEquals(3, label.getCardinality());
+#         assertFalse(label.matches(0));
+#         assertTrue(label.matches(1));
+#         assertFalse(label.matches(2));

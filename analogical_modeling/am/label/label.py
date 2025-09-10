@@ -12,7 +12,6 @@
  * equivalent.
  """
 
-from sys import maxsize
 from typing import Iterator, Union
 
 
@@ -21,8 +20,6 @@ class Label:
     A Label implementation that stores match/mismatch data in a single
     long for compactness and speed. The use of a long as storage, however,
     creates a limit to the size of the label. See {MAX_CARDINALITY.
-
-    @author Nathan Glenn
     """
     def __init__(self, bits_or_label: Union[int,'Label'], cardinality: int = None):
         """
@@ -33,8 +30,6 @@ class Label:
         :param cardinality: cardinality of the label
         """
         if cardinality is not None:
-            if cardinality > maxsize:
-                raise ValueError(f"Input cardinality too high ({cardinality}); max cardinality for this labeler is {maxsize}")
             self._label_bits = bits_or_label
             self.card = cardinality
             self.hash_code = self.calculate_hash_code()

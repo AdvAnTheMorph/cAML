@@ -1,9 +1,8 @@
 """weka.classifiers.lazy.AM.data"""
 
-from ..label.label import Label
-from supracontext import Supracontext
-from subcontext import Subcontext
-from ..lattice.lattice import SparseLattice
+from analogical_modeling.am.label.label import Label
+from analogical_modeling.am.data.supracontext import Supracontext
+from analogical_modeling.am.data.subcontext import Subcontext
 
 
 class Concept(Supracontext):
@@ -11,8 +10,6 @@ class Concept(Supracontext):
     This class is a decorator which wraps a Supracontext and adds the
     functionality of a node (concept) used in the ImprovedAddIntent algorithm
     (see SparseLattice.
-
-    @author Nathan Glenn"
     # TODO: did this really need to be genericized? Won't you always use a classifiedSupra?
     """
     def __init__(self, intent: Label, extent: Supracontext):

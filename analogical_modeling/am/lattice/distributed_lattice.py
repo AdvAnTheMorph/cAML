@@ -30,8 +30,6 @@ from analogical_modeling.am.label.labeler import Labeler
 class DistributedLattice(Lattice):
     """This lass manages several smaller, heterogeneous lattices. The
     supracontexts of smaller lattices are combined to create the final Supracontexts.
-
-    @author Nathan Glenn
     """
     def __init__(self):
         # super.__init__(self)

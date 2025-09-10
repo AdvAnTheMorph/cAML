@@ -5,7 +5,7 @@
  * index is also provided for use in determining when the node was created.
  *
  * @param <T> The implementation of Supracontext to be stored in this node.
- * @author Nathan Glenn"""
+"""
 
 from ..data.subcontext import Subcontext
 from ..data.supracontext import Supracontext
@@ -99,7 +99,7 @@ class LinkedLatticeNode(Supracontext):
 
     # Below methods are delegated to the contained supracontext
     def add(self, other: Subcontext):
-        self.supra + other
+        self.supra.add(other)
 
     def get_data(self) -> set[Subcontext]:
         return self.supra.get_data()

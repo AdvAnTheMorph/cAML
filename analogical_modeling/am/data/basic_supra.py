@@ -6,10 +6,7 @@ from ..label.label import Label
 # TODO: metaclass for interface in 14_OOP1 and 16_OOP3
 
 class BasicSupra(Supracontext):
-    """Basic implementation of Supracontext with no extra features.
-
-     @author Nathan Glenn
-    """
+    """Basic implementation of Supracontext with no extra features."""
     def __init__(self, data: set = None, count: int = None):
         """Creates a new supracontext with the given parameters as the contents.
         If no args given: create a new supracontext with an empty data set.
@@ -33,7 +30,7 @@ class BasicSupra(Supracontext):
         self.context = None
         self.data.add(other)
 
-    def get_data(self):
+    def get_data(self) -> frozenset:
         return frozenset(self.data)
 
     def is_empty(self):
