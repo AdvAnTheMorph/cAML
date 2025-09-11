@@ -14,14 +14,13 @@
 #  * limitations under the License.                                           *
 #  ****************************************************************************
 
-from typing import Iterable, TypeVar
+from typing import Iterable
 
 from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.label.labeler import Labeler
-# from weka.core import Instance
+from analogical_modeling.utils import Dataset, Instance
 
-Instance = TypeVar("Instance")
 
 class SubcontextList:
     """
@@ -35,7 +34,7 @@ class SubcontextList:
     """
     # TODO: why use an iterator, instead of just returning a list?
 
-    def __init__(self, labeler: Labeler, data: list[Instance], ignore_full_matches: bool):
+    def __init__(self, labeler: Labeler, data: Dataset, ignore_full_matches: bool):
         """
         This is the easiest to use constructor. It creates and stores a list of
         subcontexts given classified exemplars and an exemplar to be classified.
@@ -64,7 +63,7 @@ class SubcontextList:
 
         :return: True if instances with exact same attribute values as the test instance are removed from the list.
         """
-        return self.get_ignore_full_matches()
+        return self.ignore_full_matches
 
     def add(self, exemplar: Instance):
         label = self.labeler.label(exemplar)
@@ -83,7 +82,7 @@ class SubcontextList:
         for d in data:
             self.add(d)
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         """
          This method is not particularly speedy, since it sorts the contained
          subcontexts by label. It is meant for test purposes only; do not rely on
@@ -112,7 +111,7 @@ class SubcontextList:
 
         :return: An iterator which returns each of the contained subcontexts.
         """
-        for el in self.label_to_subcontext.keys():
+        for el in self.label_to_subcontext.values():
             yield el
 
     def __len__(self) -> int:

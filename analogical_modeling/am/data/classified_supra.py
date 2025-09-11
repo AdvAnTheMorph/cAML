@@ -30,23 +30,28 @@ class ClassifiedSupra(Supracontext):
     lead to heterogeneity.
     """
 
-    def __init__(self):
+    def __init__(self, data: set|None = None, count: int|None = None):
         """Creates a supracontext with no data. The outcome will be
         am_utils.UNKNOWN until data is added.
+
+        If parameters are given:
+        Creates a new supracontext with the given parameters as the contents.
+        :param data: The subcontexts contained in the supracontext
+        :param count: The count of this supracontext
+        :raises: ValueError if data XOR count is None, or count is less than 0
         """
+        if data is None and count is not None:
+            raise ValueError("data must not be None")
         self.supra = BasicSupra()
         # class attribute value, or nondeterministic, heterogeneous, or undetermined
         self.outcome: float = float("nan")
 
-    def classified_supra(self, data: set, count: int):
-        """Creates a new supracontext with the given parameters as the contents.
+        if data is not None:
+            for sub in data:
+                self.add(sub)
+            self.supra.set_count(count)
 
-        :param data: The subcontexts contained in the supracontext
-        :param count: The count of this supracontext
-        :raises: ValueError if data or count are None, or count is less than 0
-        """
-        if data is None:
-            raise ValueError("data must not be None")
+    def classified_supra(self, data: set, count: int):
         self.supra = BasicSupra()
         for sub in data:
             self.add(sub)
@@ -114,7 +119,7 @@ class ClassifiedSupra(Supracontext):
     def set_count(self, count: int):
         self.supra.set_count(count)
 
-    def get_context(self):
+    def get_context(self) -> Label:
         return self.supra.get_context()
 
     def __eq__(self, other) -> bool:
@@ -122,10 +127,12 @@ class ClassifiedSupra(Supracontext):
             return True
         if other is None:
             return False
+        if isinstance(other, ClassifiedSupra):
+            return self.supra == other.supra
         return self.supra == other
 
     def __hash__(self):
         return hash(self.supra)
 
-    def __repr__(self):
+    def __str__(self):
         return str(self.supra)

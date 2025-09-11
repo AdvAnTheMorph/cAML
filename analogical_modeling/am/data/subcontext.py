@@ -14,14 +14,11 @@
  # * limitations under the License.                                           *
  # ****************************************************************************
 
-from typing import TypeVar
-
 from analogical_modeling.am import am_utils
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.label.labeler import Labeler
-# from weka.core import Instance
+from analogical_modeling.utils import Instance
 
-Instance = TypeVar("Instance")
 
 class Subcontext:
     """
@@ -42,7 +39,7 @@ class Subcontext:
         self.label: Label = label
         self.display_label: str = display_label
         self.data: set[Instance] = set()
-        self.outcome: float = 0.0
+        self.outcome: str = ""
         self.hash: int = -1
 
     def add(self, other):
@@ -54,11 +51,11 @@ class Subcontext:
         if len(self.data):
             if other.class_value() != next(iter(self.data)).class_value():
                 self.outcome = am_utils.NONDETERMINISTIC
-            else:
-                self.outcome = other.class_value()
+        else:
+            self.outcome = other.class_value()
         self.data.add(other)
 
-    def get_outcome(self) -> float:
+    def get_outcome(self) -> str:
         return self.outcome
 
     def get_label(self) -> Label:
@@ -99,17 +96,16 @@ class Subcontext:
         self.hash = self.SEED * hash(self.label) + hash(frozenset(self.data))
         return self.hash
 
-    def __repr__(self):
+    def __str__(self):
         middle_part = ""
         if self.outcome == am_utils.NONDETERMINISTIC:
             middle_part = am_utils.NONDETERMINISTIC_STRING
         elif len(self.data):
-            middle_part = next(iter(self.data)).string_value(next(iter(self.data)).class_attribute())
-            # TODO: sb.append(data.iterator().next().stringValue(data.iterator().next().classAttribute()));
+            middle_part = next(iter(self.data)).class_value()
 
         # str(Instance) separates attributes with commas, so we can't
         # use a comma here or it will be difficult to read
-        return f"({self.label}|{middle_part}|{'/'.join(self.data)})"
+        return f"({self.label}|{middle_part}|{'/'.join(map(str, self.data))})"
 
     def is_nondeterministic(self) -> bool:
         return self.outcome == am_utils.NONDETERMINISTIC

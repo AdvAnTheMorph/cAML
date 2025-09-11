@@ -2,10 +2,11 @@
 
 from collections import defaultdict
 
-from subcontext import Subcontext
+from analogical_modeling.am.data.subcontext import Subcontext
+from analogical_modeling.utils import Instance
 
-import lombok.Value;
-from weka.core import Instance
+
+# import lombok.Value;
 
 
 # TODO: @Value
@@ -19,11 +20,12 @@ class GangEffect:
     on the predicted outcome.
     """
 
-    def __init__(self, sub: Subcontext, exemplar_pointers = dict[object, int]):
+    def __init__(self, sub: Subcontext, exemplar_pointers = dict[Instance, int]):
         self.subcontext = sub
         # Maps outcome to the exemplars supporting that outcome
         # TODO: list or SortedSet would be better, but Instance is not comparable :(
-        self.class_to_instances: dict[str, set] = defaultdict(set)
+        # TODO: is it?
+        self.class_to_instances: dict[str, set[Instance]] = defaultdict(set)
         for i in sub.get_exemplars():
             key = i.string_value(i.class_index())
             self.class_to_instances[key].add(i)

@@ -15,15 +15,8 @@
  # ****************************************************************************
 
 from enum import Enum
-from typing import TypeVar
 
-from ..enum_2_tag_utils import TagInfo
-# from weka.core import Attribute
-# from weka.core import Instance
-
-# FIXME: use from weka
-Instance = TypeVar("Instance")
-Attribute = TypeVar("Attribute")
+from ...utils import Instance
 
 
 class MissingDataCompare(Enum):
