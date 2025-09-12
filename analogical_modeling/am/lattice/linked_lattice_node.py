@@ -121,10 +121,12 @@ class LinkedLatticeNode(Supracontext):
             return True
         if other is None:
             return False
+        if isinstance(other, LinkedLatticeNode):
+            return self.supra == other.supra
         return self.supra == other
 
     def __hash__(self):
         return hash(self.supra)
 
-    def __repr__(self):
+    def __str__(self):
         return str(self.supra)
