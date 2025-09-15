@@ -3,10 +3,10 @@
 import random
 from abc import ABC, abstractmethod
 
-from lattice import Lattice
-from .johnsen_johansson_lattice import JohnsenJohanssonLattice
-from .distributed_lattice import DistributedLattice
-from .basic_lattice import BasicLattice
+from analogical_modeling.am.lattice.lattice import Lattice
+from analogical_modeling.am.lattice.johnsen_johansson_lattice import JohnsenJohanssonLattice
+from analogical_modeling.am.lattice.distributed_lattice import DistributedLattice
+from analogical_modeling.am.lattice.basic_lattice import BasicLattice
 
 
 class LatticeFactory(ABC):

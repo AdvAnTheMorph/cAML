@@ -47,8 +47,6 @@
  *
  * TODO: maybe if H(p) is small enough we could do exact counting with
  * include-exclude
- *
- * @author Nate
  """
 
 import random

@@ -33,8 +33,6 @@ class BasicLattice(Lattice):
     lattice is a boolean algebra which models supra- and subcontexts for the AM
     algorithm. Using boolean algebra allows efficient computation of these as
     well as traversal of all subcontexts within a supracontext.
-
-    @author Nate Glenn
     """
     def __init__(self):
         """
@@ -44,9 +42,6 @@ class BasicLattice(Lattice):
         # points to nothing, has no data or outcome.
         self.hetero_supra = LinkedLatticeNode(ClassifiedSupra())
         # All points in the lattice point to the empty supracontext by default.
-        self.empty_supracontext = LinkedLatticeNode(ClassifiedSupra())
-        self.empty_supracontext.set_next(self.empty_supracontext)
-
         self.empty_supracontext = LinkedLatticeNode(ClassifiedSupra())
         self.empty_supracontext.set_next(self.empty_supracontext)
 
@@ -77,8 +72,7 @@ class BasicLattice(Lattice):
         # add the sub to its label position
         self.add_to_context(sub, sub.get_label())
         # then add the sub to all of the children of its label position
-        si = sub.get_label().descendant_iterator()
-        for el in si:
+        for el in sub.get_label().descendant_iterator():
             self.add_to_context(sub, el)
         # remove supracontexts with count = 0 after every pass
         self.clean_supra()
@@ -130,7 +124,7 @@ class BasicLattice(Lattice):
                 supra = supra.get_next()
         assert self.no_zero_supras()
 
-    def get_supracontexts(self):
+    def get_supracontexts(self) -> set:
         sup_list = set()
         supra = self.empty_supracontext.get_next()
         while supra != self.empty_supracontext:
