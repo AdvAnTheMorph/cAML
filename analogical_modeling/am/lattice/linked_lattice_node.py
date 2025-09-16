@@ -7,13 +7,17 @@
  * @param <T> The implementation of Supracontext to be stored in this node.
 """
 
-from ..data.subcontext import Subcontext
-from ..data.supracontext import Supracontext
-from ..label.label import Label
+from typing import TypeVar
+
+from analogical_modeling.am.data.subcontext import Subcontext
+from analogical_modeling.am.data.supracontext import Supracontext
+from analogical_modeling.am.label.label import Label
+
+T = TypeVar("T")
 
 
 class LinkedLatticeNode(Supracontext):
-    def __init__(self, supra):
+    def __init__(self, supra: T, ind: int|None = None):
         """Create a new node containing the given supracontext. The index is set to
            -1.
 
@@ -22,17 +26,13 @@ class LinkedLatticeNode(Supracontext):
         #  the wrapped supracontext
         self.supra = supra
         # a number representing when this supracontext was created
-        self.index: int = -1
+        if ind is None:
+            self.index = -1
+        else:
+            self.index = ind  # used by insert_after
         # pointer to the next node; this is used during lattice filling to create a
         # circular linked list
         self.next: 'LinkedLatticeNode' = None
-
-    # FIXME: ?????
-    def __linked_lattice_node(self, supra, ind: int):
-        """used privately by insertAfter"""
-        node = LinkedLatticeNode(supra)
-        node.index = ind
-        return node
 
     def insert_after(self, sub: Subcontext, ind: int):
         """
@@ -47,7 +47,7 @@ class LinkedLatticeNode(Supracontext):
         new_supra = self.get_supracontext().copy()
         new_supra.set_count(1)
         new_supra.add(sub)
-        new_node = self.__linked_lattice_node(new_supra, ind)
+        new_node = LinkedLatticeNode(new_supra, ind)
         new_node.set_next(self.get_next())
         self.set_next(new_node)
         return new_node
@@ -88,12 +88,12 @@ class LinkedLatticeNode(Supracontext):
             raise ValueError('Count cannot be less than zero.')
         self.supra.set_count(self.supra.get_count() - 1)
 
-    def get_supracontext(self):
+    def get_supracontext(self) -> T:
         return self.supra
 
     def copy(self) -> Supracontext:
         new_supra = self.get_supracontext().copy()
-        new_node = self.__linked_lattice_node(new_supra, self.index)
+        new_node = LinkedLatticeNode(new_supra, self.index)
         new_node.set_next(self.next)
         return new_node
 
@@ -121,8 +121,6 @@ class LinkedLatticeNode(Supracontext):
             return True
         if other is None:
             return False
-        if isinstance(other, LinkedLatticeNode):
-            return self.supra == other.supra
         return self.supra == other
 
     def __hash__(self):

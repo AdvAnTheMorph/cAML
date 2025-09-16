@@ -19,7 +19,7 @@ from typing import Iterable
 from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.label.labeler import Labeler
-from analogical_modeling.utils import Dataset, Instance
+from analogical_modeling.utils import Instance
 
 
 class SubcontextList:
@@ -29,12 +29,10 @@ class SubcontextList:
 
     After creating a list of subcontexts, iterate through the subcontexts using
     the Iterator returned by iterator().
-
-    @author Nate Glenn
     """
     # TODO: why use an iterator, instead of just returning a list?
 
-    def __init__(self, labeler: Labeler, data: Dataset, ignore_full_matches: bool):
+    def __init__(self, labeler: Labeler, data: Iterable[Instance], ignore_full_matches: bool):
         """
         This is the easiest to use constructor. It creates and stores a list of
         subcontexts given classified exemplars and an exemplar to be classified.
