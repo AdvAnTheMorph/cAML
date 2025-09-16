@@ -28,20 +28,20 @@ class SubContextListTest(unittest.TestCase):
         sub_list = self.get_sub_list(subs)
         self.assertEqual(4, len(sub_list))
 
-        expected = Subcontext(Label(0b001, 3), "foo")
+        expected = Subcontext(Label({0}, 3), "foo")
         expected.add(train[0])  # 310e
         expected.add(train[4])  # 311r
         self.assertTrue(expected in sub_list)
 
-        expected = Subcontext(Label(0b100, 3), "foo")
+        expected = Subcontext(Label({2}, 3), "foo")
         expected.add(train[3])  # 212r
         self.assertTrue(expected in sub_list)
 
-        expected = Subcontext(Label(0b101, 3), "foo")
+        expected = Subcontext(Label({0, 2}, 3), "foo")
         expected.add(train[1])  # 210r
         self.assertTrue(expected in sub_list)
 
-        expected = Subcontext(Label(0b110, 3), "foo")
+        expected = Subcontext(Label({1, 2}, 3), "foo")
         expected.add(train[2])  # 032r
         self.assertTrue(expected in sub_list)
 
@@ -49,7 +49,7 @@ class SubContextListTest(unittest.TestCase):
         train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA)
         test = train[0]
         labeler = Labeler(test, False, MissingDataCompare.MATCH)
-        all_matching_sub = Subcontext(Label(0b000, 3), "foo")
+        all_matching_sub = Subcontext(Label({0}, 3), "foo")
         all_matching_sub.add(train[0])  # 310e
 
         subs = SubcontextList(labeler, train, False)

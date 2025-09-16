@@ -16,25 +16,25 @@ class ClassifiedSupraTest(unittest.TestCase):
         self.dataset = Dataset([[1, "r"], [1, "e"], [0, "e"]])
 
         self.subs = []
-        sub = Subcontext(Label(0b0, 1), "foo")
+        sub = Subcontext(Label({0}, 1), "foo")
         sub.add(self.dataset[0])
         sub.add(self.dataset[1])
         self.subs.append(sub)
 
-        sub = Subcontext(Label(0b0, 1), "foo")
+        sub = Subcontext(Label({0}, 1), "foo")
         sub.add(self.dataset[0])
         sub.add(self.dataset[2])
         self.subs.append(sub)
 
-        sub = Subcontext(Label(0b0, 1), "foo")
+        sub = Subcontext(Label({0}, 1), "foo")
         sub.add(self.dataset[0])
         self.subs.append(sub)
 
-        sub = Subcontext(Label(0b0, 1), "foo")
+        sub = Subcontext(Label({0}, 1), "foo")
         sub.add(self.dataset[1])
         self.subs.append(sub)
 
-        sub = Subcontext(Label(0b0, 1), "foo")
+        sub = Subcontext(Label({0}, 1), "foo")
         sub.add(self.dataset[2])
         self.subs.append(sub)
 
@@ -59,7 +59,7 @@ class ClassifiedSupraTest(unittest.TestCase):
         test_supra = ClassifiedSupra()
         self.assertEqual(frozenset(), test_supra.get_data())
 
-        label = Label(0b001, 3)
+        label = Label({0}, 3)
         sub1 = Subcontext(label, "foo")
         sub2 = Subcontext(label, "foo")
         sub3 = Subcontext(label, "foo")

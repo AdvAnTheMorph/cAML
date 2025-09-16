@@ -12,7 +12,7 @@ from analogical_modeling.tests.am.test_utils import six_cardinality_data
 class GangEffectTest(unittest.TestCase):
     def test_constructor(self):
         dataset = six_cardinality_data()
-        sub = Subcontext(Label(0b0101, 4), "foo")
+        sub = Subcontext(Label({0, 2}, 4), "foo")
         for i in range(6):
             sub.add(dataset[i])
         effect = GangEffect(sub, {dataset[0]: 1, dataset[1]: 2, dataset[2]: 3, dataset[3]: 4, dataset[4]: 5, dataset[5]: 6})

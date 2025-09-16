@@ -8,18 +8,13 @@ boolean vector.
 
 This class is used to assign context labels to training instances by
 comparison with the instance being classified.
- """
+"""
 
 from math import ceil, floor
-from sys import maxsize
 
-from .label import Label
-from .missing_data_compare import MissingDataCompare
+from analogical_modeling.am.label.label import Label
+from analogical_modeling.am.label.missing_data_compare import MissingDataCompare
 from analogical_modeling.utils import Instance
-
-
-# No direct equivalent in Python, but you can use comments to indicate visibility for testing.
-# import com.google.common.annotations.VisibleForTesting;
 
 
 # The default (max) size of a label partition
@@ -46,11 +41,8 @@ class Labeler:
                     ignore_set.add(i)
         self.ignore_set = frozenset(ignore_set)
 
-        if self.get_cardinality() > maxsize:
-            raise ValueError(f"Cardinality of instance too high ({self.get_cardinality()}); max cardinality for this labeler is {maxsize}.")
-
-        spans = self.partitions()
-        self.masks = [BitMask(spans[i]) for i in range(self.num_partitions())]
+        self.spans =self.partitions()
+        self.partitioners = [Partitioner(self.spans[i]) for i in range(self.num_partitions())]
 
     def get_cardinality(self):
         """
@@ -105,7 +97,7 @@ class Labeler:
         """
         return index in self.ignore_set
 
-    def label(self, data) -> Label:
+    def label(self, data: Instance) -> Label:
         """
         Create a context label for the input instance by comparing it with the
         test instance.
@@ -116,10 +108,14 @@ class Labeler:
         that feature is the same in the test and data instances.
         :raises: ValueError if the test and data instances are not from the same data set.
         """
-        label = 0
-        length = self.get_cardinality()
-        index = 0
+        # FIXME: implement
+        # if not data.equal_headers(self.get_test_instance()):
+        #     raise ValueError("Input instance is not compatible with the test instance")
 
+        label = set()
+        length = self.get_cardinality()
+
+        index = 0
         for i in range(self.get_test_instance().num_attributes()):
             # skip ignored attributes and the class attribute
             if self.is_ignored(i) or i == self.get_test_instance().class_index():
@@ -127,14 +123,13 @@ class Labeler:
             att = self.get_test_instance().attribute_name(i)
             # use mdc if were are comparing a missing attribute
             if self.get_test_instance().is_missing(i) or data.is_missing(i):
-                if not self.get_missing_data_compare().matches(
-                        self.get_test_instance(), data, i):
+                if not self.get_missing_data_compare().matches(self.get_test_instance(), data, i):
                     # use length-1-index instead of index so that in binary the
                     # labels show left to right, first to last feature.
-                    label |= 1 << (length - 1 - index)
+                    label.add(length - 1 - index)
             elif self.get_test_instance().value(att) != data.value(att):
                 # same as above
-                label |= 1 << (length - 1 - index)
+                label.add(length - 1 - index)
             index += 1
         return Label(label, self.get_cardinality())
 
@@ -144,7 +139,7 @@ class Labeler:
 	    and the label is 00101, then the return string will be "A C * Z *".
         """
         context_list = self.get_context_list(label, "*")
-        return " ".join(context_list)
+        return " ".join(map(str, context_list))
 
     def get_context_list(self, label: Label, mismatch_string: str) -> list[str]:
         """
@@ -193,7 +188,7 @@ class Labeler:
             atts.append(instance.attribute_name(i))
         return atts
 
-    def get_lattice_top(self) -> Label:
+    def get_lattice_top(self):
         """
         Creates and returns the label which belongs at the top of the boolean
         lattice formed by the subcontexts labeled by this labeler, i.e. the one for
@@ -201,9 +196,9 @@ class Labeler:
 
 	    :return: A label with all matches
 	    """
-        return Label(0, self.get_cardinality())
+        return Label(set(), self.get_cardinality())
 
-    def get_lattice_bottom(self) -> Label:
+    def get_lattice_bottom(self):
         """
         Creates and returns the label which belongs at the bottom of the boolean
 	    lattice formed by the subcontexts labeled by this labeler, i.e. the one for
@@ -211,21 +206,22 @@ class Labeler:
 
         :return: A label with all mismatches
         """
-        bottom = "1" * self.get_cardinality()
-        return Label(-1, self.get_cardinality())  # TODO: doesn't work, as no fixed size
-        # 	@Override
-        # 	public Label getLatticeBottom() {
-        # 		BitSet bottom = new BitSet();
-        # 		bottom.set(0, getCardinality());
-        #
-        # 		return new BitSetLabel(bottom, getCardinality());
-        # 	}
+        bottom = set(range(self.get_cardinality()))
 
-    def from_bits(self, label_bits: int) -> Label:
+        return Label(bottom, self.get_cardinality())
+
+    def from_bits(self, label_bits: int):
         """For testing purposes, this method allows the client to directly specify the label using
 	    the bits of an integer
 	    """
-        return Label(label_bits, self.get_cardinality())
+        bits = set()
+        index = 0
+        while label_bits != 0:
+            if label_bits % 2 != 0:
+                bits.add(index)
+            index += 1
+            label_bits = label_bits >> 1
+        return Label(bits, self.get_cardinality())
 
     def partition(self, label: Label, partition_index: int) -> Label:
         """
@@ -254,9 +250,8 @@ class Labeler:
             raise ValueError(
                 f"This labeler can only handle IntLabels; input label was an instance of {label.__class__.__name__}")
 
-        # create and cache the masks if they have not been created yet
-        # loop through the bits and set the unmatched ones
-        return self.masks[partition_index].mask(label)
+        # create and cache the masks if they have not be created yet
+        return self.partitioners[partition_index].extract(label)
 
     def num_partitions(self) -> int:
         """
@@ -310,23 +305,24 @@ class Partition:
         """
         return self.cardinality
 
-    def __repr__(self):
+    def __str__(self):
         return f"[{self.start_index},{self.cardinality}]"
 
-class BitMask:
-    """Object used to partition IntLabels via an integer bit mask."""
+
+class Partitioner:
+    """ class for storing label partitions"""
     def __init__(self, s: Partition):
-        """This is an int such as 000111000 that can mask the bits in another
-           integer via ||-ing."""
         self.start_index = s.get_start_index()
         self.cardinality = s.get_cardinality()
 
-        self.mask_bits = 0
-        for i in range(self.start_index, self.start_index + self.cardinality):
-            self.mask_bits |= 1 << i
+    def extract(self, label: Label) -> Label:
+        new_label = set()
+        # loop through the bits and set the unmatched ones
+        for i in range(self.cardinality):
+            if not label.matches(i + self.start_index):
+                new_label.add(i)
+        return Label(new_label, self.cardinality)
 
-    def mask(self, label: Label) -> Label:
-        return Label((self.mask_bits & label.label_bits()) >> self.start_index, self.cardinality)
+    def __str__(self):
+        return f"{self.start_index},{self.cardinality}"
 
-    def __repr__(self) -> str:
-        return f"{self.start_index},{self.cardinality}:{bin(self.mask_bits)[2:]}"

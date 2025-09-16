@@ -47,7 +47,6 @@ class LabelerTest(unittest.TestCase):
         self.assertEqual(cardinality, top.num_matches())
 
     def test_get_lattice_bottom(self):
-        # FIXME: fails
         cardinality = 32
         labeler = Labeler(test_utils.mock_instance(cardinality), False, MissingDataCompare.MATCH)
         bottom = labeler.get_lattice_bottom()
@@ -99,58 +98,58 @@ class LabelerTest(unittest.TestCase):
         labeler = Labeler(data[0], False, MissingDataCompare.VARIABLE)
         label = labeler.label(data[1])
 
-        self.assertEqual(label, Label(0b0000110010, 10))
+        self.assertEqual(label, Label({1, 4, 5}, 10))
         self.assertEqual(labeler.num_partitions(), 2)
 
-        self.assertEqual(labeler.partition(label, 0), Label(0b10010, 5))
-        self.assertEqual(labeler.partition(label, 1), Label(0b00001, 5))
+        self.assertEqual(labeler.partition(label, 0), Label({1, 4}, 5))
+        self.assertEqual(labeler.partition(label, 1), Label({0}, 5))
 
 
     def test_label(self):
         dataset = test_utils.six_cardinality_data()
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
-        self.assertEqual(Label(0b00000, 5), labeler.label(dataset[1]))
-        self.assertEqual(Label(0b10110, 5), labeler.label(dataset[2]))
-        self.assertEqual(Label(0b00011, 5), labeler.label(dataset[3]))
-        self.assertEqual(Label(0b10011, 5), labeler.label(dataset[4]))
-        self.assertEqual(Label(0b11111, 5), labeler.label(dataset[5]))
+        self.assertEqual(Label(set(), 5), labeler.label(dataset[1]))
+        self.assertEqual(Label({1, 2, 4}, 5), labeler.label(dataset[2]))
+        self.assertEqual(Label({0, 1}, 5), labeler.label(dataset[3]))
+        self.assertEqual(Label({0, 1, 4}, 5), labeler.label(dataset[4]))
+        self.assertEqual(Label({0, 1, 2, 3, 4}, 5), labeler.label(dataset[5]))
 
     def test_label_with_alternative_class_index(self):
         """Test with a different class index to make sure its location is not hard coded."""
         dataset = test_utils.six_cardinality_data()
         dataset.set_class_index(2)
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
-        self.assertEqual(Label(0b10100, 5), labeler.label(dataset[2]))
-        self.assertEqual(Label(0b00111, 5), labeler.label(dataset[3]))
-        self.assertEqual(Label(0b10110, 5), labeler.label(dataset[4]))
-        self.assertEqual(Label(0b11111, 5), labeler.label(dataset[5]))
+        self.assertEqual(Label({2, 4}, 5), labeler.label(dataset[2]))
+        self.assertEqual(Label({0, 1, 2}, 5), labeler.label(dataset[3]))
+        self.assertEqual(Label({1, 2, 4}, 5), labeler.label(dataset[4]))
+        self.assertEqual(Label({0, 1, 2, 3, 4}, 5), labeler.label(dataset[5]))
 
     def test_get_context_label_missing_data_compares(self):
         """Test that missing values are compared based on the input MissingDataCompare value."""
         dataset = test_utils.six_cardinality_data()
         labeler = Labeler(dataset[6], False, MissingDataCompare.MATCH)
-        self.assertEqual(Label(0b00100, 5), labeler.label(dataset[0]))
+        self.assertEqual(Label({2}, 5), labeler.label(dataset[0]))
 
         labeler = Labeler(dataset[6], False, MissingDataCompare.MISMATCH)
-        self.assertEqual(Label(0b00101, 5), labeler.label(dataset[0]))
+        self.assertEqual(Label({0, 2}, 5), labeler.label(dataset[0]))
 
         labeler = Labeler(dataset[6], False, MissingDataCompare.VARIABLE)
-        self.assertEqual(Label(0b00100, 5), labeler.label(dataset[7]))
-        self.assertEqual(Label(0b00111, 5), labeler.label(dataset[8]))
+        self.assertEqual(Label({2}, 5), labeler.label(dataset[7]))
+        self.assertEqual(Label({0, 1, 2}, 5), labeler.label(dataset[8]))
 
     def test_get_context_list(self):
         dataset = test_utils.six_cardinality_data()
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
-        label = Label(0b01011, 5)
+        label = Label({0, 1, 3}, 5)
         actual = labeler.get_context_list(label, "*")
-        self.assertEqual(list("a*v**"), actual)
+        self.assertEqual(list("a*v**"), actual)  # FIXME: fails
 
     def test_get_context_string(self):
         dataset = test_utils.six_cardinality_data()
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
-        label = Label(0b01011, 5)
+        label = Label({0, 1, 3}, 5)
         actual = labeler.get_context_string(label)
-        self.assertEqual("a * v * *", actual)
+        self.assertEqual("a * v * *", actual)  # FIXME: fails
 
     def test_get_instance_atts_list(self):
         dataset = test_utils.six_cardinality_data()
@@ -168,7 +167,7 @@ class LabelerTest(unittest.TestCase):
         dataset = test_utils.six_cardinality_data()
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
         labeler.ignore_set = {0}
-        label = Label(0b0011, 4)
+        label = Label({0, 1}, 4)
         actual = labeler.get_context_list(label, "*")
         self.assertEqual(list("xv**"), actual)
 
@@ -183,7 +182,7 @@ class LabelerTest(unittest.TestCase):
         dataset = test_utils.six_cardinality_data()
         dataset.set_class_index(2)
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
-        label = Label(0b01011, 5)
+        label = Label({0, 1, 3}, 5)
         actual = labeler.get_context_list(label, "*")
         self.assertEqual(list("a*u**"), actual)
 

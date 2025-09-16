@@ -101,7 +101,7 @@ class TestLabel(unittest.TestCase):
 		# V , O , V , I , 0 , ? , O , T , T , A , A
 		# V , U , V , O , 0 , ? , 0 , ? , L , E , A
 		labeler = Labeler(mock_instance(10), False, MissingDataCompare.VARIABLE)
-		label = labeler.from_bits(0b0101001111) # FIXME: empty set
+		label = labeler.from_bits(0b0101001111)
 
 		expected_labels = {labeler.from_bits(0b0101011111), labeler.from_bits(0b0101111111), labeler.from_bits(0b0101101111),
 						   labeler.from_bits(0b0111101111), labeler.from_bits(0b0111111111), labeler.from_bits(0b0111011111),
@@ -180,13 +180,13 @@ class TestLabel(unittest.TestCase):
 		self.assertEqual("", str(label))
 
 	def test_constructor(self):
-		label = Label(0b101, 3)
+		label = Label({0, 2}, 3)
 		self.assertEqual(3, label.get_cardinality())
 		self.assertFalse(label.matches(0))
 		self.assertTrue(label.matches(1))
 		self.assertFalse(label.matches(2))
 
-		label = Label(0b100000000000000000000000000000101, 33)
+		label = Label({0, 2, 32}, 33)
 		self.assertEqual(33, label.get_cardinality())
 		self.assertFalse(label.matches(0))
 		self.assertTrue(label.matches(1))
@@ -196,14 +196,14 @@ class TestLabel(unittest.TestCase):
 		self.assertFalse(label.matches(32))
 
 	def test_label_bits(self):
-		label = Label(0b0011, 4)
-		self.assertEqual(0b0011, label.label_bits())
+		label = Label({0, 1}, 4)
+		self.assertEqual({0, 1}, label.label_bits)
 
-		label = Label(0b100000000000000000000000000000101, 33)
-		self.assertEqual(0b100000000000000000000000000000101, label.label_bits())
+		label = Label({0, 1, 32}, 33)
+		self.assertEqual({0, 1, 32}, label.label_bits)
 
 	def test_copy_constructor(self):
-		first_label = Label(0b100, 3)
+		first_label = Label({2}, 3)
 		second_label = Label(first_label)
 		self.assertEqual(second_label, first_label)
 

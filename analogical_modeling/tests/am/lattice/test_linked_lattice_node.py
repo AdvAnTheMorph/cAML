@@ -48,12 +48,12 @@ class LinkedLatticeNodeTest(unittest.TestCase):
         dataset = test_utils.get_dataset(test_utils.FINNVERB_MIN)
         for supra in supras:
             test_node1 = LinkedLatticeNode(supra())
-            sub1 = Subcontext(Label(0b0, 1), "foo")
+            sub1 = Subcontext(Label({0}, 1), "foo")
             sub1.add(dataset[0])
-            sub2 = Subcontext(Label(0b1, 1), "foo")
+            sub2 = Subcontext(Label({1}, 1), "foo")
             sub2.add(dataset[1])
             sub2.add(dataset[2])
-            sub3 = Subcontext(Label(0b0, 1), "foo")
+            sub3 = Subcontext(Label({0}, 1), "foo")
 
             test_node2 = test_node1.insert_after(sub1, 11)
             expected = BasicSupra({sub1}, 1)
