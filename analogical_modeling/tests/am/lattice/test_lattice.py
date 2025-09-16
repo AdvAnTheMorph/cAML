@@ -75,7 +75,7 @@ class LatticeTest(unittest.TestCase):
         self.assertEqual(len(expected_supras), len(actual_supras), f"{lattice_supplier}: {actual_supras} != {expected_supras}")
         for expected in expected_supras:
             supra = test_utils.get_supra_from_string(expected, train)
-            self.assertTrue(test_utils.contains_supra(actual_supras, supra))
+            self.assertTrue(test_utils.contains_supra(actual_supras, supra))  # fails because self.label != other.label
 
     def test_filling_with_empty_subcontext_list(self):
         for lattice_supplier in lattices:
@@ -91,21 +91,18 @@ class LatticeTest(unittest.TestCase):
                 lattice.fill(SubcontextList(Mock(spec=Labeler), Dataset([]), False))
 
     def test_chapter3_data(self):
-        train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA)
         expected_supras = ["[2x(001|&nondeterministic&|3,1,0,e/3,1,1,r)]", "[1x(100|r|2,1,2,r)]", "[1x(100|r|2,1,2,r),(110|r|0,3,2,r)]"]
 
-        # FIXME: fails
         for lattice_supplier in lattices:
-            if isinstance(lattice_supplier, HeterogeneousLattice) or isinstance(lattice_supplier, JohnsenJohanssonLattice):
+            if isinstance(lattice_supplier(), HeterogeneousLattice) or isinstance(lattice_supplier(), JohnsenJohanssonLattice):
                 # HeterogeneousLattice not designed for prediction
                 # JohnsenJohanssonLattice inaccurate for small datasets
                 continue
+            train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA)
             self.do_test_supras(train, 0, expected_supras, lattice_supplier)
 
-    # FIXME: fails
     def test_heterogeneous_marking(self):
         """Test that supracontexts are properly marked heterogeneous."""
-        train = test_utils.get_reduced_dataset(test_utils.FINNVERB_MIN, [5, 6, 7, 8, 9])
         expected_supras = ["[1x(01010|&nondeterministic&|H,A,V,I,0,A/H,A,V,A,0,B)]",
                            "[2x(10000|A|K,U,V,U,0,A)]",
                            "[2x(00011|C|H,U,V,O,S,C)]",
@@ -113,26 +110,24 @@ class LatticeTest(unittest.TestCase):
                            "[1x(10010|A|U,U,V,I,0,A),(10110|A|P,U,0,?,0,A),(10000|A|K,U,V,U,0,A)]"]
 
         for lattice_supplier in lattices:
-            if isinstance(lattice_supplier, HeterogeneousLattice) or isinstance(lattice_supplier, JohnsenJohanssonLattice):
+            if isinstance(lattice_supplier(), HeterogeneousLattice) or isinstance(lattice_supplier(), JohnsenJohanssonLattice):
                 # HeterogeneousLattice not designed for prediction
                 # JohnsenJohanssonLattice inaccurate for small datasets
                 continue
+            train = test_utils.get_reduced_dataset(test_utils.FINNVERB_MIN, [5, 6, 7, 8, 9])
             self.do_test_supras(train, 0, expected_supras, lattice_supplier)
 
-    # FIXME: fails
     def test_clean_supra_timing(self):
         """Test that BasicLattice.clean_supra() is only run after a subcontext
         is inserted completely, not after each single insertion"""
-
-        train = test_utils.get_reduced_dataset(test_utils.FINNVERB_MIN, [0, 6, 7, 8, 9])
         expected_supras = ["[6x(00000|A|U,V,U,0,?,A)]",
                            "[3x(00000|A|U,V,U,0,?,A),(00100|A|U,V,I,0,?,A)]",
                            "[3x(00000|A|U,V,U,0,?,A),(01100|A|U,0,?,0,?,A),(00100|A|U,V,I,0,?,A)]"]
 
         for lattice_supplier in lattices:
-            if isinstance(lattice_supplier, HeterogeneousLattice) or isinstance(lattice_supplier, JohnsenJohanssonLattice):
+            if isinstance(lattice_supplier(), HeterogeneousLattice) or isinstance(lattice_supplier(), JohnsenJohanssonLattice):
                 # HeterogeneousLattice not designed for prediction
                 # JohnsenJohanssonLattice inaccurate for small datasets
                 continue
-
+            train = test_utils.get_reduced_dataset(test_utils.FINNVERB_MIN,  [0, 6, 7, 8, 9])
             self.do_test_supras(train, 0, expected_supras, lattice_supplier)

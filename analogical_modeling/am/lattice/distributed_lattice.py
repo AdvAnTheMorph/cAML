@@ -24,7 +24,6 @@ from analogical_modeling.am.data.subcontext_list import SubcontextList
 from analogical_modeling.am.data.basic_supra import BasicSupra
 from analogical_modeling.am.data.classified_supra import ClassifiedSupra
 from analogical_modeling.am.lattice.lattice import Lattice
-from analogical_modeling.am.label.labeler import Labeler
 
 
 class DistributedLattice(Lattice):
@@ -32,7 +31,6 @@ class DistributedLattice(Lattice):
     supracontexts of smaller lattices are combined to create the final Supracontexts.
     """
     def __init__(self):
-        # super.__init__(self)
         self.supras: set[Supracontext] = set()
         self.filled: bool = False
 
@@ -42,9 +40,6 @@ class DistributedLattice(Lattice):
         :return: the list of homogeneous supracontexts created with this lattice
         """
         return self.supras
-
-    def distributed_lattice(self):
-        pass
 
     def fill(self, sub_list: SubcontextList):
         """
@@ -57,35 +52,29 @@ class DistributedLattice(Lattice):
         if self.filled:
             raise ValueError("Lattice is already filled and cannot be filled again.")
         self.filled = True
-        if not sub_list:
+        if len(sub_list) == 0:
             return
         labeler = sub_list.get_labeler()
         num_lattices = labeler.num_partitions()
 
-        supras_futures = []
         with ThreadPoolExecutor() as executor:
-            for partition_index in range(num_lattices):
+            supras_futures = []
+            for i in range(num_lattices):
                 # fill each heterogeneous lattice with a given label partition
+                partition_index = i
                 future = executor.submit(self.fill_lattice_partition, sub_list, partition_index)
                 supras_futures.append(future)
 
-            results = []
-            for future in as_completed(supras_futures):
-                results.append(future.result())
-
             # then combine them 2 at a time, consolidating duplicate supracontexts
             if num_lattices > 2:
-                intermediate_futures = []
-                for i in range(1, num_lattices - 1):
-                    supras1 = results.pop()
-                    supras2 = results.pop()
+                for _ in range(1, num_lattices - 1):
+                    supras1 = supras_futures.pop(0).result()
+                    supras2 = supras_futures.pop(0).result()
                     future = executor.submit(self.lattice_product, supras1, supras2, IntermediateProduct)
-                    intermediate_futures.append(future)
-            for future in as_completed(supras_futures):
-                results.append(future.result())
+                    supras_futures.append(future)
 
             # the final combination creates ClassifiedSupras and ignores the heterogeneous ones.
-            self.supras = self.lattice_product(results.pop(), results.pop(), FinalizingProduct)
+            self.supras = self.lattice_product(supras_futures.pop(0).result(), supras_futures.pop(0).result(), FinalizingProduct)
 
     @staticmethod
     def fill_lattice_partition(sub_list: SubcontextList, partition_index: int) -> set[Supracontext]:
@@ -106,7 +95,7 @@ class DistributedLattice(Lattice):
         results = []
 
         with ThreadPoolExecutor() as executor:
-            futures = [executor.submit(supra_product_constructor, supra, supras2) for supra in supras1]
+            futures = [executor.submit(supra_product_constructor(), supra, supras2) for supra in supras1]
             for future in as_completed(futures):
                 results.append(future.result())
 
@@ -135,14 +124,10 @@ class DistributedLattice(Lattice):
 
 
 class IntermediateProduct:
-    def __init__(self, supra1: Supracontext, supras2: set[Supracontext]):
-        self.supra1 = supra1
-        self.supras2 = supras2
-
-    def __call__(self) -> CanonicalizingSet:  # replaces Java's compute
+    def __call__(self, supra1: Supracontext, supras2: set[Supracontext]) -> CanonicalizingSet:  # replaces Java's compute
         combined_supras = CanonicalizingSet()
-        for supra2 in self.supras2:
-            new_supra = self.product(self.supra1, supra2)
+        for supra2 in supras2:
+            new_supra = self.product(supra1, supra2)
             if new_supra is not None:
                 # add to the existing count if the same supra was formed from a
                 # previous combination
@@ -175,55 +160,12 @@ class IntermediateProduct:
         return BasicSupra(combined_subs, supra1.get_count() * supra2.get_count())
 
 
-# Got it 👍 — in Java you have something like:
-#
-# java
-#
-# class FinalizingProduct extends RecursiveTask<CanonicalizingSet<Supracontext>> {
-#     // implementation...
-# }
-#
-# That’s a ForkJoin RecursiveTask which runs in parallel and returns a CanonicalizingSet<Supracontext>.
-#
-# In Python, there’s no RecursiveTask, but since we already mapped your concurrency to concurrent.futures, the closest equivalent is just a callable class (or function) that returns a CanonicalizingSet.
-#
-# Here’s the skeleton translation:
-#
-# python
-#
-# class FinalizingProduct:
-#     def __init__(self, supra: "Supracontext", supras: "CanonicalizingSet[Supracontext]"):
-#         self.supra = supra
-#         self.supras = supras
-#
-#     def __call__(self) -> "CanonicalizingSet[Supracontext]":
-#         """
-#         Equivalent to compute() in Java's RecursiveTask.
-#         Should return a CanonicalizingSet[Supracontext].
-#         """
-#         # TODO: implement the actual lattice-finalizing logic
-#         result = CanonicalizingSet()
-#         # Example: maybe process self.supra and merge into result
-#         # result.merge(self.supra, lambda s1, s2: ...)
-#         return result
-#
-# 🔑 Key points:
-#
-#     In Java, compute() is the main method of RecursiveTask.
-#     In Python, making the class callable (__call__) allows us to use it with executor.submit(FinalizingProduct(...)).
-#     That means you don’t need to change the code in lattice_product, because Python will treat the class instance as a task.
-#
-# 👉 Do you want me to also create a parallel stub for IntermediateProduct in the same style, so both task types are ready to plug into your translated lattice code?
 class FinalizingProduct:
-    def __init__(self, supra1: Supracontext, supras2: set[Supracontext]):
-        self.supra1 = supra1
-        self.supras2 = supras2
-
-    def __call__(self) -> CanonicalizingSet:
+    def __call__(self, supra1: Supracontext, supras2: set[Supracontext]) -> CanonicalizingSet:
         final_supras = CanonicalizingSet()
 
-        for supra2 in self.supras2:
-            supra = self.product(self.supra1, supra2)
+        for supra2 in supras2:
+            supra = self.product(supra1, supra2)
             if supra is None:
                 continue
             # add to the existing count if the same supra was formed from a
