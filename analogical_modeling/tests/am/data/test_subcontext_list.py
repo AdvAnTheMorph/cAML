@@ -49,7 +49,7 @@ class SubContextListTest(unittest.TestCase):
         train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA)
         test = train[0]
         labeler = Labeler(test, False, MissingDataCompare.MATCH)
-        all_matching_sub = Subcontext(Label({0}, 3), "foo")
+        all_matching_sub = Subcontext(Label(set(), 3), "foo")
         all_matching_sub.add(train[0])  # 310e
 
         subs = SubcontextList(labeler, train, False)

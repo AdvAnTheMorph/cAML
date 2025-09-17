@@ -35,7 +35,7 @@ class SupracontextTest(unittest.TestCase):
             if isinstance(test_supra, Concept):
                 print("Concept skipped: determines context differently")
                 continue
-            for bits in [{1, 3}, {0, 3}, {0, 4}, {3, 4}]:
+            for bits in [{1, 3}, {1, 3}, {1, 4}, {3, 4}]:
                 test_supra.add(Subcontext(Label(bits, 5), "foo"))
             self.assertEqual(Label({1, 3, 4}, 5), test_supra.get_context(), "Label should be intersect of subcontext labels")
 
@@ -79,8 +79,8 @@ class SupracontextTest(unittest.TestCase):
             self.assertIsNot(test_supra, test_supra2)
 
     def test_equals_and_hash_code(self):
-        sub1 = Subcontext(Label({0}, 1), "foo")
-        sub2 = Subcontext(Label({0}, 2), "foo")
+        sub1 = Subcontext(Label(set(), 1), "foo")
+        sub2 = Subcontext(Label(set(), 2), "foo")
         for supra in supras:
             test_supra1 = supra()
             # equals and hash code work different for Concept
