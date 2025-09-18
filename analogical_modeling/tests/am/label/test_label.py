@@ -197,10 +197,10 @@ class TestLabel(unittest.TestCase):
 
 	def test_label_bits(self):
 		label = Label({0, 1}, 4)
-		self.assertEqual({0, 1}, label.label_bits)
+		self.assertEqual({0, 1}, label.get_label_bits())
 
 		label = Label({0, 1, 32}, 33)
-		self.assertEqual({0, 1, 32}, label.label_bits)
+		self.assertEqual({0, 1, 32}, label.get_label_bits())
 
 	def test_copy_constructor(self):
 		first_label = Label({2}, 3)

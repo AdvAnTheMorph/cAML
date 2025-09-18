@@ -41,8 +41,8 @@ class Labeler:
                     ignore_set.add(i)
         self.ignore_set = frozenset(ignore_set)
 
-        self.spans =self.partitions()
-        self.partitioners = [Partitioner(self.spans[i]) for i in range(self.num_partitions())]
+        spans = self.partitions()
+        self.partitioners = [Partitioner(spans[i]) for i in range(self.num_partitions())]
 
     def get_cardinality(self):
         """
@@ -248,7 +248,7 @@ class Labeler:
                 f"Label cardinality is {label.get_cardinality()}, but labeler cardinality is {self.get_cardinality()}")
         if not isinstance(label, Label):
             raise ValueError(
-                f"This labeler can only handle IntLabels; input label was an instance of {label.__class__.__name__}")
+                f"This labeler can only handle Labels; input label was an instance of {label.__class__.__name__}")
 
         # create and cache the masks if they have not be created yet
         return self.partitioners[partition_index].extract(label)

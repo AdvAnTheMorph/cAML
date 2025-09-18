@@ -15,50 +15,52 @@ class Label:
         :param c: cardinality of the label
         """
         if c is not None:
-            self.label_bits = l
-            self.card = c
-            self.hash_code = 37 * self.get_cardinality() + hash(frozenset(self.label_bits))
+            self.__label_bits = l
+            self.__card = c
         elif isinstance(l, Label):
-            self.label_bits = l.label_bits
-            self.card = l.card
-            self.hash_code = l.hash_code
+            self.__label_bits = l.get_label_bits()
+            self.__card = l.get_cardinality()
         else:
             raise ValueError("Either a Label instance or a set and a cardinality must be given.")
+        self.__hash_code = 37 * self.__card + hash(tuple(sorted(self.__label_bits)))
 
     def get_cardinality(self) -> int:
-        return self.card
+        return self.__card
+
+    def get_label_bits(self) -> set[int]:
+        return self.__label_bits
 
     def matches(self, index: int) -> bool:
         if index > self.get_cardinality() - 1 or index < 0:
             raise ValueError(f"Illegal index: {index}")
-        return index not in self.label_bits
+        return index not in self.__label_bits
 
     def num_matches(self) -> int:
-        return self.get_cardinality() - len(self.label_bits)
+        return self.get_cardinality() - len(self.__label_bits)
 
     def intersect(self, other_label: 'Label') -> 'Label':
         if not isinstance(other_label, Label):
             raise ValueError("BitSetLabel can only be intersected with other BitSetLabel")
-        bits = self.label_bits.union(other_label.label_bits)
+        bits = self.__label_bits.union(other_label.__label_bits)
         return Label(bits, self.get_cardinality())
 
     def union(self, other: 'Label') -> 'Label':
         if not isinstance(other, Label):
             raise ValueError("BitSetLabel can only be unioned with other BitSetLabel")
-        bits = self.label_bits.intersection(other.label_bits)
+        bits = self.__label_bits.intersection(other.__label_bits)
         return Label(bits, self.get_cardinality())
 
     def all_matching(self) -> bool:
-        return len(self.label_bits) == 0
+        return len(self.__label_bits) == 0
 
-    def __str__(self):
+    def __repr__(self):
         if self.get_cardinality() == 0:
             return ""
-        num_leading_zeroes = self.get_cardinality() - (max(self.label_bits.union({-1}))+1)
+        num_leading_zeroes = self.get_cardinality() - (max(self.__label_bits.union({-1})) + 1)
         string = "0" * num_leading_zeroes
-        if len(self.label_bits) > 0:
-            for i in range(max(self.label_bits), -1, -1):
-                string += "1" if i in self.label_bits else "0"
+        if len(self.__label_bits) > 0:
+            for i in range(max(self.__label_bits), -1, -1):
+                string += "1" if i in self.__label_bits else "0"
         return string
 
     def __eq__(self, other):
@@ -68,10 +70,10 @@ class Label:
             return False
         if not isinstance(other, Label):
             return False
-        return other.get_cardinality() == self.get_cardinality() and other.label_bits == self.label_bits
+        return other.get_cardinality() == self.get_cardinality() and other.get_label_bits() == self.get_label_bits()
 
     def __hash__(self):
-        return self.hash_code
+        return self.__hash_code
 
     def descendant_iterator(self) -> Iterator['Label']:
         return SubsetIterator(self)
@@ -82,8 +84,8 @@ class Label:
         # boolean lattice ancestor/descendants yield the descendant when ORed;
         # this label needs to have all of the same ones (and optionally more
         # ones)
-        for i in possible_descendant.label_bits:
-            if i >= self.card or i not in self.label_bits:
+        for i in possible_descendant.__label_bits:
+            if i >= self.__card or i not in self.__label_bits:
                 return False
         return True
 
@@ -92,13 +94,13 @@ class SubsetIterator:
     def __init__(self, bitset_label: Label):
         """Construct an iterator over all subsets of this label"""
         self.card = bitset_label.get_cardinality()
-        self.current = bitset_label.label_bits
+        self.current = set(bitset_label.get_label_bits())  # copy
         # the indices of the 0 entries
         self.gaps = []
 
         # iterate over the clear bits and record their locations
         for i in range(self.card):
-            if i not in self.current:
+            if i not in bitset_label.get_label_bits():
                 self.gaps.append(i)
         # if there were no gaps, then there is nothing to iterate over
         if not self.gaps:

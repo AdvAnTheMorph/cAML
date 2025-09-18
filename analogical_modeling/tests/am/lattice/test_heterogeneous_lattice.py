@@ -41,4 +41,4 @@ class HeterogeneousLatticeTest(unittest.TestCase):
         self.assertEqual(len(expected_supras), len(actual_supras))
         for expected in expected_supras:
             supra = test_utils.get_supra_from_string(expected, train)
-            self.assertTrue(test_utils.contains_supra(actual_supras, supra))  # FIXME: fails
+            self.assertTrue(test_utils.contains_supra(actual_supras, supra))

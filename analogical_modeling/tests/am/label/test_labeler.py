@@ -142,14 +142,14 @@ class LabelerTest(unittest.TestCase):
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
         label = Label({0, 1, 3}, 5)
         actual = labeler.get_context_list(label, "*")
-        self.assertEqual(list("a*v**"), actual)  # FIXME: fails
+        self.assertEqual(list("a*v**"), actual)
 
     def test_get_context_string(self):
         dataset = test_utils.six_cardinality_data()
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
         label = Label({0, 1, 3}, 5)
         actual = labeler.get_context_string(label)
-        self.assertEqual("a * v * *", actual)  # FIXME: fails
+        self.assertEqual("a * v * *", actual)
 
     def test_get_instance_atts_list(self):
         dataset = test_utils.six_cardinality_data()
@@ -192,3 +192,16 @@ class LabelerTest(unittest.TestCase):
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
         actual = labeler.get_instance_atts_values_list(dataset[0])
         self.assertEqual(list("axusr"), actual)
+
+    def test_label_larbe_instance(self):
+        data = test_utils.get_dataset(test_utils.SOYBEAN)
+        labeler = Labeler(data[0], False, MissingDataCompare.VARIABLE)
+        label = labeler.label(data[1])
+        bits = {15, 25, 26, 27, 28, 29, 34}
+        self.assertEqual(Label(bits, 35), label)
+
+    def test_partition_large_label(self):
+        # 35 features, 7 partitions
+        data = test_utils.get_dataset(test_utils.SOYBEAN)
+        labeler = Labeler(data[0], False, MissingDataCompare.VARIABLE)
+        self.assertEqual(7, labeler.num_partitions())
