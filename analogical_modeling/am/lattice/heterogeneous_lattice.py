@@ -60,7 +60,7 @@ class HeterogeneousLattice(Lattice):
         """
         self.partition_index: int = partition_index
         # Lattice is a 2^n array of Supracontexts
-        self.lattice: dict[Label, LinkedLatticeNode[BasicSupra]] = {}
+        self.lattice: dict[Label, LinkedLatticeNode] = {}
         # the current number of the subcontext being added
         self.index: int = -1
         # All points in the lattice point to the empty supracontext by default.
@@ -97,7 +97,7 @@ class HeterogeneousLattice(Lattice):
         """Add the given subcontext to the supracontext with the given label"""
         # the default value is the empty supracontext (leave null until now to
         # save time/space)
-        if not label in self.lattice.keys():
+        if label not in self.lattice.keys():
             self.lattice[label] = self.empty_supracontext
 
         # if the following supracontext matches the current index, just repoint
@@ -147,7 +147,7 @@ class HeterogeneousLattice(Lattice):
             supra = supra.get_next()
         return sup_list
 
-    def supra_list_to_string(self):
+    def supra_list_to_string(self) -> str:
         """
 
         :return: A string representation of the list of Supracontexts created when the Lattice was filled

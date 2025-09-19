@@ -67,7 +67,7 @@ class BasicLattice(Lattice):
         # skip this if the supracontext to be added to is already heterogeneous;
         # it would not be possible to make any non-heterogeneous supracontexts.
 
-        if self.lattice.get(sub.get_label()) == self.hetero_supra:
+        if self.lattice.get(sub.get_label()) is self.hetero_supra:
             return
         # add the sub to its label position
         self.add_to_context(sub, sub.get_label())
@@ -88,8 +88,9 @@ class BasicLattice(Lattice):
         if label not in self.lattice:
             self.lattice[label] = self.empty_supracontext
         # if the Supracontext is heterogeneous, ignore it
-        if self.lattice.get(label) == self.hetero_supra:
+        if self.lattice.get(label) is self.hetero_supra:  # Java == corresponds to Python is
             return
+
         # if the following supracontext matches the current index, just
         # re-point to that one; this is a supracontext that was made in
         # the final else statement below this one.
@@ -101,12 +102,14 @@ class BasicLattice(Lattice):
                 self.lattice.get(label).decrement_count()
             self.lattice[label] = self.lattice.get(label).get_next()
             self.lattice[label].increment_count()
+
         # we now know that we will have to make a new Supracontext to contain
         # this subcontext; don't bother making heterogeneous supracontexts
         elif self.lattice.get(label).get_supracontext().would_be_hetero(sub):
             self.lattice.get(label).decrement_count()
             self.lattice[label] = self.hetero_supra
             return
+
         # otherwise make a new Supracontext and add it
         else:
             # don't decrement the count for the emptySupracontext!
@@ -135,7 +138,7 @@ class BasicLattice(Lattice):
     # Below methods are for private debugging and asserting
     def dump_lattice(self):
         # useful for private debugging on occasion
-        return am_utils.LINE_SEPARATOR.join([f"{k}:[hetero]" if v == self.hetero_supra else f"{k}:{v}" for k, v in self.lattice.items()])
+        return am_utils.LINE_SEPARATOR.join([f"{k}:[hetero]" if v is self.hetero_supra else f"{k}:{v}" for k, v in self.lattice.items()])
 
     def no_zero_supras(self):
         for supra in self.get_supracontexts():

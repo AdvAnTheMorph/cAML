@@ -95,9 +95,9 @@ class SupracontextTest(unittest.TestCase):
 
             test_supra2.add(sub1)
             test_supra2.add(sub2)
-            self.assertEqual(test_supra1, test_supra2)  # FIXME: fails for LinkedLatticeNode
+            self.assertEqual(test_supra1, test_supra2)
             self.assertEqual(hash(test_supra1), hash(test_supra2))
 
             test_supra1.set_count(29)
-            self.assertEqual(test_supra1, test_supra2, "Count is not compared for equality")  # FIXME: fails for LinkedLatticeNode
+            self.assertEqual(test_supra1, test_supra2, "Count is not compared for equality")
             self.assertEqual(hash(test_supra1), hash(test_supra2), "Count does not affect Hash")

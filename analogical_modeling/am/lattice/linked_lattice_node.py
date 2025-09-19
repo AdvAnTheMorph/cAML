@@ -34,7 +34,7 @@ class LinkedLatticeNode(Supracontext):
         # circular linked list
         self.next: 'LinkedLatticeNode' = None
 
-    def insert_after(self, sub: Subcontext, ind: int):
+    def insert_after(self, sub: Subcontext, ind: int) -> 'LinkedLatticeNode':
         """
         Create a new node by copying this one, adding the given subcontext and
         setting the index to that provided. Insert the new node between this node
@@ -121,6 +121,8 @@ class LinkedLatticeNode(Supracontext):
             return True
         if other is None:
             return False
+        if isinstance(other, LinkedLatticeNode):
+            return self.supra == other.supra
         return self.supra == other
 
     def __hash__(self):

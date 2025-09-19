@@ -1,9 +1,8 @@
 """weka.classifiers.lazy.AM.data"""
 
-from .supracontext import Supracontext
-from ..label.label import Label
+from analogical_modeling.am.data.supracontext import Supracontext
+from analogical_modeling.am.label.label import Label
 
-# TODO: metaclass for interface in 14_OOP1 and 16_OOP3
 
 class BasicSupra(Supracontext):
     """Basic implementation of Supracontext with no extra features."""
@@ -50,7 +49,6 @@ class BasicSupra(Supracontext):
     def get_context(self) -> Label:
         if not self.context:
             self.context = super().get_context()
-            # TODO (maybe): this.context = Supracontext.super.getContext();
         return self.context
 
     def copy(self):
@@ -69,7 +67,7 @@ class BasicSupra(Supracontext):
     def __hash__(self):
         return hash(self.get_data())
 
-    def __repr__(self):
+    def __str__(self):
         """
 
         :return: String representation of this supracontext in this form:

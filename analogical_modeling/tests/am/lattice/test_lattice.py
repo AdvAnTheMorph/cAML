@@ -32,7 +32,7 @@ class FullSplitLabeler(Labeler):
         return self.wrapped.label(data)
 
     def partition(self, label: Label, partition_index: int):
-        label_bit = 0 if label.matches(partition_index) else 1
+        label_bit = set() if label.matches(partition_index) else {0}
         return Label(label_bit, 1)
 
     def num_partitions(self) -> int:
