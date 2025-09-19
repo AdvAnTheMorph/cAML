@@ -42,7 +42,7 @@ class Concept(Supracontext):
     def remove_parent(self, old_parent):
         self.parents.remove(old_parent)
 
-    def __repr__(self):
+    def __str__(self):
         return f"{self.intent}({self.extent})->[{self.parents}]"
 
     def copy(self):

@@ -162,6 +162,17 @@ def leave_one_out(am: AnalogicalModeling, data: Dataset):
     return correct
 
 
+def bits_to_bitset(bits: int) -> set[int]:
+    bitset = set()
+    index = 0
+    while bits != 0:
+        if bits % 2 != 0:
+            bitset.add(index)
+        index += 1
+        bits = bits >> 1
+    return bitset
+
+
 def get_supra_from_string(supra_string: str, data):
     """Create the ClassifiedSupra object specified by the input string.
 
@@ -193,7 +204,7 @@ def get_supra_from_string(supra_string: str, data):
         if len(sub_components) != 3:
             raise ValueError(f"Incomplete subcontext specified {substring}")
         # parse label
-        label = Label(int(sub_components[0], 2), len(sub_components[0]))
+        label = Label(bits_to_bitset(int(sub_components[0], 2)), len(sub_components[0]))
         sub = Subcontext(label, "foo")
 
         # parse outcome
@@ -215,19 +226,19 @@ def get_supra_from_string(supra_string: str, data):
             # instances, i.e. grep the set for the matching object :(
             # # TODO: pd.Series.equals() exists
             added = False
-            inst = Instance(instance_string.split(","), len(instance_string.split(","))-1)
-            if inst in data:
-                sub.add(inst)
-                added = True
-                seen_instances.add(inst)
-            # for instance in data:
-            #     if str(instance) == instance_string:
-            #         if instance in seen_instances:
-            #             continue
-            #         sub.add(instance)
-            #         added = True
-            #         seen_instances.add(instance)
-            #         break
+            # inst = Instance(instance_string.split(","), len(instance_string.split(","))-1)
+            # if inst in data:
+            #     sub.add(inst)
+            #     added = True
+            #     seen_instances.add(inst)
+            for instance in data:
+                if str(instance) == instance_string:
+                    if instance in seen_instances:
+                        continue
+                    sub.add(instance)
+                    added = True
+                    seen_instances.add(instance)
+                    break
             if not added:
                 raise ValueError(f"{instance_string} does not specify any instance in the given dataset")
         if sub.get_outcome() != outcome:
@@ -265,7 +276,7 @@ def test_supra_from_string():
     # assert supra_deep_equals(get_supra_from_string(str(expected_supra), data), actual_supra)
 
     data = get_reduced_dataset(FINNVERB, [5, 6, 7, 8, 9])
-    sub5 = Subcontext(Label(0b00001, 5), "foo")
+    sub5 = Subcontext(Label({0}, 5), "foo")
     sub5.add(data[1])  # A,A,0,?,S,B
     sub5.add(data[2])  # also A,A,0,?,S,B  # FIXME: fails probably due to set() -> can be added only once, since equal
     expected_supra = ClassifiedSupra({sub5}, 6)

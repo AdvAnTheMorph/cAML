@@ -1,6 +1,7 @@
 """weka.classifiers.lazy.AM.data"""
 
 import unittest
+from importlib.metadata import distribution
 
 from analogical_modeling.analogical_modeling import AnalogicalModeling
 from analogical_modeling.tests.am import test_utils
@@ -25,116 +26,89 @@ class AMResultsTest(unittest.TestCase):
     def test_exemplar_quadratic_effects(self):
         effects = {str(k): v for k, v in self.as_quadratic.get_exemplar_effect_map().items()}
         self.assertEqual(4, len(effects))
-        # TODO
-#
-# 	@Test
-# 	public void exemplarQuadraticEffectsTest() {
-# 		Map<String, BigDecimal> effects = instanceKeysToString(asQuadratic.getExemplarEffectMap());
-# 		assertEquals(effects.size(), 4);
-# 		assertThat(effects, hasEntry(equalTo("3,1,0,e"), closeTo(new BigDecimal("0.3076923"), EPSILON)));
-# 		assertThat(effects, hasEntry(equalTo("0,3,2,r"), closeTo(new BigDecimal("0.1538462"), EPSILON)));
-# 		assertThat(effects, hasEntry(equalTo("2,1,2,r"), closeTo(new BigDecimal("0.2307692"), EPSILON)));
-# 		assertThat(effects, hasEntry(equalTo("3,1,1,r"), closeTo(new BigDecimal("0.3076923"), EPSILON)));
-# 	}
-#
-# 	@Test
-# 	public void exemplarLinearEffectsTest() {
-# 		Map<String, BigDecimal> effects = instanceKeysToString(asLinear.getExemplarEffectMap());
-# 		assertEquals(effects.size(), 4);
-# 		assertThat(effects, hasEntry(equalTo("3,1,0,e"), closeTo(new BigDecimal("0.2857143"), EPSILON)));
-# 		assertThat(effects, hasEntry(equalTo("0,3,2,r"), closeTo(new BigDecimal("0.1428571"), EPSILON)));
-# 		assertThat(effects, hasEntry(equalTo("2,1,2,r"), closeTo(new BigDecimal("0.2857143"), EPSILON)));
-# 		assertThat(effects, hasEntry(equalTo("3,1,1,r"), closeTo(new BigDecimal("0.2857143"), EPSILON)));
-# 	}
-#
-# 	@Test
-# 	public void quadraticPointersTest() {
-# 		assertEquals(asQuadratic.getTotalPointers(), BigInteger.valueOf(13));
-# 		assertEquals(asQuadratic.getClassPointers(), new HashMap<String, BigInteger>() {
-# 			{
-# 				put("r", BigInteger.valueOf(9));
-# 				put("e", BigInteger.valueOf(4));
-# 			}
-# 		});
-# 		Map<String, BigInteger> pointers = instanceKeysToString(asQuadratic.getExemplarPointers());
-# 		assertEquals(pointers.size(), 4);
-# 		assertThat(pointers, hasEntry("3,1,0,e", BigInteger.valueOf(4)));
-# 		assertThat(pointers, hasEntry("0,3,2,r", BigInteger.valueOf(2)));
-# 		assertThat(pointers, hasEntry("2,1,2,r", BigInteger.valueOf(3)));
-# 		assertThat(pointers, hasEntry("3,1,1,r", BigInteger.valueOf(4)));
-# 	}
-#
-# 	@Test
-# 	public void linearPointersTest() {
-# 		assertEquals(asLinear.getTotalPointers(), BigInteger.valueOf(7));
-# 		assertEquals(asLinear.getClassPointers(), new HashMap<String, BigInteger>() {
-# 			{
-# 				put("r", BigInteger.valueOf(5));
-# 				put("e", BigInteger.valueOf(2));
-# 			}
-# 		});
-# 		Map<String, BigInteger> pointers = instanceKeysToString(asLinear.getExemplarPointers());
-# 		assertEquals(pointers.size(), 4);
-# 		assertThat(pointers, hasEntry("3,1,0,e", BigInteger.valueOf(2)));
-# 		assertThat(pointers, hasEntry("0,3,2,r", BigInteger.valueOf(1)));
-# 		assertThat(pointers, hasEntry("2,1,2,r", BigInteger.valueOf(2)));
-# 		assertThat(pointers, hasEntry("3,1,1,r", BigInteger.valueOf(2)));
-# 	}
-#
-# 	@Test
-# 	public void quadraticClassDistributionTest() {
-# 		Map<String, BigDecimal> distribution = asQuadratic.getClassLikelihood();
-#
-# 		assertEquals(distribution.size(), 2);
-# 		// test to 10 decimal places, the number used by AMUtils.mathContext
-# 		assertThat(distribution.get("r"), closeTo(new BigDecimal("0.6923077"), EPSILON));
-# 		assertThat(distribution.get("e"), closeTo(new BigDecimal("0.3076923"), EPSILON));
-#
-# 		assertEquals(asQuadratic.getPredictedClasses(), new HashSet<String>() {
-# 			{
-# 				add("r");
-# 			}
-# 		});
-# 		assertThat(asQuadratic.getClassProbability(), closeTo(new BigDecimal("0.6923077"), EPSILON));
-# 	}
-#
-# 	@Test
-# 	public void linearClassDistributionTest() {
-# 		Map<String, BigDecimal> distribution = asLinear.getClassLikelihood();
-#
-# 		assertEquals(distribution.size(), 2);
-# 		// test to 10 decimal places, the number used by AMUtils.mathContext
-# 		assertThat(distribution.get("r"), closeTo(new BigDecimal("0.7142857"), EPSILON));
-# 		assertThat(distribution.get("e"), closeTo(new BigDecimal("0.2857143"), EPSILON));
-#
-# 		assertEquals(asLinear.getPredictedClasses(), new HashSet<String>() {
-# 			{
-# 				add("r");
-# 			}
-# 		});
-# 		assertThat(asLinear.getClassProbability(), closeTo(new BigDecimal("0.7142857"), EPSILON));
-# 	}
-#
-#     @Test
-#     public void classifiedExTest() {
-#         assertEquals(asQuadratic.getClassifiedEx(), test);
-#     }
-#     // TODO: test with linear counting
-#     // TODO: test toString
-#
-# 	private static <T> Map<String, T> instanceKeysToString(Map<Instance, T> instanceMap) {
-# 		Map<String, T> translated = new HashMap<>();
-# 		for(Entry<Instance, T> e : instanceMap.entrySet()) {
-# 			translated.put(e.getKey().toString(), e.getValue());
-# 		}
-# 		return translated;
-# 	}
-#
-# 	@Test
-# 	public void getGangEffectsTest() {
-# 		List<GangEffect> effects = asQuadratic.getGangEffects();
-# 		assertEquals("Should return 3 gang effects ordered by number of pointers",
-# 				List.of("3 1 *", "* 1 2", "* * 2"),
-# 				effects.stream().map(e -> e.getSubcontext().getDisplayLabel()).collect(toList()));
-# 	}
-# }
+
+        self.assertIn("3,1,0,e", effects)
+        self.assertAlmostEqual(0.3076923, effects["3,1,0,e"], delta=1e-7)
+        self.assertIn("0,3,2,r", effects)
+        self.assertAlmostEqual(0.1538462, effects["0,3,2,r"], delta=1e-7)
+        self.assertIn("2,1,2,r", effects)
+        self.assertAlmostEqual(0.2307692, effects["2,1,2,r"], delta=1e-7)
+        self.assertIn("3,1,1,r", effects)
+        self.assertAlmostEqual(0.3076923, effects["3,1,1,r"], delta=1e-7)
+
+    def test_exemplar_linear_effects(self):
+        effects = {str(k): v for k, v in self.as_linear.get_exemplar_effect_map().items()}
+        self.assertEqual(4, len(effects))
+
+        self.assertIn("3,1,0,e", effects)
+        self.assertAlmostEqual(0.2857143, effects["3,1,0,e"], delta=1e-7)
+        self.assertIn("0,3,2,r", effects)
+        self.assertAlmostEqual(0.1428571, effects["0,3,2,r"], delta=1e-7)
+        self.assertIn("2,1,2,r", effects)
+        self.assertAlmostEqual(0.2857143, effects["2,1,2,r"], delta=1e-7)
+        self.assertIn("3,1,1,r", effects)
+        self.assertAlmostEqual(0.2857143, effects["3,1,1,r"], delta=1e-7)
+
+    def test_quadratic_pointers(self):
+        self.assertEqual(13, self.as_quadratic.get_total_pointers())
+        self.assertEqual({"r": 9, "e": 4}, self.as_quadratic.get_class_pointers())
+
+        pointers = {str(k): v for k, v in self.as_quadratic.get_exemplar_pointers().items()}
+        self.assertEqual(4, len(pointers))
+
+        self.assertIn("3,1,0,e", pointers)
+        self.assertEqual(4, pointers["3,1,0,e"])
+        self.assertIn("0,3,2,r", pointers)
+        self.assertEqual(2, pointers["0,3,2,r"])
+        self.assertIn("2,1,2,r", pointers)
+        self.assertEqual(3, pointers["2,1,2,r"])
+        self.assertIn("3,1,1,r", pointers)
+        self.assertEqual(4, pointers["3,1,1,r"])
+
+    def test_linear_pointers(self):
+        self.assertEqual(7, self.as_linear.get_total_pointers())
+        self.assertEqual({"r": 5, "e": 2}, self.as_linear.get_class_pointers())
+
+        pointers = {str(k): v for k, v in self.as_linear.get_exemplar_pointers().items()}
+        self.assertEqual(4, len(pointers))
+
+        self.assertIn("3,1,0,e", pointers)
+        self.assertEqual(2, pointers["3,1,0,e"])
+        self.assertIn("0,3,2,r", pointers)
+        self.assertEqual(1, pointers["0,3,2,r"])
+        self.assertIn("2,1,2,r", pointers)
+        self.assertEqual(2, pointers["2,1,2,r"])
+        self.assertIn("3,1,1,r", pointers)
+        self.assertEqual(2, pointers["3,1,1,r"])
+
+    def test_quadratic_class_distribution(self):
+        distr = self.as_quadratic.get_class_likelihood()
+        self.assertEqual(2, len(distr))
+
+        # test to 10 decimal places, the number used by AMUtils.mathContext
+        self.assertAlmostEqual(0.6923077, distr["r"], delta=1e-7)
+        self.assertAlmostEqual(0.3076923, distr["e"], delta=1e-7)
+
+        self.assertEqual({"r"}, self.as_quadratic.get_predicted_classes())
+        self.assertAlmostEqual(0.6923077, self.as_quadratic.get_class_probability(), delta=1e-7)
+
+    def test_linear_class_distribution(self):
+        distr = self.as_linear.get_class_likelihood()
+        self.assertEqual(2, len(distr))
+
+        # test to 10 decimal places, the number used by AMUtils.mathContext
+        self.assertAlmostEqual(0.7142857, distr["r"], delta=1e-7)
+        self.assertAlmostEqual(0.2857143, distr["e"], delta=1e-7)
+
+        self.assertEqual({"r"}, self.as_linear.get_predicted_classes())
+        self.assertAlmostEqual(0.7142857, self.as_linear.get_class_probability(), delta=1e-7)
+
+    def test_classified_ex(self):
+        self.assertEqual(self.test, self.as_quadratic.get_classified_ex())
+
+    # TODO: test with linear counting
+    # TODO: test toString
+
+    def test_get_gang_effects(self):
+        effects = self.as_quadratic.get_gang_effects()
+        self.assertEqual(["3 1 *", "* 1 2", "* * 2"], [e.subcontext.get_display_label() for e in effects])

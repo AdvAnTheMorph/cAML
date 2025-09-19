@@ -43,11 +43,11 @@ class Instance(pd.Series):
         return f"{','.join(map(str, self.array))}"  #,\u007b{self.num_attributes()}\u007d"
 
     def __hash__(self):
-        return int(pd.util.hash_pandas_object(self, index=True).sum())
+        return int(pd.util.hash_pandas_object(self, index=False).sum())
 
     def __eq__(self, other):
         if isinstance(other, Instance):
-            return self.all() == other.all()
+            return self.values.all() == other.values.all()
         return super().__eq__(other)
 
 

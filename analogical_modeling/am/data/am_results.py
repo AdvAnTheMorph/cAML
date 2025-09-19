@@ -21,12 +21,12 @@ from collections import defaultdict
 
 from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.data.subcontext import Subcontext
-from .gang_effect import GangEffect
-from .subcontext_list import SubcontextList
-from .. import am_utils
-from ..label.labeler import Labeler
-from ..lattice.lattice import Lattice
-from weka.core import Instance
+from analogical_modeling.am.data.gang_effect import GangEffect
+from analogical_modeling.am.data.subcontext_list import SubcontextList
+from analogical_modeling.am import am_utils
+from analogical_modeling.am.label.labeler import Labeler
+from analogical_modeling.am.lattice.lattice import Lattice
+from analogical_modeling.utils import Instance
 
 
 class PointerCountingStrategy(Enum):
@@ -48,7 +48,6 @@ class Judgement(Enum):
 # The results of running {@link weka.classifiers.lazy.AnalogicalModeling AM}, containing
  # the analogical effects of the individual training instances as well as the relevant supracontexts
  # and overall class likelihoods.
- # @author Nate Glenn
 class AMResults:
     def __init__(self, lattice: Lattice, sub_list: SubcontextList, test_item: Instance, linear: bool, labeler: Labeler):
         """
@@ -83,7 +82,7 @@ class AMResults:
         # find the likelihood for a given outcome based on the pointers
         self.class_pointer_map: dict[str, int] = defaultdict(int)
         for e in self.ex_pointer_map:
-            class_name = e.string_value(e.class_attribute())
+            class_name = e.class_value()
             self.class_pointer_map[class_name] += self.ex_pointer_map[e]
 
         # set the likelihood of each possible class index to be its share of
@@ -103,7 +102,8 @@ class AMResults:
             elif temp == self.get_class_probability():
                 self.predicted_classes.add(cls_name)
 
-    def get_pointers(self, supracontexts: set[Supracontext], linear: bool) -> dict[Instance, int]:
+    @staticmethod
+    def get_pointers(supracontexts: set[Supracontext], linear: bool) -> dict[Instance, int]:
         """See page 392 of the red book.
 
         :param supracontexts: List of Supracontexts created by filling the supracontextual lattice.
@@ -136,7 +136,7 @@ class AMResults:
                     pointers[e] += pointer_product
         return pointers
 
-    def __repr__(self):
+    def __str__(self):
         effects = ""
         for k, v in self.get_exemplar_pointers().items():
             effects += f"{k} : {v} ({v / self.total_pointers}){am_utils.LINE_SEPARATOR}"
@@ -173,14 +173,14 @@ class AMResults:
         """
         return self.total_pointers
 
-    def get_class_pointers(self) -> dict[Instance, int]:
+    def get_class_pointers(self) -> dict[str, int]:
         """
 
         :return: A mapping between a class value index the number of pointers pointing to it
         """
         return self.class_pointer_map
 
-    def get_class_likelihood_map(self) -> dict[Instance, float]:
+    def get_class_likelihood(self) -> dict[str, float]:
         """
 
         :return: A mapping between the class name and its selection probability
@@ -229,7 +229,7 @@ class AMResults:
         subcontext display label
         """
         effects = [GangEffect(sub, self.get_exemplar_pointers()) for sub in self.get_subcontexts()]
-        return sorted(effects, key=lambda e: (-e.get_total_pointers(), e.get_subcontext().get_display_label()))
+        return sorted(effects, key=lambda e: (-e.total_pointers, e.subcontext.get_display_label()))
 
     def get_labeler(self) -> Labeler:
         """
