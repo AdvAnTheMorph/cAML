@@ -62,7 +62,7 @@ class Dataset:
 
     def from_csv(self, source: str|Path):
         self.data = pd.read_csv(Path(__file__).parent / source)
-        self.class_index = self.data.columns.get_loc("class")
+        self.class_index = self.num_attributes() - 1  #self.data.columns.get_loc("class")
         return self
 
     def get_instance(self, idx):
@@ -93,7 +93,7 @@ class Dataset:
         return self.data.shape[0]
 
     def add(self, row: Instance):
-        self.data = pd.concat([self.data, row]).reset_index(drop=True)
+        self.data = pd.concat([self.data, row.to_frame().T]).reset_index(drop=True)
 
 
 

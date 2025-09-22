@@ -15,6 +15,7 @@
  ****************************************************************************
 """
 
+import argparse
 from random import Random
 
 from analogical_modeling.am.am_version import AMVersion
@@ -153,8 +154,17 @@ class AnalogicalModeling:
 
         :return: Selected strategy used when comparing missing values with other data
         """
-        return self.mdc
+        return self.mdc.name
         # return SelectedTag(self.mdc.ordinal(), TAGS_MISSING)
+
+    def set_missing_data_compare(self, new_mode: str):
+        match new_mode:
+            case "match":
+                self.mdc = MissingDataCompare.MATCH
+            case "mismatch":
+                self.mdc = MissingDataCompare.MISMATCH
+            case _:
+                self.mdc = MissingDataCompare.VARIABLE
 
     # FIXME
     # def set_missing_data_compare(self, new_mode: SelectedTag):
@@ -180,14 +190,16 @@ class AnalogicalModeling:
         The provider must be thread-safe."""
         self.random_provider = random_provider
 
-    def missing_data_compare_tip_text(self) -> str:
+    @staticmethod
+    def missing_data_compare_tip_text() -> str:
         """
 
         :return: Tooltip text describing the missingDataCompare option
         """
         return "The strategy to use when comparing missing attribute values with other values while filling subcontexts and supracontexts"
 
-    def global_info(self):
+    @staticmethod
+    def global_info():
         """Returns basic human readable information about the classifier, including references."""
 
         return f"Implements the Analogical Modeling algorithm, invented by Royal Skousen. " \
@@ -500,6 +512,7 @@ class AnalogicalModeling:
         :param options: the commandline options
         :return:
         """
+        # self.build_classifier()
         raise NotImplementedError("TODO: evaluation")
         # print(Evaluation.evaluate_model(classifier, options))
         # try {

@@ -16,7 +16,7 @@
 
 from enum import Enum
 
-from ...utils import Instance
+from analogical_modeling.utils import Instance
 
 
 class MissingDataCompare(Enum):

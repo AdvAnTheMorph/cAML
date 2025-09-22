@@ -3,7 +3,6 @@
 import random
 from pathlib import Path
 from threading import Lock
-from typing import TypeVar
 
 from unittest.mock import Mock
 
@@ -14,11 +13,9 @@ from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.data.classified_supra import ClassifiedSupra
-# from analogical_modeling.analogical_modeling import AnalogicalModeling
+from analogical_modeling.analogical_modeling import AnalogicalModeling
 from analogical_modeling.utils import Instance, Dataset
 
-# TODO: remove
-AnalogicalModeling = TypeVar("AnalogicalModeling")
 
 # The name of the chapter 3 training data file
 CHAPTER_3_DATA = "ch3example.csv"
@@ -147,17 +144,19 @@ def contains_supra(actual_supras: set, expected):
 def leave_out_index(am: AnalogicalModeling, data: Dataset, index: int):
     # copy so that removing an instance doesn't affect the original
     train = Dataset(data)
-    test = train.data.drop(index=index)
+    test = train[index]
+    train.data.drop(index=index, inplace=True)
     am.build_classifier(train)
     am.distribution_for_instance(test)
 
     return am.get_results()
 
-def leave_one_out(am: AnalogicalModeling, data: Dataset):
+
+def leave_one_out(am: AnalogicalModeling, data: Dataset) -> int:
     correct = 0
-    for i in range(data.data.size[0]):
+    for i in range(data.data.shape[0]):  # number of rows
         am_set = leave_out_index(am, data, i)
-        if data[i].class_value() in am_set.get_predicted_classer():
+        if data[i].class_value() in am_set.get_predicted_classes():
             correct += 1
     return correct
 

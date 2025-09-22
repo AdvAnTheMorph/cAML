@@ -52,7 +52,9 @@
 import random
 import concurrent.futures
 from collections import defaultdict
+from math import comb
 from typing import Callable
+from functools import lru_cache
 
 from analogical_modeling.am.lattice.lattice import Lattice
 from analogical_modeling.am import am_utils
@@ -66,23 +68,112 @@ from analogical_modeling.am.label.label import Label
 NUM_EXPERIMENTS = 10
 
 
-class Memoizer:
+class Pair:
+    def __init__(self, first: int, second: int):
+        self.first = first
+        self.second = second
+
+    def __hash__(self):
+        return 37 * self.first + self.second
+
+    def __eq__(self, other):
+        return self.first == other.first and self.second == other.second
 
 
-    def __init__(self):
-        self.cache = {}
+@lru_cache(maxsize=None)
+def binomial_coefficient(p: Pair):
+    n = p.first
+    k = p.second
+    if n == 0:
+        return 1
+    if k == 0:
+        return 0
+    # (n C k) and (n C (n-k)) are the same, so pick the smaller as k:
+    if k > n - k:
+        k = n - k
+    return comb(n, k)
 
-    def do_memoize(self, fun: Callable) -> Callable:
-        def memoized_fun(input_):
-            if input_ not in self.cache:
-                self.cache[input_] = fun(input_)
-            return self.cache[input_]
 
-        return memoized_fun
+class SupraApproximator():
+    def __init__(self, lattice: 'JohnsenJohanssonLattice' , p: Subcontext, outcome_sub_map: dict[float, list[Label]], rnd: random.Random):
+        self.p = p
+        self.outcome_sub_map = outcome_sub_map
+        self.random = rnd
+        self.jj_lattice = lattice
 
-    @staticmethod
-    def memoize(fun: Callable) -> Callable:
-        return Memoizer().do_memoize(fun)
+    def __call__(self) -> Supracontext:
+        return self.approximate_supra(self.p, self.outcome_sub_map)
+
+    def approximate_supra(self, p: Subcontext, outcome_sub_map: dict[float, list[Label]]) -> Supracontext:
+        p_label = p.get_label()
+        # H(p) is p intersected with labels of any subcontexts with a
+        # different class, or all other sub labels if p is non-deterministic
+        # (combination with these would lead to heterogeneity)
+        hp = []
+        for k, v in outcome_sub_map.items():
+            if p.get_outcome() != k or p.get_outcome() == am_utils.HETEROGENEOUS:
+                for x in v:
+                    hp.append(p_label.intersect(x))
+
+        # min(p) is the number of matches in the label in H(p) with the most matches
+        # max(p) is the number of matches in the union of all labels in H(p)
+        min_p = 0
+        hp_union: Label = p_label
+        for l in hp:
+            if l.num_matches() > min_p:
+                min_p = l.num_matches()
+            hp_union = hp_union.union(l)
+        max_p = hp_union.num_matches()
+        # the upper bound on H_limit(p)
+        ub_p = 0
+        for k in range(1, min_p+1):
+            ub_p = ub_p + binomial_coefficient(Pair(max_p, k))
+        # ratio of |{x_s in H(p)}| to |{x_s}|
+        hetero_ratio: float = self.estimate_hetero_ratio(hp, hp_union, NUM_EXPERIMENTS)
+        # final estimation of total count of space subsumed by elements of
+        # H(p); rounds down
+        hetero_count_estimate = int(ub_p * hetero_ratio)
+        # final count is 2^|p| - heteroCountEstimate
+        count = 2 ** p_label.num_matches() - hetero_count_estimate
+
+        # add the approximated sub as its own supra with the given count
+        approximated_supra = ClassifiedSupra()
+        approximated_supra.add(p)
+        approximated_supra.set_count(count)
+        return approximated_supra
+
+    def estimate_hetero_ratio(self, hp: list[Label], hp_union: Label, num_experiments: int):
+        hetero_count = 0
+        cache: dict[Label, bool] = {}
+
+        for _ in range(num_experiments):
+            # choose x_s, a union of random items from H(p)
+            xs: Label = self.jj_lattice.bottom
+            random.shuffle(hp)
+            for l in hp:
+                # cannot use random.random() in parallel code
+                if self.jj_lattice.random_provider().random() > 0.5:
+                    # further union operations would do nothing since we are supposed to compare against hpUnion
+                    unioned = xs.union(l)
+                    if unioned == hp_union:
+                        break
+                    xs = unioned
+            was_hetero = cache.get(xs)
+            if was_hetero is not None:
+                if was_hetero:
+                    hetero_count += 1
+                continue
+
+            # x_s is hetero if it is a child of any element of H(p)
+            hetero = False
+            for l in hp:
+                # use union to discover ancestor relationship
+                if l.union(xs) == l:
+                    hetero_count += 1
+                    hetero = True
+                    break
+            cache[xs] = hetero
+        return hetero_count / num_experiments
 
 
 class JohnsenJohanssonLattice(Lattice):
@@ -113,125 +204,12 @@ class JohnsenJohanssonLattice(Lattice):
 
         # Estimate the counts for each supracontext in parallel
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(self.SupraApproximator(p, outcome_sub_map, self.random_provider())) for p in sub_list]
+            futures = [executor.submit(SupraApproximator(self, p, outcome_sub_map, self.random_provider())) for p in sub_list]
             # futures = [executor.submit(self.SupraApproximator(p, outcome_sub_map, self.random_provider()))() for p in sub_list]
 
             for future in concurrent.futures.as_completed(futures):
                 self.supras.add(future.result())
-
-    # FIXME: class in class?
-    class SupraApproximator():
-        def __init__(self, p: Subcontext, outcome_sub_map: dict[float, list[Label]], rnd: random.Random):
-            self.p = p
-            self.outcome_sub_map = outcome_sub_map
-            self.random = rnd
-            # FIXME: like this and use it as reference?
-            # self.jj_lattice = JohnsenJohanssonLattice()
-
-        def __call__(self) -> Supracontext:
-            return self.approximate_supra(self.p, self.outcome_sub_map)
-
-        def approximate_supra(self, p: Subcontext, outcome_sub_map: dict[float, list[Label]]) -> Supracontext:
-            p_label = p.get_label()
-            # H(p) is p intersected with labels of any subcontexts with a
-            # different class, or all other sub labels if p is non-deterministic
-            # (combination with these would lead to heterogeneity)
-            hp = []
-            for k, v in outcome_sub_map.items():
-                if p.get_outcome() != k or p.get_outcome() == am_utils.HETEROGENEOUS:
-                    for x in v:
-                        hp.append(p_label.intersect(x))
-
-            # min(p) is the number of matches in the label in H(p) with the most matches
-            # max(p) is the number of matches in the union of all labels in H(p)
-            min_p = 0
-            hp_union: Label = p_label
-            for l in hp:
-                if l.num_matches() > min_p:
-                    min_p = l.num_matches()
-                hp_union = hp_union.union(l)
-            max_p = hp_union.num_matches()
-            # the upper bound on H_limit(p)
-            ub_p = 0
-            for k in range(1, min_p+1):
-                ub_p = ub_p + JohnsenJohanssonLattice.memoized_NcK(JohnsenJohanssonLattice.Pair(max_p, k))
-            # ratio of |{x_s in H(p)}| to |{x_s}|
-            hetero_ratio: float = self.estimate_hetero_ratio(hp, hp_union, NUM_EXPERIMENTS)
-            # final estimation of total count of space subsumed by elements of
-            # H(p); rounds down
-            hetero_count_estimate = int(ub_p * hetero_ratio)
-            # final count is 2^|p| - heteroCountEstimate
-            count = 2 ** p_label.num_matches() - hetero_count_estimate
-
-            # add the approximated sub as its own supra with the given count
-            approximated_supra = ClassifiedSupra()
-            approximated_supra + p
-            approximated_supra.set_count(count)
-            return approximated_supra
-
-        def estimate_hetero_ratio(self, hp: list[Label], hp_union: Label, num_experiments: int):
-            hetero_count = 0
-            cache: dict[Label, bool] = {}
-
-            for _ in range(num_experiments):
-                # choose x_s, a union of random items from H(p)
-                xs: Label = JohnsenJohanssonLattice.bottom  # FIXME: from outer class
-                random.shuffle(hp)
-                for l in hp:
-                    # cannot use random.random() in parallel code
-                    if JohnsenJohanssonLattice.random_provider().random() > 0.5:
-                        # further union operations would do nothing since we are supposed to compare against hpUnion
-                        unioned = xs.union(l)
-                        if unioned == hp_union:
-                            break
-                        xs = unioned
-                was_hetero = cache.get(xs)
-                if was_hetero is not None:
-                    if was_hetero:
-                        hetero_count += 1
-                    continue
-
-                # x_s is hetero if it is a child of any element of H(p)
-                hetero = False
-                for l in hp:
-                    # use union to discover ancestor relationship
-                    if l.union(xs) == l:
-                        hetero_count += 1
-                        hetero = True
-                        break
-                cache[xs] = hetero
-            return hetero_count / num_experiments
-
-
-    class Pair:
-        def __init__(self, first: int, second: int):
-            self.first = first
-            self.second = second
-
-        def __hash__(self):
-            return 37 * self.first + self.second
-
-        def __eq__(self, other):
-            return self.first == other.first and self.second == other.second
-
-    @Memoizer.memoize
-    def binominal_coefficient(self, p: Pair):
-        n = p.first
-        k = p.second
-        if n == 0:
-            return 1
-        if k == 0:
-            return 0
-        # (n C k) and (n C (n-k)) are the same, so pick the smaller as k:
-        if k > n - k:
-            k = n - k
-        result = 1
-        for i in range(1, k+1):
-            result *= (n - k + i)
-            result //= i
-        return result
-
-    memoized_NcK = Memoizer.memoize(binominal_coefficient)
+    # memoized_NcK = Memoizer.memoize(binominal_coefficient)
 
     def get_supracontexts(self):
         return self.supras
