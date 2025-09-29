@@ -113,18 +113,16 @@ class AnalogicalModelingTest(unittest.TestCase):
 
 
     def test_audiology(self):
+        # forces use of JohnsenJohanssonLattice
         train = test_utils.get_dataset(test_utils.AUDIOLOGY)
         num_correct = test_utils.leave_one_out(self.get_classifier(), train)
         self.assertTrue(num_correct >= 155)
 
-#     public void testGetOptions() {
-#         AnalogicalModeling am = new AnalogicalModeling();
-#         Assert.assertArrayEquals("Default options", am.getOptions(), new String[]{"-R", "-M", "variable"});
-#
-#         am.setRemoveTestExemplar(false);
-#         am.setMissingDataCompare(new SelectedTag(MissingDataCompare.MISMATCH.ordinal(), TAGS_MISSING));
-#         am.setLinearCount(true);
-#         am.setIgnoreUnknowns(true);
-#         Assert.assertArrayEquals("Custom options", am.getOptions(), new String[]{"-L", "-I", "-M", "mismatch"});
-#     }
-# }
+    def test_get_options(self):
+        am = AnalogicalModeling()
+        self.assertEqual("Linear: False, Remove test exemplars: True, Ignore unknowns: False, Missing data: variable", am.get_options())
+
+        am.set_remove_test_exemplar(False)
+        am.set_missing_data_compare("mismatch")
+        am.set_ignore_unknowns(True)
+        self.assertEqual("Linear: False, Remove test exemplars: False, Ignore unknowns: True, Missing data: mismatch", am.get_options())
