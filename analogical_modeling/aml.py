@@ -17,6 +17,11 @@
 
 import argparse
 from random import Random
+from pathlib import Path
+
+import pandas as pd
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
 
 from analogical_modeling.am.am_version import AMVersion
 from analogical_modeling.am.data.am_results import AMResults
@@ -27,15 +32,6 @@ from analogical_modeling.am.label.missing_data_compare import \
 from analogical_modeling.am.lattice.lattice_factory import \
     CardinalityBasedLatticeFactory
 from analogical_modeling.utils import Instance, Dataset
-
-
-# import weka.classifiers.Evaluation;
-# import weka.classifiers.UpdateableClassifier;
-# import weka.classifiers.lazy.AM.Enum2TagUtils;
-#
-# import weka.core.*;
-# import weka.core.Capabilities.Capability;
-# import weka.core.TechnicalInformation.Type;
 
 
 class AnalogicalModeling:
@@ -166,25 +162,6 @@ class AnalogicalModeling:
             case _:
                 self.mdc = MissingDataCompare.VARIABLE
 
-    # FIXME
-    # def set_missing_data_compare(self, new_mode: SelectedTag):
-    #     """
-    #
-    #     :param self:
-    #     :param new_mode: representing choice for strategy to compare missing data
-    #     :raises ValueError: if input is not a known missing data comparison strategy
-    #     """
-    #     if new_mode.get_tags() == TAGS_MISSING:
-    #         self.mdc = Enum2TagUtils.get_element(MissingDataCompare, new_mode)
-#         if (newMode.getTags() == TAGS_MISSING) {
-#             mdc = Enum2TagUtils.getElement(MissingDataCompare.class, newMode);
-
-# public class AnalogicalModeling {
-#     /**
-#      * Define possible missing value handling methods
-#      */
-#     public static final Tag[] TAGS_MISSING = Enum2TagUtils.getTags(MissingDataCompare.class);
-#
     def set_random_provider(self, random_provider: Random):
         """Provide the source of randomness for algorithms that require it (e.g. JohnsenJohanssonLattice).
         The provider must be thread-safe."""
@@ -208,142 +185,8 @@ class AnalogicalModeling:
                # f"{self.get_technical_information()}"  # TODO
 
     def get_options(self):
-        raise NotImplementedError("TODO")
-#
-#     /**
-#      * Lists the options available for this classifier.
-#      *
-#      * @return {@inheritDoc}
-#      * @see weka.classifiers.AbstractClassifier#listOptions()
-#      */
-#     @Override
-#     public Enumeration<Option> listOptions() {
-#
-#         Vector<Option> options = getOptionsOfSuper();
-#         options.add(new Option("\tIgnore attributes with unknown value in the test exemplar", "i", 0, "-I"));
-#         options.add(new Option(
-#             "\tUse linear instead of quadratic calculation of " + "pointers (default off)",
-#             "L",
-#             0,
-#             "-L"
-#         ));
-#         options.add(new Option("\tRemove test exemplar from training set", "r", 0, "-R"));
-#         options.add(new Option("\tMethod of dealing with missing data. The options are "
-#                                + "variable, match or mismatch; 'variable' means to treat missing data as "
-#                                + "a all one variable, 'match' means that missing data will be considered "
-#                                + "the same as whatever it is compared with, and 'mismatch' means that missing "
-#                                + "data will always be unequal to whatever it is compared with. Default is 'variable'",
-#                                "M",
-#                                1,
-#                                "-M <method>"
-#         ));
-#
-#         return options.elements();
-#     }
-#
-#     /**
-#      * Gets the options of super.
-#      *
-#      * @return Vector of all Options given in parent object(s).
-#      */
-#     private Vector<Option> getOptionsOfSuper() {
-#         Vector<Option> v = new Vector<>();
-#         // super will always return Enumeration<Option>
-#         Enumeration<Option> e = super.listOptions();
-#         while (e.hasMoreElements()) {
-#             Option option = e.nextElement();
-#             v.add(option);
-#         }
-#         return v;
-#     }
-#
-#     /**
-#      * Returns the options currently set.
-#      *
-#      * @return {@inheritDoc}
-#      * @see weka.classifiers.AbstractClassifier#getOptions()
-#      */
-#     @Override
-#     public String[] getOptions() {
-#         Vector<String> options = new Vector<>();
-#         if (getLinearCount()) {
-#             options.add("-L");
-#         }
-#         if (getRemoveTestExemplar()) {
-#             options.add("-R");
-#         }
-#         if (getIgnoreUnknowns()) {
-#             options.add("-I");
-#         }
-#         options.add("-M");
-#         options.add(mdc.getOptionString());
-#         // add all options of the superclass
-#         options.addAll(Arrays.asList(super.getOptions()));
-#         return options.toArray(new String[0]);
-#     }
-#
-#     /**
-#      * <!-- options-start --> * Parses a given list of options. Valid options are: <p> * *
-#      *
-#      * <pre>
-#      * -D
-#      *    If set, classifier is run in debug mode and
-#      *    may output additional info to the console
-#      * </pre>
-#      *
-#      *
-#      * <pre>
-#      * -I
-#      *    Ignore attributes with unknown values in the test exemplar
-#      * </pre>
-#      *
-#      * <pre>
-#      * -L
-#      *    Use linear instead of quadratic calculation of pointers (default off)
-#      * </pre>
-#      *
-#      *
-#      *
-#      * <pre>
-#      * -R
-#      *    Remove test exemplar from training set
-#      * </pre>
-#      *
-#      *
-#      *
-#      * <pre>
-#      * -M &lt;method&gt;
-#      *    Method of dealing with missing data. The options are variable, match or mismatch; 'variable' means to treat
-#      * missing data as a all one variable, 'match' means that missing data will be considered the same as whatever it is
-#      * compared with, and 'mismatch' means that missing data will always be unequal to whatever it is compared with.
-#      * Default is 'variable'
-#      * </pre>
-#      *
-#      *   <!-- options-end -->
-#      *
-#      * @param options {@inheritDoc}
-#      */
-#     @Override
-#     public void setOptions(String[] options) {
-#         try {
-#             if (Utils.getFlag('I', options)) {
-#                 setIgnoreUnknowns(true);
-#             }
-#             if (Utils.getFlag('L', options)) {
-#                 setLinearCount(true);
-#             }
-#             if (Utils.getFlag('R', options)) {
-#                 setRemoveTestExemplar(true);
-#             }
-#             String optionString = Utils.getOption('M', options);
-#             if (optionString.length() != 0) {
-#                 this.mdc = Enum2TagUtils.getElement(MissingDataCompare.class, optionString);
-#             }
-#         } catch (Exception e) {
-#             e.printStackTrace();
-#         }
-#
-#     }
+        return f"Linear: {self.linear_count}, Remove test exemplars: {self.remove_test_exemplar}, Ignore unknowns: {self.ignore_unknowns}, Missing data: {self.mdc.option_string}"
+
     def get_capabilities(self):
         """Analogical Modeling can handle only nominal class attributes. Missing
            classes are handled, too, although you must specify how to handle them
@@ -447,12 +290,11 @@ class AnalogicalModeling:
         # create exemplars for actually running the classifier
         self.training_exemplars = [el for el in instances]
 
-
     def update_classifier(self, instance: Instance):
         """This is used to add more information to the classifier."""
         # if (!trainingInstances.equalHeaders(instance.dataset())) throw new Exception(
         #     "Incompatible instance types\n" + trainingInstances.equalHeadersMsg(instance.dataset()));
-        if instance.is_missing(instance.class_index()):
+        if instance.is_missing(instance.get_class_index()):
             return
         self.training_instances.add(instance)
         self.training_exemplars.append(instance)
@@ -480,7 +322,6 @@ class AnalogicalModeling:
         # return class_probability
         return self.results.get_class_likelihood()
 
-
     def get_results(self) -> AMResults:
         """
 
@@ -505,31 +346,163 @@ class AnalogicalModeling:
             return string + f"Training instances: {len(self.training_exemplars)}\n"
         return string
 
-    def run_classifier(self, classifier: 'AnalogicalModeling', options: list[str]):
+    def run_classifier(self, csv: str, out_path: Path):
         """runs the classifier instance with the given options.
 
-        :param classifier: the classifier to run
-        :param options: the commandline options
-        :return:
+        :param csv: training data
+        :param out_path: where to save output files
         """
-        # self.build_classifier()
-        raise NotImplementedError("TODO: evaluation")
-        # print(Evaluation.evaluate_model(classifier, options))
-        # try {
-        # System.out.println(Evaluation.evaluateModel(classifier, options));
-        # } catch (Exception e) {
-        # if (((e.getMessage() != null) & & (!e.getMessage().contains("General options"))) | | (e.getMessage() == null))
-        # e.printStackTrace();
-        # else System.err.println(e.getMessage());
+        instances = Dataset().from_csv(csv)
+        self.build_classifier(instances)
 
+        results = []
+        for instance in instances:
+            self.distribution_for_instance(instance)
+            results.append(self.get_results())
+        print(f"Accuracy: {round(self.calculate_accuracy(instances, results)*100, 3)}%")
+        self.create_output_files(out_path, results, instances)
+
+    def create_output_files(self, dest: Path, results: list[AMResults], instances: Dataset):
+        print("Generating output files...")
+        # information equal for all exemplars
+        feats = results[0].get_classified_ex().keys()
+        classes = list(instances.get_classes())
+        cls_header = [f"Class {i+1}" for i in range(len(classes))] + sum([[f"{cls}: pointers", f"{cls}: pct"] for cls in classes], [])
+        cls_header_gang = sum([[f"{cls}: pointers", f"{cls}: pct", f"{cls}: size"] for cls in classes], [])
+        train_size = len(instances)
+        num_feats = instances.num_attributes()
+        ignore = self.ignore_unknowns
+        mdc = self.mdc.name
+        ignore_given = self.remove_test_exemplar
+        count_strategy = "linear" if self.linear_count else "quadratic"
+
+        gang_header = feats.tolist() + cls_header_gang + ["Gang pointers", "Gang pct", "Rank", "Size", "Total pointers", "Classified item index", "Classified item class"] + [f"Classified item {el}" for el in feats]
+        analog_header = feats.tolist() + ["Class", "Percentage", "Pointers", "Classified item class"] + [f"Classified item {el}" for el in feats]
+        distr_header = ["Judgement", "Expected", "Predicted"] + feats.tolist() + cls_header + ["Train size", "Num feats", "Ignore unknowns", "Missing data compare", "Ignore given", "Count strategy", "Classified item index"]
+
+        gangs = []
+        analogs = []
+        distributions = []
+        for idx, res in enumerate(results):
+            classified = res.get_classified_ex()
+
+            # gang effects
+            effects = res.get_gang_effects()
+            total_pointers = sum(effect.total_pointers for effect in effects)
+            pointers_rank = sorted(list(set([effect.total_pointers for effect in effects])), reverse=True)
+            for effect in effects:
+                effect_pointers = effect.total_pointers
+                rank = pointers_rank.index(effect_pointers) +1
+                gang_pct = effect_pointers/total_pointers*100
+
+                cls_info = {inst: sum([
+                    [effect.class_to_pointers.get(cls,0),  # cls: pointers
+                     round(effect.class_to_pointers.get(cls,0)/effect_pointers*gang_pct, 3),  # cls: pct
+                     len(effect.class_to_instances.get(cls, []))  # cls: size
+                     ] if inst in effect.class_to_instances.get(cls, []) else [0, 0, 0]
+                    for cls in classes
+                ], []) for inst in effect.subcontext.data}
+
+                gangs += [inst.tolist() + cls_info[inst] + [
+                    effect_pointers,  # gang pointers
+                    round(gang_pct, 3),  # gang pct
+                    rank,  # rank
+                    sum(map(len, effect.class_to_instances.values())),  # size
+                    total_pointers,  # total pointers
+                    idx,  # classified item index
+                    classified.class_value()  # classified item class
+                ] + classified.tolist()
+                          for inst in sum(map(list, effect.class_to_instances.values()), [])]
+
+            # analogical sets
+            pointers = res.ex_pointer_map
+            effects = res.ex_effect_map
+            analogs += [
+                inst.to_list() + [
+                    inst.class_value(),  # class
+                    effects.get(inst)*100,  # percentage
+                    ptrs,  # pointers
+                    classified.class_value()  # instance class
+                ] + classified.tolist() for inst, ptrs in pointers.items()]
+
+            # distribution
+            pred = res.get_predicted_classes()
+            gold = res.get_expected_class_name()
+            correct = gold in pred
+
+            cls_info = classes + sum([[
+                res.class_pointer_map.get(cls,0),  # cls: pointers
+                res.class_likelihood_map.get(cls,0.0)*100]  # cls: pct
+                for cls in classes], [])
+            distributions += [
+                ['correct' if correct else 'incorrect',  # judgement
+                 gold,  # expected
+                 '|'.join(pred)  # predicted
+                 ] + classified.tolist() + cls_info + [
+                    train_size, # train size
+                    num_feats,  # num feats
+                    ignore,  # ignore unknowns
+                    mdc,  # missing data compare
+                    ignore_given,  # ignore given
+                    count_strategy,  # count strategy
+                    idx  # index
+                ]]
+
+        gang = pd.DataFrame(gangs, columns=gang_header)
+        analog = pd.DataFrame(analogs, columns=analog_header)
+        distr = pd.DataFrame(distributions, columns=distr_header)
+
+        out_gang = dest.with_name(dest.stem + "_gangs.csv")
+        out_analog = dest.with_name(dest.stem + "_analogical_sets.csv")
+        out_distribution = dest.with_name(dest.stem + "_distributions.csv")
+
+        gang.to_csv(out_gang, index=False)
+        analog.to_csv(out_analog, index=False)
+        distr.to_csv(out_distribution, index=False)
+        print(f"Outputs saved to {out_gang}, {out_analog}, {out_distribution}.")
+
+    @staticmethod
+    def calculate_accuracy(instances: Dataset, results: list[AMResults]):
+        # inaccurate in the case of ties
+        preds = [list(res.get_predicted_classes())[0] for res in results]
+        golds = [inst.class_value() for inst in instances]
+
+        correct = sum([inst.class_value() in res.get_predicted_classes() for inst, res in zip(instances, results)])
+        acc = correct/len(results)
+        cnf = confusion_matrix(golds, preds, labels=list(instances.get_classes()))
+        disp = ConfusionMatrixDisplay(cnf, display_labels=list(instances.get_classes()))
+        disp.plot()
+        plt.show()
+        return acc
+
+
+
+if __name__ == "__main__":
     # try with -t data/ch3example.arff -x 5
-    def main(self, argv: list[str]):
-        """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--train", help="csv containing the data")
+    parser.add_argument("-o", "--output", help="output path", type=Path)
+    parser.add_argument("-L", "--linear", action="store_true")
+    parser.add_argument("-K", "--keep_test", action="store_false", help="Keep test exemplar in training set (default: False)")  # !keep_test = remove, which is default
+    parser.add_argument("-I", "--ignore_unknowns", action="store_true", help="Ignore attributes with unknown values in the test exemplar")
+    parser.add_argument("-D", "--debug", action="store_true", help="Run classifier in debug mode and may output additional info to the console")
+    parser.add_argument("-M", "--missing_data", choices=["match", "mismatch", "variable"], default="variable",
+                        help="Method of dealing with missing data. The options are variable, match or mismatch; 'variable' means to treat " \
+                             "missing data as a all one variable, 'match' means that missing data will be considered the same as whatever it is " \
+                             "compared with, and 'mismatch' means that missing data will always be unequal to whatever it is compared with. " \
+                             "Default is 'variable'")
 
-        :param argv: should contain command line options (see setOptions)
-        :return:
-        """
-        self.run_classifier(AnalogicalModeling(), argv)
+    args = parser.parse_args()
+
+    am = AnalogicalModeling()
+    am.set_linear_count(args.linear)
+    am.set_remove_test_exemplar(args.keep_test)
+    am.set_ignore_unknowns(args.ignore_unknowns)
+    am.debug = args.debug
+    am.set_missing_data_compare(args.missing_data)
+    print(am.get_options())
+    am.run_classifier(args.train, args.output.with_suffix(".csv"))
+
 
 # /**
 #  * <!-- globalinfo-start --> Implements the Analogical Modeling algorithm, invented by Royal Skousen. Analogical

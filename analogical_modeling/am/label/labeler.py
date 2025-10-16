@@ -61,7 +61,7 @@ class Labeler:
         """
         cardinality = 0
         for i in range(test_instance.num_attributes()):
-            if i != test_instance.class_index() and not (test_instance.is_missing(i) and ignore_unknowns):
+            if i != test_instance.class_index and not (test_instance.is_missing(i) and ignore_unknowns):
                 cardinality += 1
         return cardinality
 
@@ -118,7 +118,7 @@ class Labeler:
         index = 0
         for i in range(self.get_test_instance().num_attributes()):
             # skip ignored attributes and the class attribute
-            if self.is_ignored(i) or i == self.get_test_instance().class_index():
+            if self.is_ignored(i) or i == self.get_test_instance().class_index:
                 continue
             att = self.get_test_instance().attribute_name(i)
             # use mdc if were are comparing a missing attribute
@@ -152,7 +152,7 @@ class Labeler:
         label_index = 0
         for i in range(self.test_instance.num_attributes()):
             # skip the class attribute and ignored attributes
-            if i == self.test_instance.class_index() or self.is_ignored(i):
+            if i == self.test_instance.class_index or self.is_ignored(i):
                 continue
             if context_bit_string[label_index] == "0":
                 result.append(self.test_instance.string_value(i))
@@ -169,13 +169,12 @@ class Labeler:
         atts = self.get_instance_atts_values_list(instance)
         return att_delimiter.join(atts)
 
-    # TODO: check
     def get_instance_atts_values_list(self, instance: Instance) -> list[str]:
         """Returns a list containing the attributes of the input instance (minus the class
         attribute and ignored attributes)."""
         atts = []
         for i in range(instance.num_attributes()):
-            if i == instance.class_index() or self.is_ignored(i):
+            if i == instance.class_index or self.is_ignored(i):
                 continue
             atts.append(str(instance[i]))
         return atts
@@ -183,7 +182,7 @@ class Labeler:
     def get_instance_atts_names_list(self, instance: Instance) -> list[str]:
         atts = []
         for i in range(instance.num_attributes()):
-            if i == instance.class_index() or self.is_ignored(i):
+            if i == instance.class_index or self.is_ignored(i):
                 continue
             atts.append(instance.attribute_name(i))
         return atts
