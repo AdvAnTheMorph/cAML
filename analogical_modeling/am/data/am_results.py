@@ -146,7 +146,7 @@ class AMResults:
         # Set<Entry<String, BigInteger>> sortedEntries2 = new TreeSet<>(Entry.comparingByValue());
         # sortedEntries2.addAll(getClassPointers().entrySet());
         for k, v in sorted_entries:
-            effects += f"{k} : {v} ({v / self.total_pointers}){am_utils.LINE_SEPARATOR})"
+            effects += f"{k} : {v} ({v / self.total_pointers}){am_utils.LINE_SEPARATOR}"
 
         return f"classifying: {self.get_classified_ex()}{linesep}outcome: " \
                f"{self.predicted_classes} ({self.class_probability}){linesep}" \
@@ -240,7 +240,7 @@ class AMResults:
 
     def get_expected_class_name(self) -> str:
         classified_ex = self.get_classified_ex()
-        return classified_ex.class_attribute().value(classified_ex.class_value())
+        return classified_ex.class_value()
 
     def get_sub_list(self) -> SubcontextList:
         return self.sub_list

@@ -12,17 +12,16 @@ import pandas as pd
 
 
 class Instance(pd.Series):
+    _metadata = ["class_index"]
+
+    # FIXME: https://pandas.pydata.org/docs/development/extending.html
     def __init__(self, data: pd.Series, class_index: int):
         super().__init__(data)
-        self._class_index = class_index
-
-    def class_index(self):
-        return self._class_index
+        self.class_index = class_index
 
     def is_missing(self, idx: int) -> bool:
-        # TODO: until now, missing = "?", what about missing = None
         # return self.isna().iloc[idx]
-        return self.isna().iloc[idx] or self.iloc[idx] == "?"
+        return self.iloc[idx] == "="
 
     def num_attributes(self) -> int:
         return self.shape[0]
@@ -37,7 +36,7 @@ class Instance(pd.Series):
         return self.iloc[idx]
 
     def class_value(self):
-        return self.iloc[self.class_index()]
+        return self.iloc[self.class_index]
 
     def __str__(self):
         return f"{','.join(map(str, self.array))}"  #,\u007b{self.num_attributes()}\u007d"
@@ -78,6 +77,9 @@ class Dataset:
 
     def delete_with_missing_class(self):
         return self.data.dropna(subset=self.data.columns[self.class_index])
+
+    def get_classes(self):
+        return set(self.data.iloc[:, self.class_index])
 
     def num_classes(self):
         return len(set(self.data.iloc[:, self.class_index]))
