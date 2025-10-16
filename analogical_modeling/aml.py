@@ -18,11 +18,15 @@
 import argparse
 from random import Random
 from pathlib import Path
+import os
+import sys
 
 import pandas as pd
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
+am_path = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(am_path, '..'))
 from analogical_modeling.am.am_version import AMVersion
 from analogical_modeling.am.data.am_results import AMResults
 from analogical_modeling.am.data.subcontext_list import SubcontextList
@@ -359,7 +363,7 @@ class AnalogicalModeling:
         for instance in instances:
             self.distribution_for_instance(instance)
             results.append(self.get_results())
-        print(f"Accuracy: {round(self.calculate_accuracy(instances, results)*100, 3)}%")
+        print(f"Accuracy: {round(self.evaluate(instances, results) * 100, 3)}%")
         self.create_output_files(out_path, results, instances)
 
     def create_output_files(self, dest: Path, results: list[AMResults], instances: Dataset):
@@ -456,13 +460,16 @@ class AnalogicalModeling:
         out_analog = dest.with_name(dest.stem + "_analogical_sets.csv")
         out_distribution = dest.with_name(dest.stem + "_distributions.csv")
 
+        if not dest.parent.exists():
+            dest.parent.mkdir(parents=True)
+
         gang.to_csv(out_gang, index=False)
         analog.to_csv(out_analog, index=False)
         distr.to_csv(out_distribution, index=False)
         print(f"Outputs saved to {out_gang}, {out_analog}, {out_distribution}.")
 
     @staticmethod
-    def calculate_accuracy(instances: Dataset, results: list[AMResults]):
+    def evaluate(instances: Dataset, results: list[AMResults]):
         # inaccurate in the case of ties
         preds = [list(res.get_predicted_classes())[0] for res in results]
         golds = [inst.class_value() for inst in instances]
