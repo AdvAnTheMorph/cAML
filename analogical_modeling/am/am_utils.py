@@ -18,13 +18,6 @@ from os import linesep
 from decimal import Decimal, getcontext, ROUND_HALF_EVEN
 from copy import deepcopy
 
-# import com.jakewharton.picnic.CellStyle;
-# import com.jakewharton.picnic.TextAlignment;
-
-
-# This class holds constants and methods used in the AM classifier.
-# @author nathan.glenn
-
 
 # An unknown class value.
 UNKNOWN = float("nan")
@@ -41,15 +34,6 @@ LINE_SEPARATOR = linesep
 
 
 class AMUtils:
-    # Picnic library table style used for printing gangs and analogical sets
-    # FIXME: translate to python
-    # public static final CellStyle REPORT_TABLE_STYLE = new CellStyle.Builder()
-    # .setPaddingLeft(1).
-    # setPaddingRight(1).
-    # setBorderLeft(true).
-    # setBorderRight(true).
-    # setAlignment(TextAlignment.MiddleRight).build();
-
     def format_pointer_percentage(self, pointers: int, total_pointers: float, num_decimals: int, add_percent_prefix: bool):
         """
 
