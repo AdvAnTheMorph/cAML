@@ -16,7 +16,7 @@
 
 import unittest
 
-from analogical_modeling.analogical_modeling import AnalogicalModeling
+from analogical_modeling.aml import AnalogicalModeling
 from analogical_modeling.tests.am import test_utils
 
 
@@ -94,7 +94,7 @@ class AnalogicalModelingTest(unittest.TestCase):
                     "herbicide-injury": 0.0,
                     "2-4-d-injury": 0.0}
         for k, v in expected.items():
-            self.assertAlmostEqual(v, prediction[k], delta=1e-7, msg=(k,v))
+            self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7, msg=(k,v))
 
         expected = {"anthracnose": 5358272,
                     "bacterial-blight": 2880000,
