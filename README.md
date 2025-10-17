@@ -30,9 +30,9 @@ pip install -r requirements.txt
 
 ## Usage
 Running `aml.py` will automatically create three output files:
-1. `\<output\>_gangs.csv`: gang effects
-2. `\<output\>_analogical_sets.csv`: analogical sets
-3. `\<output\>_distributions.csv`: distributions
+1. `<output>_gangs.csv`: gang effects
+2. `<output>_analogical_sets.csv`: analogical sets
+3. `<output>_distributions.csv`: distributions
 ```bash
 python3 aml.py -t <data.csv> -o <output>
 ```
@@ -41,4 +41,4 @@ python3 aml.py -t <data.csv> -o <output>
 - `-K` or `--keep_test` to keep test exemplars in the training set
 - `-I` or `--ignore_unknowns` to ignore attributes with unknown values
 - `-D` `--debug` to run the classifier in debug mode (generates more outputs), action="store_true", help="Run classifier in debug mode and may output additional info to the console")
-- `-M` or `--missing_data` `\<option\>` where `\<option\>` is one out of (`match`, `mismatch`, `variable`) to determine the treatment of missing data
+- `-M` or `--missing_data` `<option>` where `<option>` is one out of {`match`, `mismatch`, `variable`} to determine the treatment of missing data
