@@ -40,5 +40,5 @@ python3 aml.py -t <data.csv> -o <output>
 - `-L` or `--linear` to use linear instead of quadratic calculation of pointer values
 - `-K` or `--keep_test` to keep test exemplars in the training set
 - `-I` or `--ignore_unknowns` to ignore attributes with unknown values
-- `-D` `--debug` to run the classifier in debug mode (generates more outputs), action="store_true", help="Run classifier in debug mode and may output additional info to the console")
+- `-D` `--debug` to run the classifier in debug mode (generates more outputs)
 - `-M` or `--missing_data` `<option>` where `<option>` is one out of {`match`, `mismatch`, `variable`} to determine the treatment of missing data
