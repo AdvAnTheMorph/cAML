@@ -306,6 +306,11 @@ class AnalogicalModeling:
             print(f"Added instance: {instance}")
 
     def distribution_for_instance(self, instance: Instance) -> dict[str, float]:
+        """Calculate class distribution for instance
+
+        :param instance: instance to predict
+        :return: mapping between classes and their selection probability for the instance
+        """
         # if (!trainingInstances.equalHeaders(instance.dataset())) throw new Exception(
         #     "Incompatible instance types\n" + trainingInstances.equalHeadersMsg(instance.dataset()));
         if not len(self.training_instances):
@@ -366,7 +371,13 @@ class AnalogicalModeling:
         print(f"Accuracy: {round(self.evaluate(instances, results) * 100, 3)}%")
         self.create_output_files(out_path, results, instances)
 
-    def create_output_files(self, dest: Path, results: list[AMResults], instances: Dataset):
+    def create_output_files(self, dest: Path, results: list[AMResults], instances: Dataset) -> None:
+        """Store information on analogical sets, gang effects and distributions
+
+        :param dest: start name for output files
+        :param results: list of AMResults
+        :param instances: dataset used for prediction
+        """
         print("Generating output files...")
         # information equal for all exemplars
         feats = results[0].get_classified_ex().keys()
@@ -432,14 +443,13 @@ class AnalogicalModeling:
             # distribution
             pred = res.get_predicted_classes()
             gold = res.get_expected_class_name()
-            correct = gold in pred
 
             cls_info = classes + sum([[
                 res.class_pointer_map.get(cls,0),  # cls: pointers
                 res.class_likelihood_map.get(cls,0.0)*100]  # cls: pct
                 for cls in classes], [])
             distributions += [
-                ['correct' if correct else 'incorrect',  # judgement
+                [res.get_judgement().value,  # judgement
                  gold,  # expected
                  '|'.join(pred)  # predicted
                  ] + classified.tolist() + cls_info + [
@@ -459,17 +469,24 @@ class AnalogicalModeling:
         out_gang = dest.with_name(dest.stem + "_gangs.csv")
         out_analog = dest.with_name(dest.stem + "_analogical_sets.csv")
         out_distribution = dest.with_name(dest.stem + "_distributions.csv")
+        print(distr)
 
         if not dest.parent.exists():
             dest.parent.mkdir(parents=True)
 
-        gang.to_csv(out_gang, index=False)
-        analog.to_csv(out_analog, index=False)
-        distr.to_csv(out_distribution, index=False)
+        # gang.to_csv(out_gang, index=False)
+        # analog.to_csv(out_analog, index=False)
+        # distr.to_csv(out_distribution, index=False)
         print(f"Outputs saved to {out_gang}, {out_analog}, {out_distribution}.")
 
     @staticmethod
-    def evaluate(instances: Dataset, results: list[AMResults]):
+    def evaluate(instances: Dataset, results: list[AMResults]) -> float:
+        """Calculate accuracy and plot confusion matrix
+
+        :param instances: dataset used for prediction
+        :param results: list of AMResults
+        :return: accuracy
+        """
         # inaccurate in the case of ties
         preds = [list(res.get_predicted_classes())[0] for res in results]
         golds = [inst.class_value() for inst in instances]
@@ -485,7 +502,6 @@ class AnalogicalModeling:
 
 
 if __name__ == "__main__":
-    # try with -t data/ch3example.arff -x 5
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--train", help="csv containing the data")
     parser.add_argument("-o", "--output", help="output path", type=Path)

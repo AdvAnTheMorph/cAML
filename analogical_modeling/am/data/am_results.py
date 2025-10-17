@@ -36,13 +36,13 @@ class PointerCountingStrategy(Enum):
 
 class Judgement(Enum):
     # Only the correct class was predicted
-    CORRECT = "CORRECT"
+    CORRECT = "correct"
     # The correct class and others were tied in the prediction
-    TIE = "TIE"
+    TIE = "tie"
     # The correct class was not predicted
-    INCORRECT = "INCORRECT"
+    INCORRECT = "incorrect"
     # The correct class was not specified in the dataset
-    UNKNOWN = "UNKNOWN"
+    UNKNOWN = "unknown"
 
 
 # The results of running {@link weka.classifiers.lazy.AnalogicalModeling AM}, containing
