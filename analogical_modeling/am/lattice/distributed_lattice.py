@@ -16,6 +16,7 @@
  """
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from collections import defaultdict
 
 from analogical_modeling.am.lattice.heterogeneous_lattice import HeterogeneousLattice
 from analogical_modeling.am.lattice.canonicalizing_set import CanonicalizingSet
@@ -58,30 +59,90 @@ class DistributedLattice(Lattice):
         num_lattices = labeler.num_partitions()
 
         with ThreadPoolExecutor() as executor:
-            supras_futures = []
-            for i in range(num_lattices):
-                # fill each heterogeneous lattice with a given label partition
-                partition_index = i
-                future = executor.submit(self.fill_lattice_partition, sub_list, partition_index)
-                supras_futures.append(future)
+            futures = [executor.submit(self.fill_lattice_partition, sub_list, i) for i in range(num_lattices)]
 
-            # then combine them 2 at a time, consolidating duplicate supracontexts
-            if num_lattices > 2:
-                for _ in range(1, num_lattices - 1):
-                    supras1 = supras_futures.pop(0).result()
-                    supras2 = supras_futures.pop(0).result()
-                    future = executor.submit(self.lattice_product, supras1, supras2, IntermediateProduct)
-                    supras_futures.append(future)
+            partial_sets = [future.result() for future in as_completed(futures)]
 
-            # the final combination creates ClassifiedSupras and ignores the heterogeneous ones.
-            self.supras = self.lattice_product(supras_futures.pop(0).result(), supras_futures.pop(0).result(), FinalizingProduct)
+            if not partial_sets:
+                self.supras = CanonicalizingSet().empty_set()
+                return
+
+            sets_queue = partial_sets.copy()
+            while len(sets_queue) > 1:
+                next_round = []
+                # combine pairs (0,1), (2,3), ...
+                for i in range(0, len(sets_queue), 2):
+                    if i + 1 < len(sets_queue):
+                        a = sets_queue[i]
+                        b = sets_queue[i + 1]
+                        combined = self.lattice_product_accumulate(a, b,
+                                                                   supra_product_constructor=IntermediateProduct if len(
+                                                                       sets_queue) > 2 else FinalizingProduct)
+                        next_round.append(combined)
+                    else:
+                        next_round.append(sets_queue[i])
+                sets_queue = next_round
+
+            self.supras = sets_queue[0]
 
     @staticmethod
-    def fill_lattice_partition(sub_list: SubcontextList, partition_index: int) -> set[Supracontext]:
+    def fill_lattice_partition(sub_list: SubcontextList, partition_index: int) -> CanonicalizingSet:
         """Fills a heterogeneous lattice with subcontexts using the given label partition index."""
         lattice = HeterogeneousLattice(partition_index)
         lattice.fill(sub_list)
         return lattice.get_supracontexts()
+
+    def lattice_product_accumulate(self, supras1: list[Supracontext], supras2: list[Supracontext], supra_product_constructor) -> set[Supracontext]:
+        items1: list[tuple[frozenset, int, Supracontext]] = []
+        items2: list[tuple[frozenset, int, Supracontext]] = []
+        for supra in supras1:
+            data_fs = frozenset(supra.get_data())
+            items1.append((data_fs, supra.get_count(), supra))
+        for supra in supras2:
+            data_fs = frozenset(supra.get_data())
+            items2.append((data_fs, supra.get_count(), supra))
+
+        # Choose smaller outer loop
+        if len(items2) < len(items1):
+            items1, items2 = items2, items1
+
+        # accumulate: key -> accumulated count (sum of products)
+        accum: dict[frozenset, int] = defaultdict(int)
+
+        for data1, count1, _ in items1:
+            for data2, count2, _ in items2:
+                inter = data1.intersection(data2)
+                if not inter:
+                    continue
+                accum[frozenset(inter)] += (count1 * count2)
+
+        if not accum:
+            return CanonicalizingSet.empty_set()
+
+        # Build final CanonicalizingSet (create appropriate object per intersection)
+        final_set = CanonicalizingSet()
+        # choose product constructor type to create the right object for each key
+        is_final = (supra_product_constructor is FinalizingProduct) or isinstance(supra_product_constructor, FinalizingProduct)
+        for inter_fs, total_count in accum.items():
+            # create minimal supracontext object depending on product type
+            if is_final:
+                # create ClassifiedSupra and check heterogeneity/empty as FinalizingProduct would
+                supra = ClassifiedSupra()
+                for sub in inter_fs:
+                    supra.add(sub)
+                    if supra.is_heterogeneous():
+                        supra = None
+                        break
+                if supra is None or supra.is_empty():
+                    continue
+                supra.set_count(total_count)
+                final_set.merge(supra, lambda s1, s2: s1.set_count(s1.get_count() + s2.get_count()) or s1)
+            else:
+                # Intermediate / BasicSupra: keep BasicSupra with summed count
+                new_supra = BasicSupra(set(inter_fs), total_count)
+                final_set.merge(new_supra, lambda s1, s2: s1.set_count(s1.get_count() + s2.get_count()) or s1)
+
+        return final_set
 
     def lattice_product(self, supras1: set[Supracontext], supras2: set[Supracontext], supra_product_constructor) -> set[Supracontext]:
         """
