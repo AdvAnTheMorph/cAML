@@ -1,6 +1,8 @@
 """weka.classifiers.lazy.AM"""
 
+import logging
 import random
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from threading import Lock
 
@@ -13,7 +15,7 @@ from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.data.classified_supra import ClassifiedSupra
-from analogical_modeling.analogical_modeling import AnalogicalModeling
+from analogical_modeling.aml import AnalogicalModeling
 from analogical_modeling.utils import Instance, Dataset
 
 
@@ -114,19 +116,19 @@ def get_reduced_dataset(file_in_data_folder: str, ignore_atts: list[int]) -> uti
     return data
 
 
+def random_provider():
+    random_seeder = [0]
+    with Lock():
+        seed = random_seeder[0]
+        random_seeder[0] += 1
+        return random.Random(seed)
+
+
 def get_deterministic_random_provider():
     """ Supply deterministic PRNG output for testing algorithms that use randomness (JJLattice, etc.)
 
     :return: A random provider with deterministic output
     """
-    random_seeder = [0]
-    lock = Lock()
-
-    def random_provider():
-        with lock:
-            seed = random_seeder[0]
-            random_seeder[0] += 1
-            return random.Random(seed)
     return random_provider
 
 
@@ -152,12 +154,31 @@ def leave_out_index(am: AnalogicalModeling, data: Dataset, index: int):
     return am.get_results()
 
 
+# def leave_one_out(am: AnalogicalModeling, data: Dataset) -> int:
+#     correct = 0
+#     for i in range(data.data.shape[0]):  # number of rows
+#         logging.log(logging.DEBUG, f"{i+1}/{data.data.shape[0]}")
+#         am_set = leave_out_index(am, data, i)
+#         if data[i].class_value() in am_set.get_predicted_classes():
+#             correct += 1
+#     return correct
 def leave_one_out(am: AnalogicalModeling, data: Dataset) -> int:
     correct = 0
-    for i in range(data.data.shape[0]):  # number of rows
-        am_set = leave_out_index(am, data, i)
-        if data[i].class_value() in am_set.get_predicted_classes():
-            correct += 1
+    with ProcessPoolExecutor(max_workers=3) as executor:
+        futures = []
+        for i in range(data.data.shape[0]):  # number of rows
+            am_set = executor.submit(leave_out_index, am, data, i)
+            futures.append((am_set, data[i].class_value()))
+        i = 1
+        for am_set, cls in futures:
+            logging.log(logging.DEBUG, f"{i}/{data.data.shape[0]}")
+            # try:
+            if cls in am_set.result().get_predicted_classes():
+                correct += 1
+            # except:
+            #     print(cls)
+            i += 1
+    logging.log(logging.DEBUG, f"{correct=}")
     return correct
 
 

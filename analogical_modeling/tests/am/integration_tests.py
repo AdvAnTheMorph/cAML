@@ -2,7 +2,7 @@
 
 import unittest
 
-from analogical_modeling.analogical_modeling import AnalogicalModeling
+from analogical_modeling.aml import AnalogicalModeling
 from analogical_modeling.tests.am import test_utils
 
 
