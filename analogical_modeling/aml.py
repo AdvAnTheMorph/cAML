@@ -502,8 +502,8 @@ class AnalogicalModeling:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-t", "--train", help="csv containing the data")
-    parser.add_argument("-o", "--output", help="output path", type=Path)
+    parser.add_argument("-t", "--train", help="csv containing the data", required=True)
+    parser.add_argument("-o", "--output", help="output path", type=Path, required=True)
     parser.add_argument("-L", "--linear", action="store_true")
     parser.add_argument("-K", "--keep_test", action="store_false", help="Keep test exemplar in training set (default: False)")  # !keep_test = remove, which is default
     parser.add_argument("-I", "--ignore_unknowns", action="store_true", help="Ignore attributes with unknown values in the test exemplar")
