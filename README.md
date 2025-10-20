@@ -34,9 +34,12 @@ Running `aml.py` will automatically create three output files:
 2. `<output>_analogical_sets.csv`: analogical sets
 3. `<output>_distributions.csv`: distributions
 ```bash
-python3 aml.py -t <data.csv> -o <output>
+python3 aml.py -l <data.csv> -o <output>
 ```
 ### Additional options:
+- `-t` or `--test` `<test_file>` to use a separate document for testing (instead of predicting each instance in the lexicon)
+- `-d` or `--drop_duplicates` to drop duplicated instances
+- `--ignore_columns` to specify a list of column indices to ignore (starting with 0!)
 - `-L` or `--linear` to use linear instead of quadratic calculation of pointer values
 - `-K` or `--keep_test` to keep test exemplars in the training set
 - `-I` or `--ignore_unknowns` to ignore attributes with unknown values

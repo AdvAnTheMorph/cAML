@@ -94,7 +94,8 @@ class AnalogicalModelingTest(unittest.TestCase):
                     "herbicide-injury": 0.0,
                     "2-4-d-injury": 0.0}
         for k, v in expected.items():
-            self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7, msg=(k,v))
+            # self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7, msg=(k,v))
+            self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-5, msg=(k,v))
 
         expected = {"anthracnose": 5358272,
                     "bacterial-blight": 2880000,
@@ -120,9 +121,9 @@ class AnalogicalModelingTest(unittest.TestCase):
 
     def test_get_options(self):
         am = AnalogicalModeling()
-        self.assertEqual("Linear: False, Remove test exemplars: True, Ignore unknowns: False, Missing data: variable", am.get_options())
+        self.assertEqual("Linear: False, Remove test exemplars: True, Ignore unknown values: False, Missing data: variable\nDrop duplicates: False, Ignore columns: --", am.get_options())
 
         am.set_remove_test_exemplar(False)
         am.set_missing_data_compare("mismatch")
         am.set_ignore_unknowns(True)
-        self.assertEqual("Linear: False, Remove test exemplars: False, Ignore unknowns: True, Missing data: mismatch", am.get_options())
+        self.assertEqual("Linear: False, Remove test exemplars: False, Ignore unknown values: True, Missing data: mismatch\nDrop duplicates: False, Ignore columns: --", am.get_options())

@@ -60,6 +60,10 @@ class AnalogicalModeling:
         self.ignore_unknowns = False
         # By default, we remove any exemplar with the same features as the test exemplar
         self.remove_test_exemplar = True
+        # whether to drop duplicate entries
+        self.drop_duplicates = False
+        # indices of columns to ignore
+        self.ignore_columns = []
 
         # debugging
         self.debug = False
@@ -111,6 +115,18 @@ class AnalogicalModeling:
     @staticmethod
     def remove_test_exemplar_tip_text() -> str:
         return "Set to true if you wish to remove the test instance from the training set before attempting to classify it."
+
+    def get_drop_duplicates(self) -> bool:
+        return self.drop_duplicates
+
+    def set_drop_duplicates(self, drop_duplicates: bool):
+        self.drop_duplicates = drop_duplicates
+
+    def get_ignore_columns(self) -> list[str]:
+        return self.ignore_columns
+
+    def set_ignore_columns(self, ignore_list: list[str]):
+        self.ignore_columns = ignore_list
 
     def classify(self, test_item: Instance) -> AMResults:
         """
@@ -189,7 +205,7 @@ class AnalogicalModeling:
                # f"{self.get_technical_information()}"  # TODO
 
     def get_options(self):
-        return f"Linear: {self.linear_count}, Remove test exemplars: {self.remove_test_exemplar}, Ignore unknowns: {self.ignore_unknowns}, Missing data: {self.mdc.option_string}"
+        return f"Linear: {self.linear_count}, Remove test exemplars: {self.remove_test_exemplar}, Ignore unknown values: {self.ignore_unknowns}, Missing data: {self.mdc.option_string}\nDrop duplicates: {self.drop_duplicates}, Ignore columns: {self.ignore_columns or '--'}"
 
     def get_capabilities(self):
         """Analogical Modeling can handle only nominal class attributes. Missing
@@ -355,14 +371,23 @@ class AnalogicalModeling:
             return string + f"Training instances: {len(self.training_exemplars)}\n"
         return string
 
-    def run_classifier(self, csv: str, out_path: Path):
+    def run_classifier(self, csv: str, out_path: Path, test: str):
         """runs the classifier instance with the given options.
 
-        :param csv: training data
+        :param csv: lexicon
         :param out_path: where to save output files
+        :param test: test data (use lexicon if not given)
         """
         instances = Dataset().from_csv(csv)
+        instances.set_ignored(self.ignore_columns)
+        if self.drop_duplicates:
+            instances.data.drop_duplicates(inplace=True)
         self.build_classifier(instances)
+
+        # use test set, if available
+        if test:
+            instances = Dataset().from_csv(test)
+            instances.set_ignored(self.ignore_columns)
 
         results = []
         for instance in instances:
@@ -392,8 +417,8 @@ class AnalogicalModeling:
         count_strategy = "linear" if self.linear_count else "quadratic"
 
         gang_header = feats.tolist() + cls_header_gang + ["Gang pointers", "Gang pct", "Rank", "Size", "Total pointers", "Classified item index", "Classified item class"] + [f"Classified item {el}" for el in feats]
-        analog_header = feats.tolist() + ["Class", "Percentage", "Pointers", "Classified item class"] + [f"Classified item {el}" for el in feats]
-        distr_header = ["Judgement", "Expected", "Predicted"] + feats.tolist() + cls_header + ["Train size", "Num feats", "Ignore unknowns", "Missing data compare", "Ignore given", "Count strategy", "Classified item index"]
+        analog_header = feats.tolist() + ["Class", "Percentage", "Pointers", "Classified item index", "Classified item class"] + [f"Classified item {el}" for el in feats]
+        distr_header = ["Judgement", "Expected", "Predicted"] + feats.tolist() + cls_header + ["Train size", "Num feats", "Ignore unknown values", "Missing data compare", "Ignore given", "Count strategy", "Classified item index"]
 
         gangs = []
         analogs = []
@@ -437,6 +462,7 @@ class AnalogicalModeling:
                     inst.class_value(),  # class
                     effects.get(inst)*100,  # percentage
                     ptrs,  # pointers
+                    idx,  # index
                     classified.class_value()  # instance class
                 ] + classified.tolist() for inst, ptrs in pointers.items()]
 
@@ -455,7 +481,7 @@ class AnalogicalModeling:
                  ] + classified.tolist() + cls_info + [
                     train_size, # train size
                     num_feats,  # num feats
-                    ignore,  # ignore unknowns
+                    ignore,  # ignore unknown values
                     mdc,  # missing data compare
                     ignore_given,  # ignore given
                     count_strategy,  # count strategy
@@ -502,8 +528,11 @@ class AnalogicalModeling:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-t", "--train", help="csv containing the data", required=True)
+    parser.add_argument("-l", "--lexicon", help="csv containing the data", required=True)
+    parser.add_argument("-t", "--test", help="csv containing test data")
     parser.add_argument("-o", "--output", help="output path", type=Path, required=True)
+    parser.add_argument("-d", "--drop_duplicates", action="store_true", help="Drop duplicated instances")
+    parser.add_argument("--ignore_columns", nargs="*", help="Columns to ignore", type=str, default=[])
     parser.add_argument("-L", "--linear", action="store_true")
     parser.add_argument("-K", "--keep_test", action="store_false", help="Keep test exemplar in training set (default: False)")  # !keep_test = remove, which is default
     parser.add_argument("-I", "--ignore_unknowns", action="store_true", help="Ignore attributes with unknown values in the test exemplar")
@@ -522,8 +551,11 @@ if __name__ == "__main__":
     am.set_ignore_unknowns(args.ignore_unknowns)
     am.debug = args.debug
     am.set_missing_data_compare(args.missing_data)
+    am.set_drop_duplicates(args.drop_duplicates)
+    am.set_ignore_columns(args.ignore_columns)
     print(am.get_options())
-    am.run_classifier(args.train, args.output.with_suffix(".csv"))
+    import sys; sys.exit()
+    am.run_classifier(args.lexicon, args.output.with_suffix(".csv"), args.test)
 
 
 # /**
