@@ -38,6 +38,12 @@ from analogical_modeling.am.lattice.lattice_factory import \
 from analogical_modeling.utils import Instance, Dataset
 
 
+class HeaderMissmatchError(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+
 class AnalogicalModeling:
     def __init__(self):
         # The training instances used for classification.
@@ -388,6 +394,7 @@ class AnalogicalModeling:
         if test:
             instances = Dataset().from_csv(test)
             instances.set_ignored(self.ignore_columns)
+            self.check_header(instances)
 
         results = []
         for instance in instances:
@@ -524,6 +531,13 @@ class AnalogicalModeling:
         plt.show()
         return acc
 
+    def check_header(self, instances):
+        """Headers of lexicon and test data must be equal"""
+        l_header = self.training_instances.data.columns.tolist()
+        t_header = instances.data.columns.tolist()
+        if t_header != l_header:
+            raise HeaderMissmatchError(
+                f"Expected header is {l_header}, but test data header is {t_header}")
 
 
 if __name__ == "__main__":
@@ -553,8 +567,6 @@ if __name__ == "__main__":
     am.set_missing_data_compare(args.missing_data)
     am.set_drop_duplicates(args.drop_duplicates)
     am.set_ignore_columns(args.ignore_columns)
-    print(am.get_options())
-    import sys; sys.exit()
     am.run_classifier(args.lexicon, args.output.with_suffix(".csv"), args.test)
 
 
