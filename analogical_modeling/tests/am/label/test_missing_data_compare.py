@@ -9,7 +9,7 @@ from analogical_modeling.utils import Dataset
 
 class TestMissingDataCompare(unittest.TestCase):
     def setUp(self):
-        self.dataset = Dataset([[float("nan")], [0]])   # TODO: or 0="a"
+        self.dataset = Dataset([["="], [0]])
 
     def test_match(self):
         mdc = MissingDataCompare.MATCH
