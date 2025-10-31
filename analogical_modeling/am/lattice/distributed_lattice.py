@@ -59,31 +59,23 @@ class DistributedLattice(Lattice):
         num_lattices = labeler.num_partitions()
 
         with ThreadPoolExecutor() as executor:
-            futures = [executor.submit(self.fill_lattice_partition, sub_list, i) for i in range(num_lattices)]
+            supras_futures = []
+            for i in range(num_lattices):
+                # fill each heterogeneous lattice with a given label partition
+                partition_index = i
+                future = executor.submit(self.fill_lattice_partition, sub_list, partition_index)
+                supras_futures.append(future)
 
-            partial_sets = [future.result() for future in as_completed(futures)]
+            # then combine them 2 at a time, consolidating duplicate supracontexts
+            if num_lattices > 2:
+                for _ in range(1, num_lattices - 1):
+                    supras1 = supras_futures.pop(0).result()
+                    supras2 = supras_futures.pop(0).result()
+                    future = executor.submit(self.lattice_product, supras1, supras2, IntermediateProduct)
+                    supras_futures.append(future)
 
-            if not partial_sets:
-                self.supras = CanonicalizingSet().empty_set()
-                return
-
-            sets_queue = partial_sets.copy()
-            while len(sets_queue) > 1:
-                next_round = []
-                # combine pairs (0,1), (2,3), ...
-                for i in range(0, len(sets_queue), 2):
-                    if i + 1 < len(sets_queue):
-                        a = sets_queue[i]
-                        b = sets_queue[i + 1]
-                        combined = self.lattice_product_accumulate(a, b,
-                                                                   supra_product_constructor=IntermediateProduct if len(
-                                                                       sets_queue) > 2 else FinalizingProduct)
-                        next_round.append(combined)
-                    else:
-                        next_round.append(sets_queue[i])
-                sets_queue = next_round
-
-            self.supras = sets_queue[0]
+            # the final combination creates ClassifiedSupras and ignores the heterogeneous ones.
+            self.supras = self.lattice_product(supras_futures.pop(0).result(), supras_futures.pop(0).result(), FinalizingProduct)
 
     @staticmethod
     def fill_lattice_partition(sub_list: SubcontextList, partition_index: int) -> CanonicalizingSet:
