@@ -16,7 +16,6 @@
 
 from analogical_modeling.am import am_utils
 from analogical_modeling.am.label.label import Label
-from analogical_modeling.am.label.labeler import Labeler
 from analogical_modeling.utils import Instance
 
 
@@ -39,7 +38,7 @@ class Subcontext:
         self.label: Label = label
         self.display_label: str = display_label
         self.data: set[Instance] = set()
-        self.outcome: str = ""
+        self.outcome: str|int = ""  # private double outcome
         self.hash: int = -1
 
     def add(self, other):
@@ -62,7 +61,7 @@ class Subcontext:
         """Get binary label of of this subcontext"""
         return self.label
 
-    def get_display_label(self):
+    def get_display_label(self) -> str:
         """
         see Labeler.get_context_string(Label)
 
@@ -70,7 +69,7 @@ class Subcontext:
         """
         return self.display_label
 
-    def get_exemplars(self) -> set:
+    def get_exemplars(self) -> set[Instance]:
         """
 
         :return: list of Exemplars contained in this subcontext

@@ -250,15 +250,15 @@ def get_supra_from_string(supra_string: str, data):
 def test_supra_from_string():
     """Test that the get_supra_from_string utility function above works as desired."""
     # data = get_reduced_dataset(FINNVERB_MIN, [5, 6, 7, 8, 9])
-    # sub1 = Subcontext(Label(0b10110, 5), "foo")
+    # sub1 = Subcontext(Label({0, 1, 2, 4}, 5), "foo")
     # sub1.add(data[3])  # P,U,0,?,0,A
     #
     # sub2 = Subcontext(Label(0b10000, 5), "foo")
     # sub2.add(data[2])  # K,U,V,U,0,A
     #
-    # sub3 = Subcontext(Label(0b10010, 5), "foo")
+    # sub3 = Subcontext(Label({1, 4}, 5), "foo")
     # sub3.add(data[1])  # U,U,V,I,0,A
-
+    #
     # expected_supra = ClassifiedSupra({sub1, sub2, sub3}, 1)
     # supra_string = "[1x(10110|A|P,U,0,?,0,A),(10000|A|K,U,V,U,0,A),(10010|A|U,U,V,I,0,A)]"
     # actual_supra = get_supra_from_string(supra_string, data)
@@ -267,7 +267,7 @@ def test_supra_from_string():
     #
     # supra_string = "[1x(01010|&nondeterministic&|H,A,V,A,0,B/H,A,V,I,0,A)]"
     # actual_supra = get_supra_from_string(supra_string, data)
-    # sub4 = Subcontext(Label(0b01010, 5), "foo")
+    # sub4 = Subcontext(Label({1, 3}, 5), "foo")
     # sub4.add(data[4])  # H,A,V,I,0,A
     # sub4.add(data[5])  # H,A,V,A,0,B
     # expected_supra = ClassifiedSupra({sub4}, 1)
@@ -278,7 +278,7 @@ def test_supra_from_string():
     data = get_reduced_dataset(FINNVERB, [5, 6, 7, 8, 9])
     sub5 = Subcontext(Label({0}, 5), "foo")
     sub5.add(data[1])  # A,A,0,?,S,B
-    sub5.add(data[2])  # also A,A,0,?,S,B  # FIXME: fails probably due to set() -> can be added only once, since equal
+    sub5.add(data[2])  # also A,A,0,?,S,B
     expected_supra = ClassifiedSupra({sub5}, 6)
     supra_string = "[6x(00001|B|A,A,0,?,S,B/A,A,0,?,S,B)]"
     actual_supra = get_supra_from_string(supra_string, data)

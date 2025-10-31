@@ -6,10 +6,6 @@ from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.utils import Instance
 
 
-# import lombok.Value;
-
-
-# TODO: @Value
 class GangEffect:
     """
     Exemplars that seem less similar to the test item than those that seem
