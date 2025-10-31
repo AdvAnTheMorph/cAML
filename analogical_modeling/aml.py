@@ -138,11 +138,10 @@ class AnalogicalModeling:
         """
         This method is where all of the action happens! Given a test item, it uses
         existing exemplars to assign outcome probabilities to it.
-        <p>
-        Note that this method sets the {@link #results} variable (used by
-        {@link weka.classifiers.evaluation.output.prediction.AnalogicalModelingOutput}) without any synchronization.
+
+        Note that this method sets the results variable without any synchronization.
         This means that if you want to print results from multiple calls to this method, you should not call it
-        in parallel. If you want to make multiple {@link #classify(Instance) classify} calls in parallel, you should
+        in parallel. If you want to make multiple classify() calls in parallel, you should
         create multiple classifier instances. This sort of parallelism for large-cardinality datasets is inadvisable,
         anyway, since a single classifier instance will attempt to saturate all of the available CPUs.
 
@@ -203,7 +202,7 @@ class AnalogicalModeling:
 
     @staticmethod
     def global_info():
-        """Returns basic human readable information about the classifier, including references."""
+        """Returns basic human-readable information about the classifier, including references."""
 
         return f"Implements the Analogical Modeling algorithm, invented by Royal Skousen. " \
                f"Analogical modeling is an instance-based algorithm designed to model human behavior. " \
@@ -305,21 +304,19 @@ class AnalogicalModeling:
         # self.get_capabilities().test_with_fail(instances)  # TODO
 
         # remove instances with missing class value,
-        # but don't modify original data
-        instances = Dataset(instances)
         instances.delete_with_missing_class()
 
-        self.cardinality = instances.num_attributes()
+        self.cardinality = instances.num_counted_attributes()
         # save instances for checking headers
-        self.training_instances = Dataset(instances)  # , 0, instances.num_attributes())
+        self.training_instances = instances  # , 0, instances.num_attributes())
 
         # create exemplars for actually running the classifier
         self.training_exemplars = [el for el in instances]
 
     def update_classifier(self, instance: Instance):
         """This is used to add more information to the classifier."""
-        # if (!trainingInstances.equalHeaders(instance.dataset())) throw new Exception(
-        #     "Incompatible instance types\n" + trainingInstances.equalHeadersMsg(instance.dataset()));
+        self.check_header(instance)
+
         if instance.is_missing(instance.get_class_index()):
             return
         self.training_instances.add(instance)
@@ -333,8 +330,8 @@ class AnalogicalModeling:
         :param instance: instance to predict
         :return: mapping between classes and their selection probability for the instance
         """
-        # if (!trainingInstances.equalHeaders(instance.dataset())) throw new Exception(
-        #     "Incompatible instance types\n" + trainingInstances.equalHeadersMsg(instance.dataset()));
+        # self.check_header(instance)
+
         if not len(self.training_instances):
             raise RuntimeError("No training instances!")
 
@@ -400,8 +397,13 @@ class AnalogicalModeling:
         for instance in instances:
             self.distribution_for_instance(instance)
             results.append(self.get_results())
-        print(f"Accuracy: {round(self.evaluate(instances, results) * 100, 3)}%")
+
+        acc, conf_matrix = self.evaluate(instances, results)
+        print(f"Accuracy: {round(acc * 100, 3)}%")
         self.create_output_files(out_path, results, instances)
+        conf_matrix.plot()
+        plt.show()
+
 
     def create_output_files(self, dest: Path, results: list[AMResults], instances: Dataset) -> None:
         """Store information on analogical sets, gang effects and distributions
@@ -412,12 +414,12 @@ class AnalogicalModeling:
         """
         print("Generating output files...")
         # information equal for all exemplars
-        feats = results[0].get_classified_ex().keys()
+        feats = results[0].get_classified_ex().real_data.keys()
         classes = list(instances.get_classes())
         cls_header = [f"Class {i+1}" for i in range(len(classes))] + sum([[f"{cls}: pointers", f"{cls}: pct"] for cls in classes], [])
         cls_header_gang = sum([[f"{cls}: pointers", f"{cls}: pct", f"{cls}: size"] for cls in classes], [])
         train_size = len(instances)
-        num_feats = instances.num_attributes()
+        num_feats = instances.num_attributes() -1  # - class attribute
         ignore = self.ignore_unknowns
         mdc = self.mdc.name
         ignore_given = self.remove_test_exemplar
@@ -450,7 +452,7 @@ class AnalogicalModeling:
                     for cls in classes
                 ], []) for inst in effect.subcontext.data}
 
-                gangs += [inst.tolist() + cls_info[inst] + [
+                gangs += [inst.real_data.tolist() + cls_info[inst] + [
                     effect_pointers,  # gang pointers
                     round(gang_pct, 3),  # gang pct
                     rank,  # rank
@@ -458,20 +460,20 @@ class AnalogicalModeling:
                     total_pointers,  # total pointers
                     idx,  # classified item index
                     classified.class_value()  # classified item class
-                ] + classified.tolist()
+                ] + classified.real_data.tolist()
                           for inst in sum(map(list, effect.class_to_instances.values()), [])]
 
             # analogical sets
             pointers = res.ex_pointer_map
             effects = res.ex_effect_map
             analogs += [
-                inst.to_list() + [
+                inst.real_data.to_list() + [
                     inst.class_value(),  # class
                     effects.get(inst)*100,  # percentage
                     ptrs,  # pointers
                     idx,  # index
                     classified.class_value()  # instance class
-                ] + classified.tolist() for inst, ptrs in pointers.items()]
+                ] + classified.real_data.tolist() for inst, ptrs in pointers.items()]
 
             # distribution
             pred = res.get_predicted_classes()
@@ -485,7 +487,7 @@ class AnalogicalModeling:
                 [res.get_judgement().value,  # judgement
                  gold,  # expected
                  '|'.join(pred)  # predicted
-                 ] + classified.tolist() + cls_info + [
+                 ] + classified.real_data.tolist() + cls_info + [
                     train_size, # train size
                     num_feats,  # num feats
                     ignore,  # ignore unknown values
@@ -512,7 +514,7 @@ class AnalogicalModeling:
         print(f"Outputs saved to {out_gang}, {out_analog}, {out_distribution}.")
 
     @staticmethod
-    def evaluate(instances: Dataset, results: list[AMResults]) -> float:
+    def evaluate(instances: Dataset, results: list[AMResults]) -> tuple[float,ConfusionMatrixDisplay]:
         """Calculate accuracy and plot confusion matrix
 
         :param instances: dataset used for prediction
@@ -527,9 +529,8 @@ class AnalogicalModeling:
         acc = correct/len(results)
         cnf = confusion_matrix(golds, preds, labels=list(instances.get_classes()))
         disp = ConfusionMatrixDisplay(cnf, display_labels=list(instances.get_classes()))
-        disp.plot()
-        plt.show()
-        return acc
+
+        return acc, disp
 
     def check_header(self, instances):
         """Headers of lexicon and test data must be equal"""
