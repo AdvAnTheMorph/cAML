@@ -69,26 +69,9 @@ def get_instance_from_file(file_in_data_folder: str, index: int) -> utils.Instan
 
 
 def six_cardinality_data():
-    # atts = []
-	# 	atts.add(new Attribute("a", List.of("a", "z", "w")));  # column z,w with name a
-	# 	atts.add(new Attribute("b", List.of("b", "x", "y")));
-	# 	atts.add(new Attribute("c", List.of("c", "w", "v")));
-	# 	atts.add(new Attribute("d", List.of("d", "u", "t")));
-	# 	atts.add(new Attribute("e", List.of("e", "s", "r")));
-	# 	atts.add(new Attribute("class", List.of("e", "r")));
-    #     Instances dataset = new Instances("TestInstances", atts, 0);
-    #     dataset.setClassIndex(dataset.numAttributes() - 1);
-
-    # data = [[0, 1, 2, 1, 1, 1], [0, 1, 2, 1, 1, 0], [2, 1, 1, 2, 1, 1], [0, 1, 2, 0, 2, 0],
-    #         [2, 1, 2, 0, 2, 1], [1, 0, 1, 0, 0, 0], [0, 1, 1, 1, float("NaN"), 1],
-    #         [0, 1, 0, 1, float("NaN"), 0], [0, 1, 2, float("NaN"), 1, 1]]
     data = [list("axvusr"), list("axvuse"), list("wxwtsr"), list("axvdre"),
-            list("wxvdrr"), list("zbwdee"), ["a", "x", "w", "u", float("NaN"), "r"],
-            ["a", "x", "c", "u", float("NaN"), "e"], ["a", "x", "v", float("NaN"), "s", "r"]]
-    #     for (double[] datum : data) {
-    #         Instance instance = new DenseInstance(6, datum);
-    #         dataset.add(instance);
-    #     }
+            list("wxvdrr"), list("zbwdee"), ["a", "x", "w", "u", "=", "r"],
+            ["a", "x", "c", "u", "=", "e"], ["a", "x", "v", "=", "s", "r"]]
     dataset = utils.Dataset(data)
     dataset.set_class_index(dataset.num_attributes() - 1)
     return dataset
@@ -172,11 +155,8 @@ def leave_one_out(am: AnalogicalModeling, data: Dataset) -> int:
         i = 1
         for am_set, cls in futures:
             logging.log(logging.DEBUG, f"{i}/{data.data.shape[0]}")
-            # try:
             if cls in am_set.result().get_predicted_classes():
                 correct += 1
-            # except:
-            #     print(cls)
             i += 1
     logging.log(logging.DEBUG, f"{correct=}")
     return correct
