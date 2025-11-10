@@ -418,7 +418,6 @@ class AnalogicalModeling:
         classes = list(instances.get_classes())
         cls_header = [f"Class {i+1}" for i in range(len(classes))] + sum([[f"{cls}: pointers", f"{cls}: pct"] for cls in classes], [])
         cls_header_gang = sum([[f"{cls}: pointers", f"{cls}: pct", f"{cls}: size"] for cls in classes], [])
-        train_size = len(instances)
         num_feats = instances.num_attributes() -1  # - class attribute
         ignore = self.ignore_unknowns
         mdc = self.mdc.name
@@ -478,6 +477,7 @@ class AnalogicalModeling:
             # distribution
             pred = res.get_predicted_classes()
             gold = res.get_expected_class_name()
+            train_size = res.get_sub_list().get_considered_exemplar_count()
 
             cls_info = classes + sum([[
                 res.class_pointer_map.get(cls,0),  # cls: pointers
