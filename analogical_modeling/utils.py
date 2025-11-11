@@ -11,9 +11,17 @@ import pandas as pd
 
 
 class Instance(pd.Series):
+    """Instance Representation"""
     _metadata = ["class_index", "ignored", "real_data", "data_idx"]
 
     def __init__(self, data: pd.Series, class_column: str, ignore_list: list[str], idx: int):
+        """
+
+        :param data: Series containing values of the Instance
+        :param class_column: name of column containing class value
+        :param ignore_list: columns to ignore
+        :param idx: index in the dataset
+        """
         super().__init__(data)
         self.drop(labels=ignore_list, inplace=True)
         self.class_index = self.keys().get_loc(class_column)
@@ -21,6 +29,10 @@ class Instance(pd.Series):
         self.data_idx = idx
 
     def is_missing(self, idx: int) -> bool:
+        """Check if value is missing
+
+        :param idx: index of value
+        """
         # return self.isna().iloc[idx]
         return self.iloc[idx] == "="
 
@@ -32,32 +44,50 @@ class Instance(pd.Series):
         """Return the number of attributes, including ignored ones."""
         return self.real_data.shape[0]
 
-    def attribute_name(self, idx: int):
+    def attribute_name(self, idx: int) -> str:
+        """Return the name of the attribute at a given index.
+
+        :param idx: index of the attribute
+        """
         return self.index[idx]
 
-    def value(self, val: str):
-        return self.get(val)
+    def value(self, attr: str):
+        """Return the value of the given attribute.
+
+        :param attr: attribute name
+        """
+        return self.get(attr)
 
     def string_value(self, idx: int):
+        """Return the value of an attributed specified by index.
+
+        :param idx: index of the attribute
+        """
         return self.iloc[idx]
 
     def class_value(self):
+        """Return the value of the class attribute."""
         return self.iloc[self.class_index]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{','.join(map(str, self.array))}"  #,\u007b{self.num_attributes()}\u007d"
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return int(pd.util.hash_pandas_object(self, index=False).sum())+hash(37*self.data_idx)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, Instance):
             return self.values.all() == other.values.all()
         return super().__eq__(other)
 
 
 class Dataset:
+    """Dataset representation"""
     def __init__(self, atts: list|None = None):
+        """
+
+        :param atts: if atts is None, call from_csv() to populate the dataset
+        """
         self.ignored = []
         if atts is None:
             self.data = None
@@ -67,37 +97,58 @@ class Dataset:
         self.class_index = self.num_attributes() - 1
 
     def from_csv(self, source: str|Path):
+        """Read dataset from csv file
+
+        :param source: path to csv file"""
         self.data = pd.read_csv(Path(__file__).parent / source)
         self.class_index = self.num_attributes() - 1
         return self
 
-    def get_instance(self, idx):
+    def get_instance(self, idx) -> Instance:
+        """Get an instance of the given index
+
+        :param idx: index of the instance"""
         return self.data.iloc[idx]
 
     def num_attributes(self) -> int:
+        """Return the number of attributes (whether ignored or not)."""
         return self.data.shape[1]
 
     def num_counted_attributes(self) -> int:
+        """Return the number of attributes that are not ignored."""
         return self.data.shape[1] - len(self.ignored)
 
     def set_class_index(self, idx: int):
+        """Set the class index.
+
+        :param idx: index of the class
+        """
         if idx > self.num_attributes():
-            raise ValueError(f"Index out of range: There are only {self.num_attributes()} attributes.")
+            raise ValueError(f"Index out of range: There are only "
+                             f"{self.num_attributes()} attributes.")
         self.class_index = idx
 
     def delete_with_missing_class(self):
-        return self.data.dropna(subset=self.data.columns[self.class_index])
+        """Delete instances without a class"""
+        self.data.dropna(subset=self.data.columns[self.class_index], inplace=True)
 
-    def get_classes(self):
+    def get_classes(self) -> set:
+        """Return all class values"""
         return set(self.data.iloc[:, self.class_index])
 
-    def num_classes(self):
+    def num_classes(self) -> int:
+        """Return the number of classes."""
         return len(set(self.data.iloc[:, self.class_index]))
 
-    def class_column_name(self):
+    def class_column_name(self) -> str:
+        """Return the name of the class column."""
         return self.data.columns[self.class_index]
 
     def set_ignored(self, ignore: list[str]):
+        """Set ignored columns.
+
+        :param ignore: columns to ignore
+        """
         self.ignored = ignore
 
     def __getitem__(self, idx) -> Instance:
@@ -111,4 +162,8 @@ class Dataset:
         return self.data.shape[0]
 
     def add(self, row: Instance):
+        """Add an instance to the dataset.
+
+        :param row: instance to add
+        """
         self.data = pd.concat([self.data, row.to_frame().T]).reset_index(drop=True)
