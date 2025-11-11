@@ -1,53 +1,52 @@
-"""weka.classifiers.lazy.AM.lattice
+"""weka.classifiers.lazy.AM.lattice"""
 
- * The approximation algorithm from "Efficient Modeling of Analogy", Johnsen and
- * Johansson, DOI 10.1007/978-3-540-30586-6_77.
- *
- * Terminology from the paper is as follows:
- *
- * <ul>
- * <li>$p$: the subcontext whose count is being approximated</li>
- * <li>$size(p)$: the size of the subcontext $p$; or, the number of 0's in
- * its label</li>
- * <li>$\mathcal{H}(p)$: the sets found by intersecting $p$ with any
- * subcontext that has a different outcome; the labels of such intersections</li>
- * <li>$max(p)$: the cardinality of the union of all $x\in\mathcal{H}(p)$;
- * the number of 0's in the union of the labels of all subcontexts in
- * $\mathcal{H}(p)$</li>
- * <li>$\mathcal{H}_{limit(p)}$: the heterogeneous elements under $p$ in the
- * lattice</li>
- * <li>$min(p)$: the size of the largest child of $p$; or, the number of 0's
- * in the label of the subcontext whose label has the most 0's and matches all
- * of the 1's in $p$'s label.</li>
- *
- * </ul>
- *
- * We estimate the count of each subcontext by randomly unioning sets of
- * subcontexts from $\{x_s\}$ and checking for heterogeneity (union means
- * OR'ing labels). The count of a subcontext $p$ is the size of its power set
- * minus the heterogeneous elements in this set (or $|\wp(p)| -
- * |\mathcal{H}_{limit(p)}|$). We use these bounds in approximating
- * $|\mathcal{H}_{limit(p)}|$:
- *
- * <ul>
- * <li>lower bound ($lb(p)$): the cardinality of the powerset of $min(p)$.</li>
- * <li>upper bound ($ub(p)$): $\sum_{k=1}^{min(p)}{max(p)\choose k}$</li>
- * </ul>
- *
- * The estimate $\hat{h}_p$ of $|\mathcal{H}_{limit(p)}|$ is computed by
- * sampling random sets of subcontexts ${x_s}$ and combining them with :
- *
- * $\frac{|\{x_s \in \mathcal{H}(p)|}{|\{x_s\}|}=\frac{\hat{h}_p}{ub(p)}$
- *
- * or
- *
- * $\hat{h}_p = \frac{ub(p)|x_s\in \mathcal{H}(p)|}{|\{x_s\}|}$
- *
- * <br>
- *
- * TODO: maybe if H(p) is small enough we could do exact counting with
- * include-exclude
- """
+# The approximation algorithm from "Efficient Modeling of Analogy", Johnsen and
+# Johansson, DOI 10.1007/978-3-540-30586-6_77.
+#
+# Terminology from the paper is as follows:
+#
+# <ul>
+# <li>$p$: the subcontext whose count is being approximated</li>
+# <li>$size(p)$: the size of the subcontext $p$; or, the number of 0's in
+# its label</li>
+# <li>$\mathcal{H}(p)$: the sets found by intersecting $p$ with any
+# subcontext that has a different outcome; the labels of such intersections</li>
+# <li>$max(p)$: the cardinality of the union of all $x\in\mathcal{H}(p)$;
+# the number of 0's in the union of the labels of all subcontexts in
+# $\mathcal{H}(p)$</li>
+# <li>$\mathcal{H}_{limit(p)}$: the heterogeneous elements under $p$ in the
+# lattice</li>
+# <li>$min(p)$: the size of the largest child of $p$; or, the number of 0's
+# in the label of the subcontext whose label has the most 0's and matches all
+# of the 1's in $p$'s label.</li>
+#
+# </ul>
+#
+# We estimate the count of each subcontext by randomly unioning sets of
+# subcontexts from $\{x_s\}$ and checking for heterogeneity (union means
+# OR'ing labels). The count of a subcontext $p$ is the size of its power set
+# minus the heterogeneous elements in this set (or $|\wp(p)| -
+# |\mathcal{H}_{limit(p)}|$). We use these bounds in approximating
+# $|\mathcal{H}_{limit(p)}|$:
+#
+# <ul>
+# <li>lower bound ($lb(p)$): the cardinality of the powerset of $min(p)$.</li>
+# <li>upper bound ($ub(p)$): $\sum_{k=1}^{min(p)}{max(p)\choose k}$</li>
+# </ul>
+#
+# The estimate $\hat{h}_p$ of $|\mathcal{H}_{limit(p)}|$ is computed by
+# sampling random sets of subcontexts ${x_s}$ and combining them with :
+#
+# $\frac{|\{x_s \in \mathcal{H}(p)|}{|\{x_s\}|}=\frac{\hat{h}_p}{ub(p)}$
+#
+# or
+#
+# $\hat{h}_p = \frac{ub(p)|x_s\in \mathcal{H}(p)|}{|\{x_s\}|}$
+#
+# <br>
+#
+# TODO: maybe if H(p) is small enough we could do exact counting with
+# include-exclude
 
 import random
 import concurrent.futures
@@ -95,7 +94,8 @@ def binomial_coefficient(p: Pair):
 
 
 class SupraApproximator():
-    def __init__(self, lattice: 'JohnsenJohanssonLattice' , p: Subcontext, outcome_sub_map: dict[float, list[Label]], rnd: random.Random):
+    def __init__(self, lattice: 'JohnsenJohanssonLattice', p: Subcontext,
+                 outcome_sub_map: dict[float, list[Label]], rnd: random.Random):
         self.p = p
         self.outcome_sub_map = outcome_sub_map
         self.random = rnd

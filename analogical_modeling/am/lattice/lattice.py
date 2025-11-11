@@ -9,7 +9,8 @@ from analogical_modeling.am.data.supracontext import Supracontext
 class Lattice(ABC):
     @abstractmethod
     def fill(self, sub_list: SubcontextList):
-        """Fill the lattice with given subcontexts. This is meant to be done only once for a given Lattice instance.
+        """Fill the lattice with given subcontexts. This is meant to be done
+        only once for a given Lattice instance.
 
         :raises: ValueError if the lattice was already filled
         """
@@ -19,7 +20,8 @@ class Lattice(ABC):
     def get_supracontexts(self) -> set[Supracontext]:
         """
 
-        :return: The list of supracontexts that were created by filling the supracontextual lattice. From this, you can
+        :return: The list of supracontexts that were created by filling the
+        supracontextual lattice. From this, you can
         compute the analogical set.
         """
         pass

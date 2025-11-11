@@ -8,11 +8,13 @@ DEFAULT_VERSION = "UNKNOWN"
 
 
 class AMVersion:
+    "Specify version of Analogical Modeling"
     def __init__(self):
         self.version = self.get_version()
 
     @staticmethod
     def get_version() -> str:
+        """Return the version of Analogical Modeling"""
         props_path = Path("resources/weka/classifiers/lazy/AM/Description.props")
         if not props_path.exists():
             print("Description.props file not found in resources.", file=stderr)
@@ -32,8 +34,6 @@ class AMVersion:
             # the whole system from loading! So we must catch everything.
             print(f"Failed to load version from Description.props: {e}", file=stderr)
             return DEFAULT_VERSION
-
-
 
     def main(self, _args: list[str]):
         print(self.get_version())

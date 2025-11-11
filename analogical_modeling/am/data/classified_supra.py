@@ -15,11 +15,11 @@
  ****************************************************************************
 """
 
-from .supracontext import Supracontext
-from .subcontext import Subcontext
-from .basic_supra import BasicSupra
-from .. import am_utils
-from ..label.label import Label
+from analogical_modeling.am.data.supracontext import Supracontext
+from analogical_modeling.am.data.subcontext import Subcontext
+from analogical_modeling.am.data.basic_supra import BasicSupra
+from analogical_modeling.am import am_utils
+from analogical_modeling.am.label.label import Label
 
 class ClassifiedSupra(Supracontext):
     """

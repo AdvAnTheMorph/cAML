@@ -1,14 +1,13 @@
 """weka.classifiers.lazy.AM.data
- * A supracontext contains a set of {@link Subcontext Subcontexts} which have
- * certain commonalities in their {@link Label Labels}.
+ * A supracontext contains a set of Subcontexts which have
+ * certain commonalities in their Labels.
  *
  * Classifying data sets with analogical modeling tends to create many
  * supracontexts with the exact same set of subcontexts. To save time and space,
  * duplicate supracontexts should be kept track of using the count instead of by
  * saving separate Supracontext objects. The count is stored in a
- * {@link BigInteger} object and starts out as {@link BigInteger#ONE one} and is
- * never allowed to fall below {@link BigInteger#ZERO zero}, which indicates
- * that the object should be discarded.
+ * BigInteger object and starts out as 1 and is never allowed to fall below 0,
+ * which indicates that the object should be discarded.
 """
 
 from abc import ABC, abstractmethod

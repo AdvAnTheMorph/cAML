@@ -9,7 +9,7 @@ class Concept(Supracontext):
     """
     This class is a decorator which wraps a Supracontext and adds the
     functionality of a node (concept) used in the ImprovedAddIntent algorithm
-    (see SparseLattice.
+    (see SparseLattice).
     # TODO: did this really need to be genericized? Won't you always use a classifiedSupra?
     """
     def __init__(self, intent: Label, extent: Supracontext):

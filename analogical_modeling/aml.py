@@ -39,12 +39,14 @@ from analogical_modeling.utils import Instance, Dataset
 
 
 class HeaderMissmatchError(Exception):
+    """Exception if headers don't match.'"""
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
 
 
 class AnalogicalModeling:
+    """Analogical modeling algorithm."""
     def __init__(self):
         # The training instances used for classification.
         self.training_instances: Dataset = None
@@ -91,7 +93,8 @@ class AnalogicalModeling:
 
     @staticmethod
     def linear_count_tip_text() -> str:
-        return "Set this to true if counting of pointers within homogeneous supracontexts should be done linearly instead of quadratically."
+        return "Set this to true if counting of pointers within homogeneous " \
+                "supracontexts should be done linearly instead of quadratically."
 
     def get_ignore_unknowns(self) -> bool:
         return self.ignore_unknowns
@@ -101,26 +104,30 @@ class AnalogicalModeling:
 
     @staticmethod
     def ignore_unknowns_tip_text() -> str:
-        return "set to true attributes with unknown values in the test item should be ignored"
+        return "set to true attributes with unknown values in the test item " \
+                "should be ignored"
 
     def get_remove_test_exemplar(self) -> bool:
         """
 
-        :return: True if we remove a test instance from training before predicting its outcome
+        :return: True if we remove a test instance from training before
+        predicting its outcome
         """
         return self.remove_test_exemplar
 
     def set_remove_test_exemplar(self, remove_test_exemplar: bool):
         """
 
-        :param remove_test_exemplar: True if we should remove a test instance from training before predicting its outcome
+        :param remove_test_exemplar: True if we should remove a test instance
+        from training before predicting its outcome
         :return:
         """
         self.remove_test_exemplar = remove_test_exemplar
 
     @staticmethod
     def remove_test_exemplar_tip_text() -> str:
-        return "Set to true if you wish to remove the test instance from the training set before attempting to classify it."
+        return "Set to true if you wish to remove the test instance from " \
+                "the training set before attempting to classify it."
 
     def get_drop_duplicates(self) -> bool:
         return self.drop_duplicates
@@ -136,19 +143,25 @@ class AnalogicalModeling:
 
     def classify(self, test_item: Instance) -> AMResults:
         """
-        This method is where all of the action happens! Given a test item, it uses
-        existing exemplars to assign outcome probabilities to it.
+        This method is where all of the action happens! Given a test item,
+        it uses existing exemplars to assign outcome probabilities to it.
 
-        Note that this method sets the results variable without any synchronization.
-        This means that if you want to print results from multiple calls to this method, you should not call it
-        in parallel. If you want to make multiple classify() calls in parallel, you should
-        create multiple classifier instances. This sort of parallelism for large-cardinality datasets is inadvisable,
-        anyway, since a single classifier instance will attempt to saturate all of the available CPUs.
+        Note that this method sets the results variable without any
+        synchronization.
+        This means that if you want to print results from multiple calls
+        to this method, you should not call it in parallel. If you want
+        to make multiple classify() calls in parallel, you should
+        create multiple classifier instances. This sort of parallelism
+        for large-cardinality datasets is inadvisable, anyway, since a
+        single classifier instance will attempt to saturate all of the
+        available CPUs.
 
         :param test_item: Item to make context base on
-        :return: Analogical set which holds results of the classification for the given item
+        :return: Analogical set which holds results of the classification
+        for the given item
         :raises: RuntimeError if execution is rejected for some reason
-        # @throws InterruptedException If any thread is interrupted for any reason (user presses ctrl-C, etc.)
+        # @throws InterruptedException If any thread is interrupted for
+        any reason (user presses ctrl-C, etc.)
         """
         if self.debug:
             print(f"Classifying {test_item}")
@@ -160,7 +173,10 @@ class AnalogicalModeling:
         sub_list = SubcontextList(labeler, self.training_exemplars, self.get_remove_test_exemplar())
 
         # 2. Create a supracontextual lattice and fill it with subcontexts
-        lattice_factory = CardinalityBasedLatticeFactory(sub_list.get_cardinality(), sub_list.get_labeler().num_partitions(), self.random_provider)
+        lattice_factory = CardinalityBasedLatticeFactory(
+            sub_list.get_cardinality(),
+            sub_list.get_labeler().num_partitions(),
+            self.random_provider)
 
         lattice = lattice_factory.create_lattice()
         lattice.fill(sub_list)
@@ -188,7 +204,9 @@ class AnalogicalModeling:
                 self.mdc = MissingDataCompare.VARIABLE
 
     def set_random_provider(self, random_provider: Random):
-        """Provide the source of randomness for algorithms that require it (e.g. JohnsenJohanssonLattice).
+        """Provide the source of randomness for algorithms that require it
+        (e.g. JohnsenJohanssonLattice).
+
         The provider must be thread-safe."""
         self.random_provider = random_provider
 
@@ -198,7 +216,9 @@ class AnalogicalModeling:
 
         :return: Tooltip text describing the missingDataCompare option
         """
-        return "The strategy to use when comparing missing attribute values with other values while filling subcontexts and supracontexts"
+        return "The strategy to use when comparing missing attribute " \
+                "values with other values while filling subcontexts and " \
+                "supracontexts"
 
     @staticmethod
     def global_info():
@@ -311,7 +331,7 @@ class AnalogicalModeling:
         self.training_instances = instances  # , 0, instances.num_attributes())
 
         # create exemplars for actually running the classifier
-        self.training_exemplars = [el for el in instances]
+        self.training_exemplars = list(instances)  #[el for el in instances]
 
     def update_classifier(self, instance: Instance):
         """This is used to add more information to the classifier."""
@@ -332,7 +352,7 @@ class AnalogicalModeling:
         """
         # self.check_header(instance)
 
-        if not len(self.training_instances):
+        if len(self.training_instances) == 0:
             raise RuntimeError("No training instances!")
 
         if self.training_instances.num_classes() == 1:
@@ -362,6 +382,7 @@ class AnalogicalModeling:
 
     @staticmethod
     def to_summary_string() -> str:
+        """Return summary"""
         return "Analogical Modeling module (2021) by Nathan Glenn"
 
     def __str__(self) -> str:

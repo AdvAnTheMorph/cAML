@@ -38,10 +38,17 @@ python3 aml.py -l <data.csv> -o <output>
 ```
 ### Additional options:
 - `-t` or `--test` `<test_file>` to use a separate document for testing (instead of predicting each instance in the lexicon)
-- `-d` or `--drop_duplicates` to drop duplicated instances
+- `-d` or `--drop_duplicates`
+  - any instance with the same features and the same class within the lexicon will be dropped
 - `--ignore_columns` to specify a list of columns to ignore (using their names)
 - `-L` or `--linear` to use linear instead of quadratic calculation of pointer values
 - `-K` or `--keep_test` to keep test exemplars in the training set
-- `-I` or `--ignore_unknowns` to ignore attributes with unknown values
+  - if True, the instance to be predicted will not be removed from the lexicon (if used as test set) before prediction
+  - if False (default), full matches (instances with the same features, but not necessarily the same class) are ignored
+- `-I` or `--ignore_unknowns`
+  - any attribute that includes unknown values will be ignored for all instances
 - `-D` `--debug` to run the classifier in debug mode (generates more outputs)
 - `-M` or `--missing_data` `<option>` where `<option>` is one out of {`match`, `mismatch`, `variable`} to determine the treatment of missing data
+  - match: missing values match anything
+  - mismatch: missing values don't match anything
+  - variable: missing values are treated like a variable, thus only matching other missing values
