@@ -47,7 +47,7 @@ class Subcontext:
         different outcomes are present in the contained exemplars, the outcome is
         AMUtils.NONDETERMINISTIC
         """
-        if len(self.data):
+        if len(self.data) > 0:
             if other.class_value() != next(iter(self.data)).class_value():
                 self.outcome = am_utils.NONDETERMINISTIC
         else:
@@ -99,7 +99,7 @@ class Subcontext:
         middle_part = ""
         if self.outcome == am_utils.NONDETERMINISTIC:
             middle_part = am_utils.NONDETERMINISTIC_STRING
-        elif len(self.data):
+        elif len(self.data) > 0:
             middle_part = next(iter(self.data)).class_value()
 
         # str(Instance) separates attributes with commas, so we can't

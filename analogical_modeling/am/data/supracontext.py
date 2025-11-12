@@ -79,7 +79,8 @@ class Supracontext(ABC):
 	    subcontexts.
         :return: The context for this supracontext, or {@code null} if the subcontexts are empty
         """
-        return reduce(lambda x, y: x.intersect(y), [subcontext.get_label() for subcontext in self.get_data()])
+        return reduce(lambda x, y: x.intersect(y),
+                      [subcontext.get_label() for subcontext in self.get_data()])
 
     @abstractmethod
     def __eq__(self, other: object) -> bool:

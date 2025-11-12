@@ -44,7 +44,6 @@ class BasicSupra(Supracontext):
         if count < 0:
             raise ValueError("count must not be less than zero")
         self.count = count
-        pass
 
     def get_context(self) -> Label:
         if not self.context:

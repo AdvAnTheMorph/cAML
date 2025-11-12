@@ -30,11 +30,13 @@ from analogical_modeling.utils import Instance
 
 
 class PointerCountingStrategy(Enum):
+    """Enum specifying possible counting strategies"""
     LINEAR = 1
     QUADRATIC = 2
 
 
 class Judgement(Enum):
+    """Enum specifying the classification outcome"""
     # Only the correct class was predicted
     CORRECT = "correct"
     # The correct class and others were tied in the prediction
@@ -45,19 +47,24 @@ class Judgement(Enum):
     UNKNOWN = "unknown"
 
 
-# The results of running {@link weka.classifiers.lazy.AnalogicalModeling AM}, containing
- # the analogical effects of the individual training instances as well as the relevant supracontexts
- # and overall class likelihoods.
+
 class AMResults:
-    def __init__(self, lattice: Lattice, sub_list: SubcontextList, test_item: Instance, linear: bool, labeler: Labeler):
+    """The results of running AM
+
+    containing the analogical effects of the individual training instances
+    as well as the relevant supracontexts and overall class likelihoods."""
+    def __init__(self, lattice: Lattice, sub_list: SubcontextList,
+                 test_item: Instance, linear: bool, labeler: Labeler):
         """
 
-        :param lattice: filled lattice, which contains the data for calculating the analogical set
-        :param sub_list:
-        :param test_item: Exemplar being classified
-        :param linear: True if counting of pointers should be done linearly; False if quadratically.
-        :param labeler: The labeler that was used to assign contextual labels; this is made available
-                        for printing purposes.
+        :param lattice: filled lattice, which contains the data for calculating
+        the analogical set
+        :param sub_list: list of subcontexts
+        :param test_item: exemplar being classified
+        :param linear: True if counting of pointers should be done linearly;
+        False if quadratically.
+        :param labeler: The labeler that was used to assign contextual labels;
+        this is made available for printing purposes.
         """
         # The exemplar whose class is being predicted by this set
         self.classified_exemplar: Instance = test_item
@@ -77,7 +84,10 @@ class AMResults:
 
         # find the analogical effect of an exemplar by dividing its pointer
         # count by the total pointer count
-        self.ex_effect_map: dict[Instance, float] = {e: self.ex_pointer_map[e] / self.total_pointers for e in self.ex_pointer_map}
+        self.ex_effect_map: dict[Instance, float] = {
+            e: self.ex_pointer_map[e] / self.total_pointers
+            for e in self.ex_pointer_map
+        }
 
         # find the likelihood for a given outcome based on the pointers
         self.class_pointer_map: dict[str, int] = defaultdict(int)
@@ -88,7 +98,8 @@ class AMResults:
         # set the likelihood of each possible class index to be its share of
         # the total pointers
         self.class_likelihood_map: dict[str, float] = {
-            name: self.class_pointer_map[name] / self.total_pointers for name in self.class_pointer_map
+            name: self.class_pointer_map[name] / self.total_pointers
+            for name in self.class_pointer_map
         }
 
         # Find the classes with the highest likelihood (there may be a tie)
@@ -106,9 +117,12 @@ class AMResults:
     def get_pointers(supracontexts: set[Supracontext], linear: bool) -> dict[Instance, int]:
         """See page 392 of the red book.
 
-        :param supracontexts: List of Supracontexts created by filling the supracontextual lattice.
-        :param linear: True if pointer counting should be done linearly; False if it should be done quadratically
-        :return: A mapping of each exemplar to the number of pointers pointing to it.
+        :param supracontexts: List of Supracontexts created by filling the
+        supracontextual lattice.
+        :param linear: True if pointer counting should be done linearly; False
+        if it should be done quadratically
+        :return: A mapping of each exemplar to the number of pointers pointing
+        to it.
         """
         pointers = defaultdict(int)
 
@@ -204,7 +218,7 @@ class AMResults:
     def get_predicted_classes(self) -> set[str]:
         """
 
-        :return: Index of the predicted class attribute value (TODO: this could actually be a tie, so it should return multiple)
+        :return: Index of the predicted class attribute value
         """
         return self.predicted_classes
 
@@ -239,10 +253,12 @@ class AMResults:
         return self.labeler
 
     def get_expected_class_name(self) -> str:
+        """Return actual class"""
         classified_ex = self.get_classified_ex()
         return classified_ex.class_value()
 
     def get_sub_list(self) -> SubcontextList:
+        """Return the subcontext list"""
         return self.sub_list
 
     def get_judgement(self):
@@ -261,4 +277,5 @@ class AMResults:
         return Judgement.INCORRECT
 
     def get_pointer_counting_strategy(self):
+        """Return pointer counting strategy (linear or quadratic)"""
         return self.pointer_counting_strategy

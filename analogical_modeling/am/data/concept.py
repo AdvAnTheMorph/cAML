@@ -21,31 +21,47 @@ class Concept(Supracontext):
         self.candidate_parent: Concept|None = None
 
     def get_extent(self):
+        """Return data of extent of this concept"""
         return self.extent.get_data()
 
     def get_supra(self):
+        """Return extent of this concept"""
         return self.extent
 
     def add_to_extent(self, new_sub: Subcontext):
-        """Add the given subcontext to the extent of this concept."""
+        """Add the given subcontext to the extent of this concept.
+
+        :param new_sub: subcontext to add to extent
+        """
         self.extent.add(new_sub)
 
     def get_intent(self) -> Label:
+        """Return intent of this concept"""
         return self.intent
 
     def get_parents(self) -> frozenset:
+        """Get parents of this concept"""
         return frozenset(self.parents)
 
     def add_parent(self, new_parent):
+        """Add the given parent to this concept
+
+        :param new_parent: new parent to add
+        """
         self.parents.add(new_parent)
 
     def remove_parent(self, old_parent):
+        """Remove the given parent from this concept
+
+        :param old_parent: old parent to remove
+        """
         self.parents.remove(old_parent)
 
     def __str__(self):
         return f"{self.intent}({self.extent})->[{self.parents}]"
 
     def copy(self):
+        """Return a copy of this concept"""
         new_node = Concept(self.intent, self.extent.copy())
         new_node.parents = self.parents.copy()
         return new_node

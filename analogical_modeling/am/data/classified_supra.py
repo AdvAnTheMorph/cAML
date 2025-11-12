@@ -51,13 +51,8 @@ class ClassifiedSupra(Supracontext):
                 self.add(sub)
             self.supra.set_count(count)
 
-    def classified_supra(self, data: set, count: int):
-        self.supra = BasicSupra()
-        for sub in data:
-            self.add(sub)
-        self.supra.set_count(count)
-
     def add(self, other: Subcontext):
+        """Add a subcontext to this supracontext."""
         if self.supra.is_empty():
             self.outcome = other.get_outcome()
         elif not self.is_heterogeneous() and self.would_be_hetero(other):
@@ -87,9 +82,11 @@ class ClassifiedSupra(Supracontext):
 
     def would_be_hetero(self, other) -> bool:
         """
-        Test if adding a subcontext would cause this supracontext to become heterogeneous.
+        Test if adding a subcontext would cause this supracontext to become
+        heterogeneous.
         :param other: subcontext to hypothetically add
-        :return: True if adding the given subcontext would cause this supracontext to become heterogeneous.
+        :return: True if adding the given subcontext would cause this
+        supracontext to become heterogeneous.
         """
         # Heterogeneous if:
         # - there are subcontexts with different outcomes

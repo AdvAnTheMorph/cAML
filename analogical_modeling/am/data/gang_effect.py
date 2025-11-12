@@ -26,7 +26,9 @@ class GangEffect:
             key = i.string_value(i.class_index)
             self.class_to_instances[key].add(i)
         # Maps each outcome to the total pointers for all exemplars supporting that outcome
-        self.class_to_pointers: dict[str, int] = {key: sum(exemplar_pointers[i] for i in instances) for key, instances in self.class_to_instances.items()}
+        self.class_to_pointers: dict[str, int] = {
+            key: sum(exemplar_pointers[i] for i in instances)
+            for key, instances in self.class_to_instances.items()
+        }
         # Total pointers for all exemplars in the subcontext
         self.total_pointers = sum(self.class_to_pointers.values())
-

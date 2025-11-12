@@ -59,7 +59,8 @@ class SubcontextList:
     def get_ignore_full_matches(self) -> bool:
         """
 
-        :return: True if instances with exact same attribute values as the test instance are removed from the list.
+        :return: True if instances with exact same attribute values as the
+        test instance are removed from the list.
         """
         return self.ignore_full_matches
 
@@ -68,7 +69,8 @@ class SubcontextList:
         if self.ignore_full_matches and label.all_matching():
             return
         if not label in self.label_to_subcontext:
-            self.label_to_subcontext[label] = Subcontext(label, self.labeler.get_context_string(label))
+            self.label_to_subcontext[label] = Subcontext(label,
+                                                         self.labeler.get_context_string(label))
         self.label_to_subcontext[label].add(exemplar)
         self.considered_exemplar_count += 1
 
@@ -118,7 +120,8 @@ class SubcontextList:
     def get_considered_exemplar_count(self) -> int:
         """
 
-        :return: The number of exemplars considered accepted into the list, e.g. added and not ignored
+        :return: The number of exemplars considered accepted into the list,
+        e.g. added and not ignored
         """
         return self.considered_exemplar_count
 
