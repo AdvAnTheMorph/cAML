@@ -152,7 +152,7 @@ class Dataset:
         self.ignored = ignore
 
     def __getitem__(self, idx) -> Instance:
-        return Instance(self.data.iloc[idx], self.class_column_name(), self.ignored, idx)
+        return Instance(self.data.iloc[idx], self.class_column_name(), self.ignored, self.data.index[idx])  # keep index
 
     def __iter__(self):
         for idx, el in self.data.iterrows():
