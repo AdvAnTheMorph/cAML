@@ -1,11 +1,4 @@
-"""weka.classifiers.lazy.AM.lattice
-
- * This class is a decorator which wraps a {@link Supracontext} and adds the
- * functionality of a linked node used in certain lattice-filling algorithms. An
- * index is also provided for use in determining when the node was created.
- *
- * @param <T> The implementation of Supracontext to be stored in this node.
-"""
+"""weka.classifiers.lazy.AM.lattice"""
 
 from typing import TypeVar
 
@@ -17,6 +10,11 @@ T = TypeVar("T")
 
 
 class LinkedLatticeNode(Supracontext):
+    """
+    This class is a decorator which wraps a Supracontext and adds the
+    functionality of a linked node used in certain lattice-filling algorithms.
+    An index is also provided for use in determining when the node was created.
+    """
     def __init__(self, supra: T, ind: int|None = None):
         """Create a new node containing the given supracontext. The index is set to
            -1.
@@ -89,6 +87,7 @@ class LinkedLatticeNode(Supracontext):
         self.supra.set_count(self.supra.get_count() - 1)
 
     def get_supracontext(self) -> T:
+        """Return supracontext"""
         return self.supra
 
     def copy(self) -> Supracontext:

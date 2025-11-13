@@ -18,7 +18,6 @@ class LatticeFactory(ABC):
 
         :return: Lattice implementation
         """
-        pass
 
 
 class CardinalityBasedLatticeFactory(LatticeFactory):
@@ -34,9 +33,10 @@ class CardinalityBasedLatticeFactory(LatticeFactory):
             self.random_provider = random_provider
 
     def create_lattice(self) -> Lattice:
+        """Create lattice based on cardinality."""
         if self.cardinality >= 50:
             return JohnsenJohanssonLattice(self.random_provider)
-        elif self.num_partitions > 1:
+        if self.num_partitions > 1:
             # TODO: is it weird that the labeler determines the lattice implementation? Choosing the
             # number of partitions should not be the labeler's responsibility
             return DistributedLattice()

@@ -16,7 +16,6 @@
 
 import unittest
 
-from analogical_modeling import utils
 from analogical_modeling.aml import AnalogicalModeling
 from analogical_modeling.tests.am import test_utils
 

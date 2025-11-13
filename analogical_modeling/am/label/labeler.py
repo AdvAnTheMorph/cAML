@@ -1,14 +1,4 @@
-"""weka.classifiers.lazy.AM.label
-
-Analogical Modeling uses labels composed of boolean vectors in order to group
-instances into subcontexts and subcontexts in supracontexts. Training set
-instances are assigned labels by comparing them with the instance to be
-classified and encoding matched attributes and mismatched attributes in a
-boolean vector.
-
-This class is used to assign context labels to training instances by
-comparison with the instance being classified.
-"""
+"""weka.classifiers.lazy.AM.label"""
 
 from math import ceil, floor
 
@@ -22,11 +12,21 @@ PARTITION_SIZE = 5
 
 
 class Labeler:
+    """
+    Analogical Modeling uses labels composed of boolean vectors in order to
+    group instances into subcontexts and subcontexts in supracontexts.
+    Training set instances are assigned labels by comparing them with the
+    instance to be classified and encoding matched attributes and mismatched
+    attributes in a boolean vector.
+
+    This class is used to assign context labels to training instances by
+    comparison with the instance being classified."""
     def __init__(self, test: Instance, ignore_unknowns: bool, mdc: MissingDataCompare):
         """
 
         :param test: Instance being classified
-        :param ignore_unknowns: True if attributes with undefined values in the test item should be ignored; False if not.
+        :param ignore_unknowns: True if attributes with undefined values in the
+        test item should be ignored; False if not.
         :param mdc: Specifies how to compare missing attributes
         """
         self.mdc = mdc
@@ -47,7 +47,8 @@ class Labeler:
     def get_cardinality(self):
         """
 
-        :return: The cardinality of the generated labels, or how many instance attributes are considered during labeling.
+        :return: The cardinality of the generated labels, or how many instance
+        attributes are considered during labeling.
         """
         return self.test_instance.num_attributes() - len(self.ignore_set) - 1
 
@@ -61,14 +62,16 @@ class Labeler:
         """
         cardinality = 0
         for i in range(test_instance.num_attributes()):
-            if i != test_instance.class_index and not (test_instance.is_missing(i) and ignore_unknowns):
+            if (i != test_instance.class_index
+                    and not (test_instance.is_missing(i) and ignore_unknowns)):
                 cardinality += 1
         return cardinality
 
     def get_ignore_unknowns(self):
         """
 
-        :return: True if attributes with undefined values in the test item are ignored during labeling; False if not.
+        :return: True if attributes with undefined values in the test item are
+        ignored during labeling; False if not.
         """
         return self.ignore_unknowns
 
@@ -103,12 +106,13 @@ class Labeler:
         test instance.
 
         :param data: Instance to be labeled
-        :return: the label for the context that the instance belongs to. The cardinality of the label will be the same as
-        the test and data items. At any given index i, label.matches(i) will return True if
-        that feature is the same in the test and data instances.
-        :raises: ValueError if the test and data instances are not from the same data set.
+        :return: the label for the context that the instance belongs to. The
+        cardinality of the label will be the same as the test and data items.
+        At any given index i, label.matches(i) will return True if that feature
+        is the same in the test and data instances.
+        :raises: ValueError if the test and data instances are not from the same
+        data set.
         """
-        # FIXME: implement
         # if not data.equal_headers(self.get_test_instance()):
         #     raise ValueError("Input instance is not compatible with the test instance")
 
@@ -135,16 +139,18 @@ class Labeler:
 
     def get_context_string(self, label: Label):
         """
-        Returns a string representing the context. If the input test instance attributes are "A C D Z R",
-	    and the label is 00101, then the return string will be "A C * Z *".
+        Returns a string representing the context. If the input test instance
+        attributes are "A C D Z R", and the label is 00101, then the return
+        string will be "A C * Z *".
         """
         context_list = self.get_context_list(label, "*")
         return " ".join(map(str, context_list))
 
     def get_context_list(self, label: Label, mismatch_string: str) -> list[str]:
         """
-        Returns a list representing the context. If the input test instance attributes are "A C D Z R",
-        the label is 00101, and the mismatch_string is "*", then the return list
+        Returns a list representing the context. If the input test instance
+        attributes are "A C D Z R", the label is 00101, and the mismatch_string
+        is "*", then the return list
         will be "A", "C", "*", "Z", "*".
         """
         context_bit_string = str(label)
@@ -236,18 +242,23 @@ class Labeler:
         </pre>
 
         :param partition_index:  index of the partition to return
-        :return: a new label representing a portion of the attributes represented by the input label.
-        :raises: ValueError if the partitionIndex is greater than num_partitions() or less than zero.
-        :raises: ValueError if the input label is not compatible with this labeler.
+        :return: a new label representing a portion of the attributes
+        represented by the input label.
+        :raises: ValueError if the partitionIndex is greater than
+        num_partitions() or less than zero.
+        :raises: ValueError if the input label is not compatible with this
+        labeler.
         """
         if partition_index > self.num_partitions() or partition_index < 0:
             raise ValueError(f"Illegal partition index: {partition_index}")
         if label.get_cardinality() != self.get_cardinality():
             raise ValueError(
-                f"Label cardinality is {label.get_cardinality()}, but labeler cardinality is {self.get_cardinality()}")
+                f"Label cardinality is {label.get_cardinality()}, but labeler "
+                f"cardinality is {self.get_cardinality()}")
         if not isinstance(label, Label):
             raise ValueError(
-                f"This labeler can only handle Labels; input label was an instance of {label.__class__.__name__}")
+                f"This labeler can only handle Labels; input label was an "
+                f"instance of {label.__class__.__name__}")
 
         # create and cache the masks if they have not be created yet
         return self.partitioners[partition_index].extract(label)
@@ -309,7 +320,7 @@ class Partition:
 
 
 class Partitioner:
-    """ class for storing label partitions"""
+    """class for storing label partitions"""
     def __init__(self, s: Partition):
         self.start_index = s.get_start_index()
         self.cardinality = s.get_cardinality()
@@ -324,4 +335,3 @@ class Partitioner:
 
     def __str__(self):
         return f"{self.start_index},{self.cardinality}"
-

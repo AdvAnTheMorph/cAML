@@ -20,6 +20,7 @@ from analogical_modeling.utils import Instance
 
 
 class MissingDataCompare(Enum):
+    """Enum specifying missing data comparison."""
     MATCH = ("match", "Consider the missing attribute value to match anything")
     MISMATCH = ("mismatch", "Consider the missing attribute value to be a mismatch")
     VARIABLE = ("variable",
@@ -30,11 +31,15 @@ class MissingDataCompare(Enum):
     def __init__(self, option_string: str, description: str):
         """
 
-        :param option_string: The string required to choose this comparison strategy from the command line
-        :param description: A description of the comparison strategy for the given value
+        :param option_string: The string required to choose this comparison
+        strategy from the command line
+        :param description: A description of the comparison strategy for the
+        given value
         """
-        self.option_string = option_string  # string used on command line to indicate the use of this strategy
-        self.description = description  # string which describes comparison strategy for a given entry
+        # string used on command line to indicate the use of this strategy
+        self.option_string = option_string
+        # string which describes comparison strategy for a given entry
+        self.description = description
 
     def get_option_string(self) -> str:
         """
@@ -57,14 +62,13 @@ class MissingDataCompare(Enum):
         :param i1: First instance
         :param i2: Second instance
         :param idx: Index of attribute to be compared between the two instances
-        :return: True if the attributes match, False if they do not; the matching mechanism depends on the chosen
-        algorithm.
+        :return: True if the attributes match, False if they do not; the
+        matching mechanism depends on the chosen algorithm.
         """
         if self is self.MATCH:
             return True  # matches anything
-        elif self is self.MISMATCH:
+        if self is self.MISMATCH:
             return False  # mismatch
-        elif self is self.VARIABLE:
+        if self is self.VARIABLE:
             return i1.is_missing(idx) and i2.is_missing(idx)
-        else:
-            raise NotImplementedError(f"Unknown MissingDataCompare: {self}")
+        raise NotImplementedError(f"Unknown MissingDataCompare: {self}")

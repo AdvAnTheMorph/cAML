@@ -7,6 +7,7 @@ from analogical_modeling.am.data.supracontext import Supracontext
 
 
 class Lattice(ABC):
+    """Abstract base class for lattices."""
     @abstractmethod
     def fill(self, sub_list: SubcontextList):
         """Fill the lattice with given subcontexts. This is meant to be done
@@ -14,7 +15,6 @@ class Lattice(ABC):
 
         :raises: ValueError if the lattice was already filled
         """
-        pass
 
     @abstractmethod
     def get_supracontexts(self) -> set[Supracontext]:
@@ -24,4 +24,3 @@ class Lattice(ABC):
         supracontextual lattice. From this, you can
         compute the analogical set.
         """
-        pass

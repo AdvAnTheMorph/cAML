@@ -56,7 +56,8 @@ class HeterogeneousLattice(Lattice):
         Initializes Supracontextual lattice to a 2^n length array of
         Supracontexts, as well as the empty and the heterogeneous supracontexts.
 
-        :param partition_index: which label partition to use in assigning subcontexts to supracontexts
+        :param partition_index: which label partition to use in assigning
+        subcontexts to supracontexts
         """
         self.partition_index: int = partition_index
         # Lattice is a 2^n array of Supracontexts
@@ -97,7 +98,7 @@ class HeterogeneousLattice(Lattice):
         """Add the given subcontext to the supracontext with the given label"""
         # the default value is the empty supracontext (leave null until now to
         # save time/space)
-        if label not in self.lattice.keys():
+        if label not in self.lattice:
             self.lattice[label] = self.empty_supracontext
 
         # if the following supracontext matches the current index, just repoint
@@ -136,8 +137,8 @@ class HeterogeneousLattice(Lattice):
     def get_supracontexts(self) -> set[Supracontext]:
         """
 
-        :return: The list of supracontexts that were created by filling the supracontextual lattice. From this, you can
-                 compute the analogical set.
+        :return: The list of supracontexts that were created by filling the
+        supracontextual lattice. From this, you can compute the analogical set.
         """
         sup_list = set()
         supra = self.empty_supracontext.get_next()
@@ -150,7 +151,8 @@ class HeterogeneousLattice(Lattice):
     def supra_list_to_string(self) -> str:
         """
 
-        :return: A string representation of the list of Supracontexts created when the Lattice was filled
+        :return: A string representation of the list of Supracontexts created
+        when the Lattice was filled
         """
         supra = self.empty_supracontext.get_next()
         if supra == self.empty_supracontext:

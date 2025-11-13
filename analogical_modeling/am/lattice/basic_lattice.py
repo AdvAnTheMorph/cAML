@@ -19,7 +19,6 @@ from analogical_modeling.am import am_utils
 from analogical_modeling.am.data.classified_supra import ClassifiedSupra
 from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.subcontext_list import SubcontextList
-from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.lattice.linked_lattice_node import LinkedLatticeNode
 
@@ -87,6 +86,7 @@ class BasicLattice(Lattice):
         # save time/space)
         if label not in self.lattice:
             self.lattice[label] = self.empty_supracontext
+
         # if the Supracontext is heterogeneous, ignore it
         if self.lattice.get(label) is self.hetero_supra:  # Java == corresponds to Python is
             return
@@ -94,7 +94,7 @@ class BasicLattice(Lattice):
         # if the following supracontext matches the current index, just
         # re-point to that one; this is a supracontext that was made in
         # the final else statement below this one.
-        elif self.lattice.get(label).get_next().get_index() == self.index:
+        if self.lattice.get(label).get_next().get_index() == self.index:
             # assert self.lattice.get(label).get_next().get_data().contains_all(self.lattice.get(label).get_data())
             # TODO: assert (lattice.get(label).getNext().getData().containsAll(lattice.get(label).getData()));
             # don't decrement count on emptySupracontext!
@@ -102,14 +102,12 @@ class BasicLattice(Lattice):
                 self.lattice.get(label).decrement_count()
             self.lattice[label] = self.lattice.get(label).get_next()
             self.lattice[label].increment_count()
-
         # we now know that we will have to make a new Supracontext to contain
         # this subcontext; don't bother making heterogeneous supracontexts
         elif self.lattice.get(label).get_supracontext().would_be_hetero(sub):
             self.lattice.get(label).decrement_count()
             self.lattice[label] = self.hetero_supra
             return
-
         # otherwise make a new Supracontext and add it
         else:
             # don't decrement the count for the emptySupracontext!
@@ -138,7 +136,10 @@ class BasicLattice(Lattice):
     # Below methods are for private debugging and asserting
     def dump_lattice(self):
         # useful for private debugging on occasion
-        return am_utils.LINE_SEPARATOR.join([f"{k}:[hetero]" if v is self.hetero_supra else f"{k}:{v}" for k, v in self.lattice.items()])
+        return am_utils.LINE_SEPARATOR.join([
+            f"{k}:[hetero]" if v is self.hetero_supra else f"{k}:{v}"
+            for k, v in self.lattice.items()
+        ])
 
     def no_zero_supras(self):
         for supra in self.get_supracontexts():

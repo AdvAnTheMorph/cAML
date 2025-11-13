@@ -21,7 +21,8 @@ class CanonicalizingSet:
     def get(self, t):
         """
 
-        :return: None if t is not contained in the set; otherwise the object contained in the set for which
+        :return: None if t is not contained in the set; otherwise the object
+        contained in the set for which
 	    t == theObject is true.
         """
         return self.__backing_map.get(t)

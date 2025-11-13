@@ -44,11 +44,13 @@ class DistributedLattice(Lattice):
 
     def fill(self, sub_list: SubcontextList):
         """
-        The number of sub-lattices is determined via Labeler.num_partitions() sub_list.get_labeler().num_partitions().
+        The number of sub-lattices is determined via Labeler.num_partitions()
+        sub_list.get_labeler().num_partitions().
 
         :param sub_list: list of Subcontexts to add to the lattice
         :raises: ExecutionException If execution is rejected for some reason,
-        :raises: InterruptedException If any thread is interrupted for any reason (user presses ctrl-C, etc.)
+        :raises: InterruptedException If any thread is interrupted for any
+        reason (user presses ctrl-C, etc.)
         """
         if self.filled:
             raise ValueError("Lattice is already filled and cannot be filled again.")
@@ -114,7 +116,8 @@ class DistributedLattice(Lattice):
         # Build final CanonicalizingSet (create appropriate object per intersection)
         final_set = CanonicalizingSet()
         # choose product constructor type to create the right object for each key
-        is_final = (supra_product_constructor is FinalizingProduct) or isinstance(supra_product_constructor, FinalizingProduct)
+        is_final = ((supra_product_constructor is FinalizingProduct)
+                    or isinstance(supra_product_constructor, FinalizingProduct))
         for inter_fs, total_count in accum.items():
             # create minimal supracontext object depending on product type
             if is_final:
@@ -148,7 +151,8 @@ class DistributedLattice(Lattice):
         results = []
 
         with ThreadPoolExecutor() as executor:
-            futures = [executor.submit(supra_product_constructor(), supra, supras2) for supra in supras1]
+            futures = [executor.submit(supra_product_constructor(), supra, supras2)
+                       for supra in supras1]
             for future in as_completed(futures):
                 results.append(future.result())
 
@@ -157,8 +161,7 @@ class DistributedLattice(Lattice):
             for r in results[1:]:
                 combined = self.remove_duplicate_results(combined, r)
             return combined
-        else:
-            return CanonicalizingSet.empty_set()
+        return CanonicalizingSet.empty_set()
 
     @staticmethod
     def remove_duplicate_results(supras1: CanonicalizingSet, supras2: CanonicalizingSet):
@@ -237,8 +240,8 @@ class FinalizingProduct:
 
         :param supra1: first partial supracontext to combine
         :param supra2: second partial supracontext to combine
-        :return: a combined supracontext, or None if supra1 and supra2 had no data in common or if the new
-        supracontext is heterogeneous
+        :return: a combined supracontext, or None if supra1 and supra2 had no
+        data in common or if the new supracontext is heterogeneous
         """
         if len(supra1.get_data()) > len(supra2.get_data()):
             larger = supra1.get_data()

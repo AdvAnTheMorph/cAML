@@ -5,8 +5,7 @@ from typing import Iterator, Union
 
 
 class Label:
-    """This Label implementations sores match and mismatch data in a
-    BitSet, so there is no limit on the cardinality."""
+    """This Label implementations sores match and mismatch data in a BitSet."""
     def __init__(self, l: Union[set,'Label'], c: int|None = None):
         """Create a new label by storing match/mismatch information in the given
         bitset.
@@ -25,32 +24,52 @@ class Label:
         self.__hash_code = 37 * self.__card + hash(tuple(sorted(self.__label_bits)))
 
     def get_cardinality(self) -> int:
+        """Return label cardinality"""
         return self.__card
 
     def get_label_bits(self) -> set[int]:
+        """Return label bits"""
         return self.__label_bits
 
     def matches(self, index: int) -> bool:
+        """Determine if the given index is marked as a match or a mismatch.
+
+        :param index: index of the attribute being represented
+        """
         if index > self.get_cardinality() - 1 or index < 0:
             raise ValueError(f"Illegal index: {index}")
         return index not in self.__label_bits
 
     def num_matches(self) -> int:
+        """Return the total number of matches marked in this label."""
         return self.get_cardinality() - len(self.__label_bits)
 
     def intersect(self, other_label: 'Label') -> 'Label':
+        """Create a new label for which each location is marked as a match if
+        both this label and otherLabel are marked match, otherwise mismatch.
+        In other words, keep all mismatches from both labels.
+
+        :param other_label: the label to intersect with this one
+        """
         if not isinstance(other_label, Label):
             raise ValueError("BitSetLabel can only be intersected with other BitSetLabel")
-        bits = self.__label_bits.union(other_label.__label_bits)
+        bits = self.__label_bits.union(other_label.get_label_bits())
         return Label(bits, self.get_cardinality())
 
     def union(self, other: 'Label') -> 'Label':
+        """Create a new label for which each location is marked as a match if
+        either this label or other is marked match, otherwise mismatch. In
+        other words, keep all matches from both labels.
+
+        :param other: Other label
+        """
         if not isinstance(other, Label):
             raise ValueError("BitSetLabel can only be unioned with other BitSetLabel")
-        bits = self.__label_bits.intersection(other.__label_bits)
+        bits = self.__label_bits.intersection(other.get_label_bits())
         return Label(bits, self.get_cardinality())
 
     def all_matching(self) -> bool:
+        """Check whether all attributes match"""
         return len(self.__label_bits) == 0
 
     def __repr__(self):
@@ -70,29 +89,47 @@ class Label:
             return False
         if not isinstance(other, Label):
             return False
-        return other.get_cardinality() == self.get_cardinality() and other.get_label_bits() == self.get_label_bits()
+        return (other.get_cardinality() == self.get_cardinality()
+                and other.get_label_bits() == self.get_label_bits())
 
     def __hash__(self):
         return self.__hash_code
 
     def descendant_iterator(self) -> Iterator['Label']:
+        """Create iterator of all descendants of the label.
+
+        The "descendants" of a label are the set of labels with the same
+        "mismatch" entries, but with one or more of the "match" entries changed
+        into a "mismatch" entry. For example, the children of
+        {match, mismatch, mismatch, match} are:
+        - {mismatch, mismatch, mismatch, match}
+        - {match, mismatch, mismatch, mismatch}
+        - {mismatch, mismatch, mismatch, mismatch}
+        """
         return SubsetIterator(self)
 
-    def is_descendant_of(self, possible_descendant: 'Label') -> bool:
-        if not isinstance(possible_descendant, Label):
+    def is_descendant_of(self, possible_ancestor: 'Label') -> bool:
+        """Determine if this label is the "descendant" of possibleAncestor.
+
+        This label is a descendant of the other label if every mismatching
+        entry in the other label is also a mismatching entry in this label.
+        Any label is also a descendant of itself.
+
+        :param possible_ancestor possible label ancestor"""
+        if not isinstance(possible_ancestor, Label):
             return False
         # boolean lattice ancestor/descendants yield the descendant when ORed;
         # this label needs to have all of the same ones (and optionally more
         # ones)
-        for i in possible_descendant.__label_bits:
+        for i in possible_ancestor.get_label_bits():
             if i >= self.__card or i not in self.__label_bits:
                 return False
         return True
 
 
 class SubsetIterator:
+    """Construct an iterator over all subsets of this label"""
     def __init__(self, bitset_label: Label):
-        """Construct an iterator over all subsets of this label"""
         self.card = bitset_label.get_cardinality()
         self.current = set(bitset_label.get_label_bits())  # copy
         # the indices of the 0 entries
@@ -138,6 +175,3 @@ class SubsetIterator:
         if not self.bin_counter:
             self.has_next = False
         return Label(self.current.copy(), self.card)
-
-    def remove(self):
-        raise NotImplementedError("remove() is not supported")

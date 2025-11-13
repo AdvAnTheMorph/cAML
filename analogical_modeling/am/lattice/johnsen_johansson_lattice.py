@@ -88,8 +88,7 @@ def binomial_coefficient(p: Pair):
     if k == 0:
         return 0
     # (n C k) and (n C (n-k)) are the same, so pick the smaller as k:
-    if k > n - k:
-        k = n - k
+    k = min(k, n-k)
     return comb(n, k)
 
 
@@ -104,7 +103,9 @@ class SupraApproximator():
     def __call__(self) -> Supracontext:
         return self.approximate_supra(self.p, self.outcome_sub_map)
 
-    def approximate_supra(self, p: Subcontext, outcome_sub_map: dict[float, list[Label]]) -> Supracontext:
+    def approximate_supra(self, p: Subcontext,
+                          outcome_sub_map: dict[float, list[Label]]) -> Supracontext:
+        """Approximate supracontext"""
         p_label = p.get_label()
         # H(p) is p intersected with labels of any subcontexts with a
         # different class, or all other sub labels if p is non-deterministic
@@ -143,6 +144,7 @@ class SupraApproximator():
         return approximated_supra
 
     def estimate_hetero_ratio(self, hp: list[Label], hp_union: Label, num_experiments: int):
+        """Estimate heterogeneous ratio"""
         hetero_count = 0
         cache: dict[Label, bool] = {}
 
@@ -153,7 +155,8 @@ class SupraApproximator():
             for l in hp:
                 # cannot use random.random() in parallel code
                 if self.jj_lattice.random_provider().random() > 0.5:
-                    # further union operations would do nothing since we are supposed to compare against hpUnion
+                    # further union operations would do nothing since we are
+                    # supposed to compare against hpUnion
                     unioned = xs.union(l)
                     if unioned == hp_union:
                         break
@@ -177,10 +180,12 @@ class SupraApproximator():
 
 
 class JohnsenJohanssonLattice(Lattice):
+    """Lattice for high cardinality data"""
     def __init__(self, random_provider: Callable[[], random.Random]):
         """
 
-        :param random_provider: Provides randomness used for performing Monte Carlo simulation in child threads
+        :param random_provider: Provides randomness used for performing Monte
+        Carlo simulation in child threads
         """
         # // TODO: should run until convergence, not a constant number of times
         self.supras = set()
@@ -204,8 +209,9 @@ class JohnsenJohanssonLattice(Lattice):
 
         # Estimate the counts for each supracontext in parallel
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(SupraApproximator(self, p, outcome_sub_map, self.random_provider())) for p in sub_list]
-            # futures = [executor.submit(self.SupraApproximator(p, outcome_sub_map, self.random_provider()))() for p in sub_list]
+            futures = [executor.submit(
+                SupraApproximator(self, p, outcome_sub_map, self.random_provider()))
+                for p in sub_list]
 
             for future in concurrent.futures.as_completed(futures):
                 self.supras.add(future.result())
