@@ -44,7 +44,7 @@ class ClassifiedSupra(Supracontext):
             raise ValueError("data must not be None")
         self.supra = BasicSupra()
         # class attribute value, or nondeterministic, heterogeneous, or undetermined
-        self.outcome: float = float("nan")
+        self.outcome: float|str = am_utils.UNKNOWN
 
         if data is not None:
             for sub in data:

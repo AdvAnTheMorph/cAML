@@ -1,12 +1,14 @@
 """weka.classifiers.lazy.AM.data"""
 
+from typing import Optional
+
 from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.label.label import Label
 
 
 class BasicSupra(Supracontext):
     """Basic implementation of Supracontext with no extra features."""
-    def __init__(self, data: set = None, count: int = None):
+    def __init__(self, data: Optional[set] = None, count: Optional[int] = None):
         """Creates a new supracontext with the given parameters as the contents.
         If no args given: create a new supracontext with an empty data set.
 

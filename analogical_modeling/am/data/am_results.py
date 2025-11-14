@@ -124,7 +124,7 @@ class AMResults:
         :return: A mapping of each exemplar to the number of pointers pointing
         to it.
         """
-        pointers = defaultdict(int)
+        pointers: dict[Instance, int] = defaultdict(int)
 
         # number of pointers in a supracontext,
         # that is the number of exemplars in the whole thing

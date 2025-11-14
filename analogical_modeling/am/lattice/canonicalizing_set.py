@@ -12,10 +12,10 @@ class CanonicalizingSet:
 
     def __init__(self):
         # TODO: private static final CanonicalizingSet EMPTY_SET = new CanonicalizingSet<>(Collections.EMPTY_MAP);
-        self.__backing_map: dict = {}
+        self.__backing_map = {}
 
     @staticmethod
-    def empty_set():
+    def empty_set() -> 'CanonicalizingSet':
         return CanonicalizingSet()  # backing_mapp defaults to an empty dict
 
     def get(self, t):

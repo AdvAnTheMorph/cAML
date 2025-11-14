@@ -54,7 +54,7 @@ class Subcontext:
             self.outcome = other.class_value()
         self.data.add(other)
 
-    def get_outcome(self) -> str:
+    def get_outcome(self) -> str|int:
         return self.outcome
 
     def get_label(self) -> Label:

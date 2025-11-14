@@ -195,6 +195,7 @@ class AnalogicalModeling:
         # return SelectedTag(self.mdc.ordinal(), TAGS_MISSING)
 
     def set_missing_data_compare(self, new_mode: str):
+        """Return method to deal with missing data"""
         match new_mode:
             case "match":
                 self.mdc = MissingDataCompare.MATCH
@@ -224,13 +225,21 @@ class AnalogicalModeling:
     def global_info():
         """Returns basic human-readable information about the classifier, including references."""
 
-        return f"Implements the Analogical Modeling algorithm, invented by Royal Skousen. " \
-               f"Analogical modeling is an instance-based algorithm designed to model human behavior. " \
-               f"Version {AMVersion().version}. For more information, see the following references:\n\n" \
+        return f"Implements the Analogical Modeling algorithm, invented by "\
+               f"Royal Skousen. Analogical modeling is an instance-based "\
+               f"algorithm designed to model human behavior. "\
+               f"Version {AMVersion().version}."
+               #f"For more information, see the following references:\n\n" \
                # f"{self.get_technical_information()}"  # TODO
 
     def get_options(self):
-        return f"Linear: {self.linear_count}, Remove test exemplars: {self.remove_test_exemplar}, Ignore unknown values: {self.ignore_unknowns}, Missing data: {self.mdc.option_string}\nDrop duplicates: {self.drop_duplicates}, Ignore columns: {self.ignore_columns or '--'}"
+        """Return options of the algorithm"""
+        return f"Linear: {self.linear_count}, "\
+               f"Remove test exemplars: {self.remove_test_exemplar}, "\
+               f"Ignore unknown values: {self.ignore_unknowns}, "\
+               f"Missing data: {self.mdc.option_string}\n"\
+               f"Drop duplicates: {self.drop_duplicates}, "\
+               f"Ignore columns: {self.ignore_columns or '--'}"
 
     def get_capabilities(self):
         """Analogical Modeling can handle only nominal class attributes. Missing
@@ -362,12 +371,6 @@ class AnalogicalModeling:
             return {self.training_instances[0].class_value(): 1.0}
 
         self.results = self.classify(instance)
-        # class_attribute = self.training_instances.data.columns[self.training_instances.class_index]
-        # class_probability = [0.0] * self.training_instances.num_classes()
-        # for k, v in self.results.get_class_likelihood().items():
-        #     class_probability[class_attribute.index(k)] = v  # classProbability[classAttribute.indexOfValue(entry.getKey())] = entry.getValue().doubleValue();
-
-        # return class_probability
         return self.results.get_class_likelihood()
 
     def get_results(self) -> AMResults:
@@ -437,7 +440,8 @@ class AnalogicalModeling:
         # information equal for all exemplars
         feats = results[0].get_classified_ex().real_data.keys()
         classes = list(instances.get_classes())
-        cls_header = [f"Class {i+1}" for i in range(len(classes))] + sum([[f"{cls}: pointers", f"{cls}: pct"] for cls in classes], [])
+        cls_header = ([f"Class {i+1}" for i in range(len(classes))] +
+                      sum([[f"{cls}: pointers", f"{cls}: pct"] for cls in classes], []))
         cls_header_gang = sum([[f"{cls}: pointers", f"{cls}: pct", f"{cls}: size"] for cls in classes], [])
         num_feats = instances.num_attributes() -1  # - class attribute
         ignore = self.ignore_unknowns
@@ -445,9 +449,19 @@ class AnalogicalModeling:
         ignore_given = self.remove_test_exemplar
         count_strategy = "linear" if self.linear_count else "quadratic"
 
-        gang_header = feats.tolist() + cls_header_gang + ["Gang pointers", "Gang pct", "Rank", "Size", "Total pointers", "Classified item index", "Classified item class"] + [f"Classified item {el}" for el in feats]
-        analog_header = feats.tolist() + ["Class", "Percentage", "Pointers", "Classified item index", "Classified item class"] + [f"Classified item {el}" for el in feats]
-        distr_header = ["Judgement", "Expected", "Predicted"] + feats.tolist() + cls_header + ["Train size", "Num feats", "Ignore unknown values", "Missing data compare", "Ignore given", "Count strategy", "Classified item index"]
+        gang_header = (feats.tolist() + cls_header_gang +
+                       ["Gang pointers", "Gang pct", "Rank", "Size", "Total pointers",
+                        "Classified item index", "Classified item class"] +
+                       [f"Classified item {el}" for el in feats])
+        analog_header = (feats.tolist() +
+                         ["Class", "Percentage", "Pointers", "Classified item index",
+                          "Classified item class"] +
+                         [f"Classified item {el}" for el in feats])
+        distr_header = (["Judgement", "Expected", "Predicted"] + feats.tolist() +
+                        cls_header +
+                        ["Train size", "Num feats", "Ignore unknown values",
+                         "Missing data compare", "Ignore given",
+                         "Count strategy", "Classified item index"])
 
         gangs = []
         analogs = []
@@ -458,7 +472,10 @@ class AnalogicalModeling:
             # gang effects
             effects = res.get_gang_effects()
             total_pointers = sum(effect.total_pointers for effect in effects)
-            pointers_rank = sorted(list(set([effect.total_pointers for effect in effects])), reverse=True)
+            pointers_rank = sorted(
+                list(set([effect.total_pointers for effect in effects])),
+                reverse=True
+            )
             for effect in effects:
                 effect_pointers = effect.total_pointers
                 rank = pointers_rank.index(effect_pointers) +1
@@ -564,19 +581,32 @@ class AnalogicalModeling:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-l", "--lexicon", help="csv containing the data", required=True)
-    parser.add_argument("-t", "--test", help="csv containing test data")
-    parser.add_argument("-o", "--output", help="output path", type=Path, required=True)
-    parser.add_argument("-d", "--drop_duplicates", action="store_true", help="Drop duplicated instances")
-    parser.add_argument("--ignore_columns", nargs="*", help="Columns to ignore", type=str, default=[])
+    parser.add_argument("-l", "--lexicon",
+                        help="csv containing the data", required=True)
+    parser.add_argument("-t", "--test",
+                        help="csv containing test data")
+    parser.add_argument("-o", "--output",
+                        help="output path", type=Path, required=True)
+    parser.add_argument("-d", "--drop_duplicates",
+                        action="store_true", help="Drop duplicated instances")
+    parser.add_argument("--ignore_columns", nargs="*",
+                        help="Columns to ignore", type=str, default=[])
     parser.add_argument("-L", "--linear", action="store_true")
-    parser.add_argument("-K", "--keep_test", action="store_false", help="Keep test exemplar in training set (default: False)")  # !keep_test = remove, which is default
-    parser.add_argument("-I", "--ignore_unknowns", action="store_true", help="Ignore attributes with unknown values in the test exemplar")
-    parser.add_argument("-D", "--debug", action="store_true", help="Run classifier in debug mode and may output additional info to the console")
-    parser.add_argument("-M", "--missing_data", choices=["match", "mismatch", "variable"], default="variable",
-                        help="Method of dealing with missing data. The options are variable, match or mismatch; 'variable' means to treat " \
-                             "missing data as a all one variable, 'match' means that missing data will be considered the same as whatever it is " \
-                             "compared with, and 'mismatch' means that missing data will always be unequal to whatever it is compared with. " \
+    parser.add_argument("-K", "--keep_test", action="store_false",
+                        help="Keep test exemplar in training set (default: False)")  # !keep_test = remove, which is default
+    parser.add_argument("-I", "--ignore_unknowns", action="store_true",
+                        help="Ignore attributes with unknown values in the test exemplar")
+    parser.add_argument("-D", "--debug", action="store_true",
+                        help="Run classifier in debug mode and may output additional info to the console")
+    parser.add_argument("-M", "--missing_data",
+                        choices=["match", "mismatch", "variable"],
+                        default="variable",
+                        help="Method of dealing with missing data. The options "
+                             "are variable, match or mismatch; 'variable' means to treat " \
+                             "missing data as a all one variable, 'match' means that " \
+                             "missing data will be considered the same as whatever it is " \
+                             "compared with, and 'mismatch' means that missing data will " \
+                             "always be unequal to whatever it is compared with. " \
                              "Default is 'variable'")
 
     args = parser.parse_args()

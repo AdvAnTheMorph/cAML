@@ -88,9 +88,9 @@ class Dataset:
 
         :param atts: if atts is None, call from_csv() to populate the dataset
         """
-        self.ignored = []
+        self.ignored: list[str] = []
         if atts is None:
-            self.data = None
+            self.data = pd.DataFrame()
             self.class_index = None
             return
         self.data = pd.DataFrame(atts)

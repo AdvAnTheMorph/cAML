@@ -28,7 +28,7 @@ class Supracontext(ABC):
         pass
 
     @abstractmethod
-    def get_data(self) -> set[Subcontext]:
+    def get_data(self) -> frozenset[Subcontext]:
         """
 
         :return: an unmodifiable view of the set of subcontexts contained in this supracontext.
