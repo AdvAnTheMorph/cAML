@@ -116,5 +116,5 @@ class Concept(Supracontext):
     def get_candidate_parent(self):
         return self.candidate_parent
 
-    def set_candidate_parent(self, candidate_parent):
+    def set_candidate_parent(self, candidate_parent: 'Concept'):
         self.candidate_parent = candidate_parent

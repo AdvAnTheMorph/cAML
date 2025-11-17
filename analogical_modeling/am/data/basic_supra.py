@@ -2,6 +2,7 @@
 
 from typing import Optional
 
+from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.label.label import Label
 
@@ -24,10 +25,15 @@ class BasicSupra(Supracontext):
         else:
             self.data = data
         # cached on first calculation
-        self.context: Label = None
+        self.context: Optional[Label] = None
 
-    def add(self, other): # other: Subcontext
-        # the value is cached when getContext is called, but is invalidated when new data is added
+    def add(self, other: Subcontext):
+        """Add a subcontext to this supracontext.
+
+        :param other: subcontext to add to the supracontext.
+        """
+        # the value is cached when get_context is called, but is invalidated
+        # when new data is added
         self.context = None
         self.data.add(other)
 

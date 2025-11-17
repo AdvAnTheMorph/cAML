@@ -10,8 +10,8 @@ class GangEffect:
     """
     Exemplars that seem less similar to the test item than those that seem
     more similar can still have a magnified effect if there are many of
-    them. This is known as the <em>gang effect</em>.
-    <p>
+    them. This is known as the gang effect.
+
     This class represents the total effect that exemplars in one subcontext have
     on the predicted outcome.
     """
@@ -19,8 +19,7 @@ class GangEffect:
     def __init__(self, sub: Subcontext, exemplar_pointers = dict[Instance, int]):
         self.subcontext = sub
         # Maps outcome to the exemplars supporting that outcome
-        # TODO: list or SortedSet would be better, but Instance is not comparable :(
-        # TODO: is it?
+        # TODO: list or SortedSet would be better
         self.class_to_instances: dict[str, set[Instance]] = defaultdict(set)
         for i in sub.get_exemplars():
             key = i.string_value(i.class_index)

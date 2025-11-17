@@ -65,6 +65,8 @@ class SubcontextList:
         return self.ignore_full_matches
 
     def add(self, exemplar: Instance):
+        """Add an exemplar
+        """
         label = self.labeler.label(exemplar)
         if self.ignore_full_matches and label.all_matching():
             return
@@ -84,9 +86,9 @@ class SubcontextList:
 
     def __str__(self) -> str:
         """
-         This method is not particularly speedy, since it sorts the contained
-         subcontexts by label. It is meant for test purposes only; do not rely on
-         exact output being the same in the future.
+        This method is not particularly speedy, since it sorts the contained
+        subcontexts by label. It is meant for test purposes only; do not rely
+        on exact output being the same in the future.
         """
         # sort the labels by hashcode so that output is consistent for testing
         # purposes
@@ -94,9 +96,9 @@ class SubcontextList:
         return ",".join([str(self.label_to_subcontext[label]) for label in sorted_labels])
 
     def __eq__(self, other):
-        """
-         Returns equals if both lists contain the same data in the same
-         subcontexts. Does not compare the Labeler object.
+        """Equal if both lists contain the same data in the same subcontexts.
+
+        Labeler object is not compared.
         """
         if self is other:
             return True
@@ -111,8 +113,7 @@ class SubcontextList:
 
         :return: An iterator which returns each of the contained subcontexts.
         """
-        for el in self.label_to_subcontext.values():
-            yield el
+        yield from self.label_to_subcontext.values()
 
     def __len__(self) -> int:
         return len(self.label_to_subcontext)

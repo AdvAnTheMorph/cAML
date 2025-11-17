@@ -15,6 +15,8 @@
  ****************************************************************************
 """
 
+from typing import Optional
+
 from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.basic_supra import BasicSupra
@@ -30,7 +32,7 @@ class ClassifiedSupra(Supracontext):
     lead to heterogeneity.
     """
 
-    def __init__(self, data: set|None = None, count: int|None = None):
+    def __init__(self, data: Optional[set] = None, count: Optional[int] = None):
         """Creates a supracontext with no data. The outcome will be
         am_utils.UNKNOWN until data is added.
 
@@ -43,7 +45,8 @@ class ClassifiedSupra(Supracontext):
         if data is None and count is not None:
             raise ValueError("data must not be None")
         self.supra = BasicSupra()
-        # class attribute value, or nondeterministic, heterogeneous, or undetermined
+        # class attribute value
+        # or nondeterministic, heterogeneous, or undetermined
         self.outcome: float|str = am_utils.UNKNOWN
 
         if data is not None:
@@ -52,21 +55,25 @@ class ClassifiedSupra(Supracontext):
             self.supra.set_count(count)
 
     def add(self, other: Subcontext):
-        """Add a subcontext to this supracontext."""
+        """Add a subcontext to this supracontext.
+
+        :param other: ubcontext to add to the supracontext.
+        """
         if self.supra.is_empty():
             self.outcome = other.get_outcome()
         elif not self.is_heterogeneous() and self.would_be_hetero(other):
             self.outcome = am_utils.HETEROGENEOUS
         self.supra.add(other)
 
-    def get_outcome(self):
-        """
-        Get the outcome of this supracontext. If all of the contained subcontexts
-        have the same outcome, then this value is returned. If there are no
-        subcontexts in this supracontext, {@link AMUtils#UNKNOWN} is returned. If
-        there are multiple subs with an outcome of
-        AMUtils.NONDETERMINISTIC or the subs with differing outcomes,
-        AMUtils.HETEROGENEOUS is returned.
+    def get_outcome(self) -> float|str:
+        """Get the outcome of this supracontext.
+
+        If all of the contained subcontexts have the same outcome, then this
+        value is returned. If there are no subcontexts in this supracontext,
+        am_utils.UNKNOWN is returned. If there are multiple subs with an outcome
+        of am_utils.NONDETERMINISTIC or the subs with differing outcomes,
+        am_utils.HETEROGENEOUS is returned.
+
         :return: outcome of this supracontext
         """
         return self.outcome
@@ -74,16 +81,17 @@ class ClassifiedSupra(Supracontext):
     def is_heterogeneous(self) -> bool:
         """
         Determine if the supracontext is heterogeneous, meaning that
-        get_outcome() returns AMUtils.HETEROGENEOUS.
+        get_outcome() returns am_utils.HETEROGENEOUS.
 
-        :return: True if the supracontext is heterogeneous, False if it is homogeneous.
+        :return: True if the supracontext is heterogeneous, False if it is
+        homogeneous.
         """
         return self.outcome == am_utils.HETEROGENEOUS
 
     def would_be_hetero(self, other) -> bool:
-        """
-        Test if adding a subcontext would cause this supracontext to become
+        """Test if adding a subcontext would cause this supracontext to become
         heterogeneous.
+
         :param other: subcontext to hypothetically add
         :return: True if adding the given subcontext would cause this
         supracontext to become heterogeneous.
@@ -98,6 +106,10 @@ class ClassifiedSupra(Supracontext):
         return other.get_outcome() == am_utils.NONDETERMINISTIC
 
     def copy(self):
+        """Return an exact, deep copy of the supracontext.
+
+        :return: a deep copy of this supracontext.
+        """
         new_supra = ClassifiedSupra()
         new_supra.supra = self.supra.copy()
         new_supra.outcome = self.outcome

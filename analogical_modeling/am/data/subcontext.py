@@ -21,13 +21,12 @@ from analogical_modeling.utils import Instance
 
 class Subcontext:
     """
-    Represents a subcontext, containing a list of Instances
-    which belong to it, along with their shared Label and common outcome.
+    Represents a subcontext, containing a list of Instances which belong to
+    it, along with their shared Label and common outcome.
     If the contained instances do not have the same outcome, then the outcome is
-    set to AMUtils.NONDETERMINISTIC.
+    set to am_utils.NONDETERMINISTIC.
     """
     SEED = 37
-
 
     def __init__(self, label: Label, display_label: str):
         """Initializes the subcontext by creating a list to hold the data
@@ -38,14 +37,14 @@ class Subcontext:
         self.label: Label = label
         self.display_label: str = display_label
         self.data: set[Instance] = set()
-        self.outcome: str|int = ""  # private double outcome
+        self.outcome: str|int = ""
         self.hash: int = -1
 
     def add(self, other):
-        """
-        Adds an exemplar e to the subcontext and sets the outcome accordingly. If
-        different outcomes are present in the contained exemplars, the outcome is
-        AMUtils.NONDETERMINISTIC
+        """Add an exemplar e to the subcontext and set the outcome accordingly.
+
+        If different outcomes are present in the contained exemplars, the
+        outcome is am_utils.NONDETERMINISTIC
         """
         if len(self.data) > 0:
             if other.class_value() != next(iter(self.data)).class_value():
@@ -55,17 +54,18 @@ class Subcontext:
         self.data.add(other)
 
     def get_outcome(self) -> str|int:
+        """Get the outcome of this subcontext."""
         return self.outcome
 
     def get_label(self) -> Label:
-        """Get binary label of of this subcontext"""
+        """Get binary label of this subcontext"""
         return self.label
 
     def get_display_label(self) -> str:
         """
         see Labeler.get_context_string(Label)
 
-        :return: User-friendly label string
+        :return: user-friendly label string
         """
         return self.display_label
 
@@ -107,4 +107,5 @@ class Subcontext:
         return f"({self.label}|{middle_part}|{'/'.join(map(str, self.data))})"
 
     def is_nondeterministic(self) -> bool:
+        """Check whether the outcome is nondeterministic."""
         return self.outcome == am_utils.NONDETERMINISTIC

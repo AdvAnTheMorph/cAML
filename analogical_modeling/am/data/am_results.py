@@ -49,10 +49,9 @@ class Judgement(Enum):
 
 
 class AMResults:
-    """The results of running AM
-
-    containing the analogical effects of the individual training instances
-    as well as the relevant supracontexts and overall class likelihoods."""
+    """The results of running AM containing the analogical effects of the
+    individual training instances as well as the relevant supracontexts and
+    overall class likelihoods."""
     def __init__(self, lattice: Lattice, sub_list: SubcontextList,
                  test_item: Instance, linear: bool, labeler: Labeler):
         """
@@ -169,14 +168,16 @@ class AMResults:
     def get_exemplar_effect_map(self) -> dict[Instance, float]:
         """
 
-        :return: A mapping between exemplars and their analogical effect (decimal percentage)
+        :return: A mapping between exemplars and their analogical effect
+        (decimal percentage)
         """
         return self.ex_effect_map
 
     def get_exemplar_pointers(self) -> dict[Instance, int]:
         """
 
-        :return: Mapping of exemplars in the analogical set to the number of pointers to it
+        :return: Mapping of exemplars in the analogical set to the number of
+        pointers to it
         """
         return self.ex_pointer_map
 
@@ -190,7 +191,8 @@ class AMResults:
     def get_class_pointers(self) -> dict[str, int]:
         """
 
-        :return: A mapping between a class value index the number of pointers pointing to it
+        :return: A mapping between a class value index the number of pointers
+        pointing to it
         """
         return self.class_pointer_map
 
@@ -232,15 +234,16 @@ class AMResults:
     def get_subcontexts(self) -> set[Subcontext]:
         """
 
-        :return: All subcontexts contained in all of the supracntexts of the analogical set.
+        :return: All subcontexts contained in all of the supracntexts of the
+        analogical set.
         """
         return {data for supra in self.get_supra_list() for data in supra.get_data()}
 
     def get_gang_effects(self) -> list[GangEffect]:
         """
 
-        :return: The gang effects, sorted by size of the effect and then alphabetically by the
-        subcontext display label
+        :return: The gang effects, sorted by size of the effect and then
+        alphabetically by the subcontext display label
         """
         effects = [GangEffect(sub, self.get_exemplar_pointers()) for sub in self.get_subcontexts()]
         return sorted(effects, key=lambda e: (-e.total_pointers, e.subcontext.get_display_label()))
@@ -248,7 +251,8 @@ class AMResults:
     def get_labeler(self) -> Labeler:
         """
 
-        :return: The Labeler object that was used to assign all of the contextual labels.
+        :return: The Labeler object that was used to assign all of the
+        contextual labels.
         """
         return self.labeler
 
