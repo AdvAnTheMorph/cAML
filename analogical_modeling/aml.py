@@ -59,6 +59,9 @@ class AnalogicalModeling:
         self.mdc = MissingDataCompare.VARIABLE
         self.random_provider: Random|None = None
 
+        # instances with a weight below this threshold will be ignored
+        self.threshold = None
+
         # The analogical set from the last call to distributionForInstance
         self.results: AMResults = None
 
@@ -140,6 +143,15 @@ class AnalogicalModeling:
 
     def set_ignore_columns(self, ignore_list: list[str]):
         self.ignore_columns = ignore_list
+
+    def set_threshold(self, threshold: float|None):
+        if threshold is None:
+            self.threshold = None
+            return
+        self.threshold = max(threshold, 0.0)  # no negative thresholds
+
+    def get_threshold(self) -> float|None:
+        return self.threshold
 
     def classify(self, test_item: Instance) -> AMResults:
         """
@@ -398,14 +410,18 @@ class AnalogicalModeling:
             return string + f"Training instances: {len(self.training_exemplars)}\n"
         return string
 
-    def run_classifier(self, csv: str, out_path: Path, test: str):
+    def run_classifier(self, csv: str, out_path: Path, test: str, weights: str):
         """runs the classifier instance with the given options.
 
         :param csv: lexicon
         :param out_path: where to save output files
         :param test: test data (use lexicon if not given)
+        :param weights: column name for weights in dataset, if given
         """
-        instances = Dataset().from_csv(csv)
+        instances = Dataset().from_csv(csv, weights)
+        if self.threshold is not None:
+            instances.filter_threshold(self.threshold)
+
         instances.set_ignored(self.ignore_columns)
         if self.drop_duplicates:
             instances.data.drop_duplicates(inplace=True)
@@ -424,7 +440,7 @@ class AnalogicalModeling:
 
         acc, conf_matrix = self.evaluate(instances, results)
         print(f"Accuracy: {round(acc * 100, 3)}%")
-        self.create_output_files(out_path, results, instances)
+        # self.create_output_files(out_path, results, instances)  # FIXME
         conf_matrix.plot()
         plt.show()
 
@@ -587,6 +603,10 @@ if __name__ == "__main__":
                         help="csv containing test data")
     parser.add_argument("-o", "--output",
                         help="output path", type=Path, required=True)
+    parser.add_argument("-w", "--weight_colum",
+                        help="name of column for weights")
+    parser.add_argument("-th", "--threshold", type=float,
+                        help="lower threshold for instance weights", default=None)
     parser.add_argument("-d", "--drop_duplicates",
                         action="store_true", help="Drop duplicated instances")
     parser.add_argument("--ignore_columns", nargs="*",
@@ -619,7 +639,8 @@ if __name__ == "__main__":
     am.set_missing_data_compare(args.missing_data)
     am.set_drop_duplicates(args.drop_duplicates)
     am.set_ignore_columns(args.ignore_columns)
-    am.run_classifier(args.lexicon, args.output.with_suffix(".csv"), args.test)
+    am.set_threshold(args.threshold)
+    am.run_classifier(args.lexicon, args.output.with_suffix(".csv"), args.test, args.weight_colum)
 
 
 # /**

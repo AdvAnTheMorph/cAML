@@ -33,11 +33,16 @@ Running `aml.py` will automatically create three output files:
 1. `<output>_gangs.csv`: gang effects
 2. `<output>_analogical_sets.csv`: analogical sets
 3. `<output>_distributions.csv`: distributions
+
+where `<output>` can be either a prefix (`my_data`) or a path to a directory followed by a prefix (`path/to/directory/my_data`)
 ```bash
 python3 aml.py -l <data.csv> -o <output>
 ```
+
 ### Additional options:
 - `-t` or `--test` `<test_file>` to use a separate document for testing (instead of predicting each instance in the lexicon)
+- `-w` or `--weight_column` `column_name` specifies a column for weights
+- `-th` or `--threshold` `value` will drop any instances with a weight below that threshold
 - `-d` or `--drop_duplicates`
   - any instance with the same features and the same class within the lexicon will be dropped
 - `--ignore_columns` to specify a list of columns to ignore (using their names)

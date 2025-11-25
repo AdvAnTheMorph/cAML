@@ -12,9 +12,9 @@ import pandas as pd
 
 class Instance(pd.Series):
     """Instance Representation"""
-    _metadata = ["class_index", "ignored", "real_data", "data_idx"]
+    _metadata = ["class_index", "ignored", "real_data", "data_idx", "weight"]
 
-    def __init__(self, data: pd.Series, class_column: str, ignore_list: list[str], idx: int):
+    def __init__(self, data: pd.Series, class_column: str, ignore_list: list[str], idx: int, weight: float):
         """
 
         :param data: Series containing values of the Instance
@@ -27,6 +27,7 @@ class Instance(pd.Series):
         self.class_index = self.keys().get_loc(class_column)
         self.real_data = data
         self.data_idx = idx
+        self.weight = weight
 
     def is_missing(self, idx: int) -> bool:
         """Check if value is missing
@@ -83,25 +84,47 @@ class Instance(pd.Series):
 
 class Dataset:
     """Dataset representation"""
-    def __init__(self, atts: list|None = None):
+    def __init__(self, atts: list|None = None, weights: str = ""):
         """
 
         :param atts: if atts is None, call from_csv() to populate the dataset
+        :param weights: name of column with weights, if given
         """
         self.ignored: list[str] = []
         if atts is None:
             self.data = pd.DataFrame()
             self.class_index = None
+            self.weights = []
             return
         self.data = pd.DataFrame(atts)
+
+        # remove weights from dataset, as they are no features
+        if weights:
+            self.weights = self.data[weights].tolist()
+            self.data.drop(columns=[weights], inplace=True)
+        else:
+            self.weights = [1] * self.data.shape[0]
+
         self.class_index = self.num_attributes() - 1
 
-    def from_csv(self, source: str|Path):
+    def from_csv(self, source: str|Path, weights: str = ""):
         """Read dataset from csv file
 
-        :param source: path to csv file"""
+        :param source: path to csv file
+        :param weights: name of column with weights, if given
+        """
         self.data = pd.read_csv(Path(__file__).parent / source)
+
+        # remove weights from dataset, as they are no features
+        if weights:
+            self.weights = self.data[weights].tolist()
+            self.data.drop(columns=[weights], inplace=True)
+        else:
+            self.weights = [1] * self.data.shape[0]
+
+        # set class index only afterwards (possibly one column less than before)
         self.class_index = self.num_attributes() - 1
+
         return self
 
     def get_instance(self, idx) -> Instance:
@@ -128,6 +151,17 @@ class Dataset:
                              f"{self.num_attributes()} attributes.")
         self.class_index = idx
 
+    def filter_threshold(self, threshold: float):
+        """Drop all instances with a weight below the given threshold."""
+        temp = pd.DataFrame(self.weights)
+        if threshold != 0:
+            self.data.drop(temp[temp[0] < threshold].index, inplace=True)
+            self.weights = list(filter(lambda w: w >= threshold, self.weights))
+        else:
+            self.data.drop(temp[temp[0] <= threshold].index, inplace=True)
+            self.weights = list(filter(lambda w: w > threshold, self.weights))
+        self.data.reset_index(drop=True, inplace=True)
+
     def delete_with_missing_class(self):
         """Delete instances without a class"""
         self.data.dropna(subset=self.data.columns[self.class_index], inplace=True)
@@ -152,11 +186,13 @@ class Dataset:
         self.ignored = ignore
 
     def __getitem__(self, idx) -> Instance:
-        return Instance(self.data.iloc[idx], self.class_column_name(), self.ignored, self.data.index[idx])  # keep index
+        return Instance(self.data.iloc[idx], self.class_column_name(),
+                        self.ignored, self.data.index[idx],  # keep index
+                        self.weights[idx])
 
     def __iter__(self):
         for idx, el in self.data.iterrows():
-            yield Instance(el, self.class_column_name(), self.ignored, idx)
+            yield Instance(el, self.class_column_name(), self.ignored, idx, self.weights[idx])
 
     def __len__(self):
         return self.data.shape[0]
