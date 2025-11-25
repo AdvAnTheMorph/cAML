@@ -16,8 +16,8 @@ class LinkedLatticeNode(Supracontext):
     An index is also provided for use in determining when the node was created.
     """
     def __init__(self, supra: T, ind: int|None = None):
-        """Create a new node containing the given supracontext. The index is set to
-           -1.
+        """Create a new node containing the given supracontext. The index is
+        set to -1.
 
         :param supra: Supracontext to store in this node.
         """
@@ -28,16 +28,17 @@ class LinkedLatticeNode(Supracontext):
             self.index = -1
         else:
             self.index = ind  # used by insert_after
-        # pointer to the next node; this is used during lattice filling to create a
-        # circular linked list
+        # pointer to the next node; this is used during lattice filling to
+        # create a circular linked list
         self.next: 'LinkedLatticeNode' = None
 
     def insert_after(self, sub: Subcontext, ind: int) -> 'LinkedLatticeNode':
-        """
-        Create a new node by copying this one, adding the given subcontext and
-        setting the index to that provided. Insert the new node between this node
-        and its next node by setting the new node to be the next node and setting
-        the previous next node to be the new node's next node.
+        """Create a new node by copying this one, adding the given subcontext
+        and setting the index to that provided.
+
+        Insert the new node between this node and its next node by setting
+        the new node to be the next node and setting the previous next node
+        to be the new node's next node.
 
         :param sub: Subcontext to insert into the copied Supracontext
         :param ind: index of new node

@@ -27,29 +27,29 @@ from analogical_modeling.am.label.labeler import Labeler
 
 class HeterogeneousLattice(Lattice):
     """
-     * Same as a normal lattice, except no supracontext is deemed heterogeneous and
-     * hence everything is kept.
-     *
-     * Represents a lattice which is to be combined with other sublattices to
-     * determine predictions later on. When a sublattice is filled, there are two
-     * main differences:
-     * <ol>
-     * <li>Only a part of a an exemplar's features are used to assign lattice
-     * locations.</li>
-     * <li>No supracontext is ever determined to be heterogeneous. This is, of
-     * course, less efficient in some ways.</li>
-     * </ol>
-     * Inefficiencies brought about by not eliminating heterogeneous supracontexts
-     * and by having to combine sublattices are a compromise to the alternative,
-     * using a single lattice for any size exemplars. Remember that the underlying
-     * structure of a lattice is an array of size 2^n, n being the size of the
-     * exemplars contained. So if the exemplars are 20 features long, a single
-     * lattice would be 2^20 or 1M elements long. On the other hand, if the
-     * exemplars are split in 4, then 4 sublattices of size 2^5, or 32, can be used
-     * instead, making for close to 100,000 times less memory used.
-     * <p>
-     * In terms of processing power, more is required to use sublattices. However,
-     * using threads the processing of each can be done in parallel.
+    Same as a normal lattice, except no supracontext is deemed heterogeneous and
+    hence everything is kept.
+
+    Represents a lattice which is to be combined with other sublattices to
+    determine predictions later on. When a sublattice is filled, there are two
+    main differences:
+
+    - Only a part of a an exemplar's features are used to assign lattice
+    locations.
+    - No supracontext is ever determined to be heterogeneous. This is, of
+    course, less efficient in some ways.
+
+    Inefficiencies brought about by not eliminating heterogeneous supracontexts
+    and by having to combine sublattices are a compromise to the alternative,
+    using a single lattice for any size exemplars. Remember that the underlying
+    structure of a lattice is an array of size 2^n, n being the size of the
+    exemplars contained. So if the exemplars are 20 features long, a single
+    lattice would be 2^20 or 1M elements long. On the other hand, if the
+    exemplars are split in 4, then 4 sublattices of size 2^5, or 32, can be used
+    instead, making for close to 100,000 times less memory used.
+
+    In terms of processing power, more is required to use sublattices. However,
+    using threads the processing of each can be done in parallel.
     """
     def __init__(self, partition_index: int):
         """
@@ -96,7 +96,7 @@ class HeterogeneousLattice(Lattice):
 
     def add_to_context(self, sub: Subcontext, label: Label) -> None:
         """Add the given subcontext to the supracontext with the given label"""
-        # the default value is the empty supracontext (leave null until now to
+        # the default value is the empty supracontext (leave None until now to
         # save time/space)
         if label not in self.lattice:
             self.lattice[label] = self.empty_supracontext
@@ -118,7 +118,7 @@ class HeterogeneousLattice(Lattice):
             self.lattice[label] = self.lattice.get(label).insert_after(sub, self.index)
 
     def clean_supra(self) -> None:
-        """Cycles through the the supracontexts and deletes ones with count=0"""
+        """Cycles through the supracontexts and deletes ones with count=0"""
         supra = self.empty_supracontext
         while supra.get_next() != self.empty_supracontext:
             if supra.get_next().get_count() == 0:

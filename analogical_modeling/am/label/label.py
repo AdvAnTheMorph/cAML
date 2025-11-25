@@ -10,7 +10,8 @@ class Label:
         """Create a new label by storing match/mismatch information in the given
         bitset.
 
-        :param l: Set whose set bits represent mismatches and clear bits represent matches
+        :param l: Set whose set bits represent mismatches and clear bits
+        represent matches
         :param c: cardinality of the label
         """
         if c is not None:
@@ -46,13 +47,13 @@ class Label:
 
     def intersect(self, other_label: 'Label') -> 'Label':
         """Create a new label for which each location is marked as a match if
-        both this label and otherLabel are marked match, otherwise mismatch.
+        both this label and other_label are marked match, otherwise mismatch.
         In other words, keep all mismatches from both labels.
 
         :param other_label: the label to intersect with this one
         """
         if not isinstance(other_label, Label):
-            raise ValueError("BitSetLabel can only be intersected with other BitSetLabel")
+            raise ValueError("Labels can only be intersected with other Labels")
         bits = self.__label_bits.union(other_label.get_label_bits())
         return Label(bits, self.get_cardinality())
 
@@ -64,7 +65,7 @@ class Label:
         :param other: Other label
         """
         if not isinstance(other, Label):
-            raise ValueError("BitSetLabel can only be unioned with other BitSetLabel")
+            raise ValueError("Labels can only be unioned with other Labels")
         bits = self.__label_bits.intersection(other.get_label_bits())
         return Label(bits, self.get_cardinality())
 
@@ -109,13 +110,14 @@ class Label:
         return SubsetIterator(self)
 
     def is_descendant_of(self, possible_ancestor: 'Label') -> bool:
-        """Determine if this label is the "descendant" of possibleAncestor.
+        """Determine if this label is the "descendant" of possible_ancestor.
 
         This label is a descendant of the other label if every mismatching
         entry in the other label is also a mismatching entry in this label.
         Any label is also a descendant of itself.
 
-        :param possible_ancestor possible label ancestor"""
+        :param possible_ancestor possible label ancestor
+        """
         if not isinstance(possible_ancestor, Label):
             return False
         # boolean lattice ancestor/descendants yield the descendant when ORed;

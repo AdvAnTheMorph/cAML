@@ -51,13 +51,13 @@ class MissingDataCompare(Enum):
     def get_description(self) -> str:
         """
 
-        :return: string which describes comparison strategy for a given
+        :return: string which describes comparison strategy for a given entry
         """
         return self.description
 
     def matches(self, i1: Instance, i2: Instance, idx: int) -> bool:
-        """Compare the two instances and return the comparison result. It is assumed
-        that has a missing value for the given attribute.
+        """Compare the two instances and return the comparison result. It is
+        assumed that has a missing value for the given attribute.
 
         :param i1: First instance
         :param i2: Second instance

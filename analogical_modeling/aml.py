@@ -340,7 +340,7 @@ class AnalogicalModeling:
         self.training_instances = instances  # , 0, instances.num_attributes())
 
         # create exemplars for actually running the classifier
-        self.training_exemplars = list(instances)  #[el for el in instances]
+        self.training_exemplars = list(instances)
 
     def update_classifier(self, instance: Instance):
         """This is used to add more information to the classifier."""

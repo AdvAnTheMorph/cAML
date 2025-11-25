@@ -20,7 +20,8 @@ class Labeler:
     attributes in a boolean vector.
 
     This class is used to assign context labels to training instances by
-    comparison with the instance being classified."""
+    comparison with the instance being classified.
+    """
     def __init__(self, test: Instance, ignore_unknowns: bool, mdc: MissingDataCompare):
         """
 
@@ -90,10 +91,10 @@ class Labeler:
         return self.test_instance
 
     def is_ignored(self, index: int) -> bool:
-        """
-        Find if the attribute at the given index is ignored during labeling. The
-        default behavior is to ignore the attributes with unknown values in the
-        test instance if get_ignore_unknowns() is true.
+        """Find if the attribute at the given index is ignored during labeling.
+
+        The default behavior is to ignore the attributes with unknown values in
+        the test instance if get_ignore_unknowns() is True.
 
         :param index: Index of the attribute being queried
         :return: True if the given attribute is ignored during labeling; False otherwise.
@@ -101,17 +102,14 @@ class Labeler:
         return index in self.ignore_set
 
     def label(self, data: Instance) -> Label:
-        """
-        Create a context label for the input instance by comparing it with the
-        test instance.
+        """Create a context label for the input instance by comparing it with
+        the test instance.
 
         :param data: Instance to be labeled
         :return: the label for the context that the instance belongs to. The
         cardinality of the label will be the same as the test and data items.
         At any given index i, label.matches(i) will return True if that feature
         is the same in the test and data instances.
-        :raises: ValueError if the test and data instances are not from the same
-        data set.
         """
         # if not data.equal_headers(self.get_test_instance()):
         #     raise ValueError("Input instance is not compatible with the test instance")
@@ -147,11 +145,11 @@ class Labeler:
         return " ".join(map(str, context_list))
 
     def get_context_list(self, label: Label, mismatch_string: str) -> list[str]:
-        """
-        Returns a list representing the context. If the input test instance
-        attributes are "A C D Z R", the label is 00101, and the mismatch_string
-        is "*", then the return list
-        will be "A", "C", "*", "Z", "*".
+        """Returns a list representing the context.
+
+        If the input test instance attributes are "A C D Z R", the label is
+        00101, and the mismatch_string is "*", then the return list will be
+        "A", "C", "*", "Z", "*".
         """
         context_bit_string = str(label)
         result = []
@@ -168,16 +166,14 @@ class Labeler:
         return result
 
     def get_instance_atts_string(self, instance: Instance, att_delimiter: str) -> str:
-        """
-        Returns a string containing the attributes of the input instance (minus the class
-        attribute and ignored attributes).
-        """
+        """Returns a string containing the attributes of the input instance
+        (minus the class attribute and ignored attributes)."""
         atts = self.get_instance_atts_values_list(instance)
         return att_delimiter.join(atts)
 
     def get_instance_atts_values_list(self, instance: Instance) -> list[str]:
-        """Returns a list containing the attributes of the input instance (minus the class
-        attribute and ignored attributes)."""
+        """Returns a list containing the attributes of the input instance
+        (minus the class attribute and ignored attributes)."""
         atts = []
         for i in range(instance.num_attributes()):
             if i == instance.class_index or self.is_ignored(i):
@@ -196,8 +192,8 @@ class Labeler:
     def get_lattice_top(self):
         """
         Creates and returns the label which belongs at the top of the boolean
-        lattice formed by the subcontexts labeled by this labeler, i.e. the one for
-	    which every feature is a match.
+        lattice formed by the subcontexts labeled by this labeler, i.e. the one
+        for which every feature is a match.
 
 	    :return: A label with all matches
 	    """
@@ -206,8 +202,8 @@ class Labeler:
     def get_lattice_bottom(self):
         """
         Creates and returns the label which belongs at the bottom of the boolean
-	    lattice formed by the subcontexts labeled by this labeler, i.e. the one for
-	    which every feature is a mismatch.
+	    lattice formed by the subcontexts labeled by this labeler, i.e. the one
+	    for which every feature is a mismatch.
 
         :return: A label with all mismatches
         """
@@ -216,30 +212,29 @@ class Labeler:
         return Label(bottom, self.get_cardinality())
 
     def from_bits(self, label_bits: int):
-        """For testing purposes, this method allows the client to directly specify the label using
-	    the bits of an integer
-	    """
+        """For testing purposes, this method allows the client to directly
+        specify the label using the bits of an integer"""
         bits = set()
         index = 0
         while label_bits != 0:
             if label_bits % 2 != 0:
                 bits.add(index)
             index += 1
-            label_bits = label_bits >> 1
+            label_bits >>= 1
         return Label(bits, self.get_cardinality())
 
     def partition(self, label: Label, partition_index: int) -> Label:
-        """
-        In distributed processing, it is necessary to split labels into
-        partitions. This method returns a partition for the given label. A full
-        label is partitioned into pieces 0 through num_partitions(), so
-        code to process labels in pieces should look like this:
+        """Create partition for given label
 
-        <pre>
-        Label myLabel = myLabeler.label(myInstance);
-        for(int i = 0; i &lt; myLabeler.numPartitions(); i++)
-            process(myLabeler.partition(myLabel, i);
-        </pre>
+        In distributed processing, it is necessary to split labels into
+        partitions. A full label is partitioned into pieces 0 through
+        num_partitions(), so code to process labels in pieces should look
+        like this::
+
+        my_label = MyLabeler.label(my_instance);
+        for i in MyLabeler.num_partitions():
+            process(MyLabeler.partition(my_label, i))
+
 
         :param partition_index:  index of the partition to return
         :return: a new label representing a portion of the attributes
@@ -273,10 +268,11 @@ class Labeler:
         return ceil(self.get_cardinality() / PARTITION_SIZE)
 
     def partitions(self) -> list['Partition']:
-        """This provides a default partitioning implementation which is overridable
-        by child classes.
+        """This provides a default partitioning implementation which is
+        overridable by child classes.
 
-        :return: An array of partitions indicating how labels can be split into partitions.
+        :return: An array of partitions indicating how labels can be split
+        into partitions.
         """
         spans = [Partition(0, 0) for _ in range(self.num_partitions())]
         span_size = floor(self.get_cardinality() / self.num_partitions())
@@ -311,7 +307,8 @@ class Partition:
     def get_cardinality(self) -> int:
         """
 
-        :return: The cardinality of the partition, or number of represented features.
+        :return: The cardinality of the partition, or number of represented
+        features.
         """
         return self.cardinality
 

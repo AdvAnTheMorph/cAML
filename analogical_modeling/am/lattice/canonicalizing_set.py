@@ -7,8 +7,9 @@ T = TypeVar('T')
 
 class CanonicalizingSet:
     """
-    A set implementation that can be used to retrieve canonical versions of objects; this is not
-    possible with Set because of the lack of a get method."""
+    A set implementation that can be used to retrieve canonical versions of
+    objects; this is not possible with Set because of the lack of a get method.
+    """
 
     def __init__(self):
         # TODO: private static final CanonicalizingSet EMPTY_SET = new CanonicalizingSet<>(Collections.EMPTY_MAP);
@@ -22,8 +23,7 @@ class CanonicalizingSet:
         """
 
         :return: None if t is not contained in the set; otherwise the object
-        contained in the set for which
-	    t == theObject is true.
+        contained in the set for which t == the_object is true.
         """
         return self.__backing_map.get(t)
 

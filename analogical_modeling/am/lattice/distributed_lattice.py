@@ -29,7 +29,8 @@ from analogical_modeling.am.lattice.lattice import Lattice
 
 class DistributedLattice(Lattice):
     """This lass manages several smaller, heterogeneous lattices. The
-    supracontexts of smaller lattices are combined to create the final Supracontexts.
+    supracontexts of smaller lattices are combined to create the final
+    Supracontexts.
     """
     def __init__(self):
         self.supras: set[Supracontext] = set()
@@ -81,7 +82,8 @@ class DistributedLattice(Lattice):
 
     @staticmethod
     def fill_lattice_partition(sub_list: SubcontextList, partition_index: int) -> CanonicalizingSet:
-        """Fills a heterogeneous lattice with subcontexts using the given label partition index."""
+        """Fills a heterogeneous lattice with subcontexts using the given label
+        partition index."""
         lattice = HeterogeneousLattice(partition_index)
         lattice.fill(sub_list)
         return lattice.get_supracontexts()
@@ -166,8 +168,8 @@ class DistributedLattice(Lattice):
     @staticmethod
     def remove_duplicate_results(supras1: CanonicalizingSet, supras2: CanonicalizingSet):
         """
-        Find duplicate supracontexts in supras1 and supras2 and return a single set of supracontexts
-	    with the combined counts from both sets.
+        Find duplicate supracontexts in supras1 and supras2 and return a single
+        set of supracontexts with the combined counts from both sets.
 	    """
         # make sure supras2 is the smaller set of supracontexts, since we will iterate over it
         if len(supras2) > len(supras1):
@@ -195,11 +197,11 @@ class IntermediateProduct:
         """
         Combine this partial supracontext with another to make a third which
         contains the subcontexts in common between the two, and a count which is
-        set to the product of the two counts. Return None if the resulting object
-        would have no subcontexts.
+        set to the product of the two counts. Return None if the resulting
+        object would have no subcontexts.
 
         :param supra1: first partial supracontext to combine
-        :param supra2: econd partial supracontext to combine
+        :param supra2: second partial supracontext to combine
         :return: A new partial supracontext, or None if it would have been empty.
         """
         if len(supra1.get_data()) > len(supra2.get_data()):
@@ -231,12 +233,13 @@ class FinalizingProduct:
         return final_supras
 
     def product(self, supra1: Supracontext, supra2: Supracontext) -> ClassifiedSupra|None:
-        """
-        Combine this partial supracontext with another to make a
-        ClassifiedSupra object. The new one contains the subcontexts
-        found in both, and the pointer count is set to the product of the two
-        pointer counts. If it turns out that the resulting supracontext would be
-        heterogeneous or empty, then return None instead.
+        """Combine this partial supracontext with another to make a
+        ClassifiedSupra object.
+
+        The new one contains the subcontexts found in both, and the pointer
+        count is set to the product of the two pointer counts. If it turns
+        out that the resulting supracontext would be heterogeneous or empty,
+        then return None instead.
 
         :param supra1: first partial supracontext to combine
         :param supra2: second partial supracontext to combine
