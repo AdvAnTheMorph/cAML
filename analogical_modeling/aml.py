@@ -440,7 +440,7 @@ class AnalogicalModeling:
 
         acc, conf_matrix = self.evaluate(instances, results)
         print(f"Accuracy: {round(acc * 100, 3)}%")
-        # self.create_output_files(out_path, results, instances)  # FIXME
+        self.create_output_files(out_path, results, instances)
         conf_matrix.plot()
         plt.show()
 
