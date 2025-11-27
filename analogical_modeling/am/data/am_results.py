@@ -77,9 +77,9 @@ class AMResults:
             self.pointer_counting_strategy = PointerCountingStrategy.QUADRATIC
 
         # find numbers of pointers to individual exemplars
-        self.ex_pointer_map: dict[Instance, int] = self.get_pointers(self.supra_list, linear)
+        self.ex_pointer_map: dict[Instance, float] = self.get_pointers(self.supra_list, linear)
         # find the total number of pointers
-        self.total_pointers: int = sum(self.ex_pointer_map.values())
+        self.total_pointers: float = sum(self.ex_pointer_map.values())
 
         # find the analogical effect of an exemplar by dividing its pointer
         # count by the total pointer count
@@ -113,7 +113,7 @@ class AMResults:
                 self.predicted_classes.add(cls_name)
 
     @staticmethod
-    def get_pointers(supracontexts: set[Supracontext], linear: bool) -> dict[Instance, int]:
+    def get_pointers(supracontexts: set[Supracontext], linear: bool) -> dict[Instance, float]:
         """See page 392 of the red book.
 
         :param supracontexts: List of Supracontexts created by filling the
@@ -123,7 +123,7 @@ class AMResults:
         :return: A mapping of each exemplar to the number of pointers pointing
         to it.
         """
-        pointers: dict[Instance, int] = defaultdict(int)
+        pointers: dict[Instance, float] = defaultdict(float)
 
         # number of pointers in a supracontext,
         # that is the number of exemplars in the whole thing
@@ -143,7 +143,7 @@ class AMResults:
                     # pointers to exemplar = pointersToSupra * pointers in list
                     # add together if already in the map
                     if linear:
-                        pointer_product = pointers_to_supra
+                        pointer_product = pointers_to_supra * e.weight
                     else:
                         pointer_product = pointers_in_list * pointers_to_supra
                     pointers[e] += pointer_product
@@ -173,7 +173,7 @@ class AMResults:
         """
         return self.ex_effect_map
 
-    def get_exemplar_pointers(self) -> dict[Instance, int]:
+    def get_exemplar_pointers(self) -> dict[Instance, float]:
         """
 
         :return: Mapping of exemplars in the analogical set to the number of
@@ -181,7 +181,7 @@ class AMResults:
         """
         return self.ex_pointer_map
 
-    def get_total_pointers(self) -> int:
+    def get_total_pointers(self) -> float:
         """
 
         :return: The total number of pointers in this analogical set

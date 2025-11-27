@@ -21,6 +21,8 @@ from analogical_modeling.utils import Instance, Dataset
 
 # The name of the chapter 3 training data file
 CHAPTER_3_DATA = "ch3example.csv"
+# chapter 3 training data file with random weights
+CHAPTER_3_DATA_W = "ch3examplew.csv"
 # The name of the finnverb data file. 10 attributes, 189 instances
 FINNVERB = "finnverb.csv"
 # A paired-down finnverb for minimal testing.
@@ -33,13 +35,14 @@ AUDIOLOGY = "audiology.csv"
 SPANISH_STRESS = "spanish_stress.csv"
 
 
-def get_dataset(file_in_data_folder: str) -> utils.Dataset:
+def get_dataset(file_in_data_folder: str, weights: str = "") -> utils.Dataset:
     """
     Read a dataset from disk and return the Instances object. It is assumed
     that the file is in the project data folder, and that the class attribute
     is the last one.
 
     :param file_in_data_folder: Name of csv file located in the project data folder
+    :param weights: Optional column name for weights
     :return: The dataset contained in the given file.
     :raises Exception: if there is a problem loading the dataset
     """
@@ -48,7 +51,7 @@ def get_dataset(file_in_data_folder: str) -> utils.Dataset:
     # instances.set_class_index(instances.num_attributes() -1)
     # return instances
     data = utils.Dataset()
-    data.from_csv(source)
+    data.from_csv(source, weights=weights)
     return data
 
 

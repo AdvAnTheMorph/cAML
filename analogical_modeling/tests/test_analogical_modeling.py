@@ -126,3 +126,21 @@ class AnalogicalModelingTest(unittest.TestCase):
         am.set_missing_data_compare("mismatch")
         am.set_ignore_unknowns(True)
         self.assertEqual("Linear: False, Remove test exemplars: False, Ignore unknown values: True, Missing data: mismatch\nDrop duplicates: False, Ignore columns: --", am.get_options())
+
+    def test_weights_linear(self):
+        train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA_W, "w")
+        test = train[0]
+        train.data.drop(index=0, inplace=True)
+
+        am = self.get_classifier()
+        am.build_classifier(train)
+        am.set_linear_count(True)
+
+        distr = am.distribution_for_instance(test)
+        for k, v in {"e": 0.401606426, "r": 0.598393574}.items():
+            self.assertAlmostEqual(v, distr.get(k, 0), delta=1e-7)
+        prediction = am.get_results().get_class_pointers()
+
+        # without weights: {"e": 2, "r": 5}
+        for k, v in {"e": 0.4, "r": 0.596}.items():
+            self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7)
