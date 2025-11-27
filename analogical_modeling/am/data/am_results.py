@@ -145,7 +145,7 @@ class AMResults:
                     if linear:
                         pointer_product = pointers_to_supra * e.weight
                     else:
-                        pointer_product = pointers_in_list * pointers_to_supra
+                        pointer_product = pointers_in_list * pointers_to_supra * e.weight
                     pointers[e] += pointer_product
         return pointers
 

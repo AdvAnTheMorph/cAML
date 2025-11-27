@@ -144,3 +144,20 @@ class AnalogicalModelingTest(unittest.TestCase):
         # without weights: {"e": 2, "r": 5}
         for k, v in {"e": 0.4, "r": 0.596}.items():
             self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7)
+
+    def test_weights_quadratic(self):
+        train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA_W, "w")
+        test = train[0]
+        train.data.drop(index=0, inplace=True)
+
+        am = self.get_classifier()
+        am.build_classifier(train)
+        am.set_linear_count(False)
+
+        distr = am.distribution_for_instance(test)
+        for k, v in {"e": 0.443951165, "r": 0.556048835}.items():
+            self.assertAlmostEqual(v, distr.get(k, 0), delta=1e-7)
+        prediction = am.get_results().get_class_pointers()
+
+        for k, v in {"e": 0.8, "r": 1.002}.items():
+            self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7)
