@@ -1,4 +1,7 @@
-"""weka.classifiers.lazy.AM.data"""
+"""GangEffect
+
+Effect of exemplars in a subcontext on the predicted outcome
+"""
 
 from collections import defaultdict
 

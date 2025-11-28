@@ -1,18 +1,11 @@
-"""package weka.classifiers.lazy.AM.data
- * **************************************************************************
- * Copyright 2021 Nathan Glenn                                              *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
- * you may not use this file except in compliance with the License.         *
- * You may obtain a copy of the License at                                  *
- *                                                                          *
- * http://www.apache.org/licenses/LICENSE-2.0                               *
- *                                                                          *
- * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
- * See the License for the specific language governing permissions and      *
- * limitations under the License.                                           *
- ****************************************************************************
+"""ClassifiedSupra
+
+Supracontext which includes outcome ("classification") and determines heterogeneity
+
+homogeneous if
+a) deterministic
+b) non-deterministic, but all occurrences occur within only one of its subcontexts
+heterogeneous otherwise
 """
 
 from typing import Optional
@@ -22,6 +15,7 @@ from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.basic_supra import BasicSupra
 from analogical_modeling.am import am_utils
 from analogical_modeling.am.label.label import Label
+
 
 class ClassifiedSupra(Supracontext):
     """
@@ -54,10 +48,10 @@ class ClassifiedSupra(Supracontext):
                 self.add(sub)
             self.supra.set_count(count)
 
-    def add(self, other: Subcontext):
+    def add(self, other: Subcontext) -> None:
         """Add a subcontext to this supracontext.
 
-        :param other: ubcontext to add to the supracontext.
+        :param other: subcontext to add to the supracontext
         """
         if self.supra.is_empty():
             self.outcome = other.get_outcome()
@@ -68,11 +62,13 @@ class ClassifiedSupra(Supracontext):
     def get_outcome(self) -> float|str:
         """Get the outcome of this supracontext.
 
-        If all of the contained subcontexts have the same outcome, then this
-        value is returned. If there are no subcontexts in this supracontext,
-        am_utils.UNKNOWN is returned. If there are multiple subs with an outcome
-        of am_utils.NONDETERMINISTIC or the subs with differing outcomes,
-        am_utils.HETEROGENEOUS is returned.
+        The outcome is:
+        - am_utils.UNKNOWN, if there are no subcontexts in this supracontext
+        - am_utils.NONDETERMINISTIC,
+        - am_utils.HETEROGENEOUS, if there are multiple subcontexts with the
+          outcome am_utils.NONDETERMINISTIC, or subcontexts have differing
+          outcomes
+        - the outcome of the contained subcontexts, otherwise
 
         :return: outcome of this supracontext
         """
@@ -98,18 +94,15 @@ class ClassifiedSupra(Supracontext):
         """
         # Heterogeneous if:
         # - there are subcontexts with different outcomes
-        # - there are more than one sub which are non-deterministic
+        # - there are more than one subcontext which are non-deterministic
         if self.supra.is_empty():
             return False
         if other.get_outcome() != self.outcome:
             return True
         return other.get_outcome() == am_utils.NONDETERMINISTIC
 
-    def copy(self):
-        """Return an exact, deep copy of the supracontext.
-
-        :return: a deep copy of this supracontext.
-        """
+    def copy(self) -> 'ClassifiedSupra':
+        """Return an exact, deep copy of the supracontext."""
         new_supra = ClassifiedSupra()
         new_supra.supra = self.supra.copy()
         new_supra.outcome = self.outcome

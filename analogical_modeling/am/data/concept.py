@@ -1,4 +1,7 @@
-"""weka.classifiers.lazy.AM.data"""
+"""Concept
+
+Wrapper for supracontexts
+"""
 
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.data.supracontext import Supracontext

@@ -1,10 +1,15 @@
-"""weka.classifiers.lazy.AM.data"""
+"""Supracontext
+
+For each subset of variables in a given context, determine occurrences in
+dataset
+"""
 
 from abc import ABC, abstractmethod
 from functools import reduce
 
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.data.subcontext import Subcontext
+
 
 class Supracontext(ABC):
     """ A supracontext contains a set of Subcontexts which have certain
@@ -72,7 +77,7 @@ class Supracontext(ABC):
         object.
 
 	    Label mismatches should be interpreted as "contained subcontexts may
-	    or may not match for this attribute, while matches should be regarded
+	    or may not match for this attribute", while matches should be regarded
 	    as "all contained subcontexts matched for this attribute".
 
 	    The running time for this default implementation is linear in the
@@ -85,14 +90,10 @@ class Supracontext(ABC):
 
     @abstractmethod
     def __eq__(self, other: object) -> bool:
-        """
-        Two Supracontexts are equal if they are of the same class
-        and contain the same subcontexts.
-        """
+        """Two Supracontexts are equal if they are of the same class
+        and contain the same subcontexts."""
 
     @abstractmethod
     def __hash__(self) -> int:
-        """
-        The hashcode depends solely on the set of subcontexts
-        contained in a supracontext.
-        """
+        """The hashcode depends solely on the set of subcontexts
+        contained in a supracontext."""

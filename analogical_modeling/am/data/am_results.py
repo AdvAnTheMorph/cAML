@@ -1,19 +1,4 @@
-"""weka.classifiers.lazy.AM.data
- * **************************************************************************
- * Copyright 2021 Nathan Glenn                                              *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
- * you may not use this file except in compliance with the License.         *
- * You may obtain a copy of the License at                                  *
- *                                                                          *
- * http://www.apache.org/licenses/LICENSE-2.0                               *
- *                                                                          *
- * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
- * See the License for the specific language governing permissions and      *
- * limitations under the License.                                           *
- ****************************************************************************
-"""
+"""Result of Analogical Modeling"""
 
 from enum import Enum
 from os import linesep
@@ -49,7 +34,7 @@ class Judgement(Enum):
 
 
 class AMResults:
-    """The results of running AM containing the analogical effects of the
+    """The results of running AM, containing the analogical effects of the
     individual training instances as well as the relevant supracontexts and
     overall class likelihoods."""
     def __init__(self, lattice: Lattice, sub_list: SubcontextList,
@@ -61,9 +46,9 @@ class AMResults:
         :param sub_list: list of subcontexts
         :param test_item: exemplar being classified
         :param linear: True if counting of pointers should be done linearly;
-        False if quadratically.
-        :param labeler: The labeler that was used to assign contextual labels;
-        this is made available for printing purposes.
+        False if quadratically
+        :param labeler: labeler that was used to assign contextual labels;
+        this is made available for printing purposes
         """
         # The exemplar whose class is being predicted by this set
         self.classified_exemplar: Instance = test_item
@@ -117,10 +102,10 @@ class AMResults:
         """See page 392 of the red book.
 
         :param supracontexts: List of Supracontexts created by filling the
-        supracontextual lattice.
+        supracontextual lattice
         :param linear: True if pointer counting should be done linearly; False
         if it should be done quadratically
-        :return: A mapping of each exemplar to the number of pointers pointing
+        :return: mapping of each exemplar to the number of pointers pointing
         to it.
         """
         pointers: dict[Instance, float] = defaultdict(float)
@@ -140,8 +125,8 @@ class AMResults:
                 pointers_to_supra = supra.get_count()
                 # iterate exemplars in subcontext
                 for e in sub.get_exemplars():
-                    # pointers to exemplar = pointersToSupra * pointers in list
                     # add together if already in the map
+                    # incorporate weights (always 1, if not provided)
                     if linear:
                         pointer_product = pointers_to_supra * e.weight
                     else:
@@ -168,7 +153,7 @@ class AMResults:
     def get_exemplar_effect_map(self) -> dict[Instance, float]:
         """
 
-        :return: A mapping between exemplars and their analogical effect
+        :return: mapping between exemplars and their analogical effect
         (decimal percentage)
         """
         return self.ex_effect_map
@@ -176,7 +161,7 @@ class AMResults:
     def get_exemplar_pointers(self) -> dict[Instance, float]:
         """
 
-        :return: Mapping of exemplars in the analogical set to the number of
+        :return: mapping of exemplars in the analogical set to the number of
         pointers to it
         """
         return self.ex_pointer_map
@@ -184,14 +169,14 @@ class AMResults:
     def get_total_pointers(self) -> float:
         """
 
-        :return: The total number of pointers in this analogical set
+        :return: total number of pointers in this analogical set
         """
         return self.total_pointers
 
     def get_class_pointers(self) -> dict[str, int]:
         """
 
-        :return: A mapping between a class value index the number of pointers
+        :return: mapping between a class value index the number of pointers
         pointing to it
         """
         return self.class_pointer_map
@@ -199,42 +184,42 @@ class AMResults:
     def get_class_likelihood(self) -> dict[str, float]:
         """
 
-        :return: A mapping between the class name and its selection probability
+        :return: mapping between the class name and its selection probability
         """
         return self.class_likelihood_map
 
     def get_classified_ex(self) -> Instance:
         """
 
-        :return: The exemplar which was classified
+        :return: exemplar which was classified
         """
         return self.classified_exemplar
 
     def get_class_probability(self) -> float:
         """
 
-        :return: Probability of the predicted class
+        :return: probability of the predicted class
         """
         return self.class_probability
 
     def get_predicted_classes(self) -> set[str]:
         """
 
-        :return: Index of the predicted class attribute value
+        :return: index of the predicted class attribute value
         """
         return self.predicted_classes
 
     def get_supra_list(self) -> frozenset[Supracontext]:
         """
 
-        :return: The Supracontexts that comprise the analogical set.
+        :return: supracontexts that comprise the analogical set.
         """
         return frozenset(self.supra_list)
 
     def get_subcontexts(self) -> set[Subcontext]:
         """
 
-        :return: All subcontexts contained in all of the supracntexts of the
+        :return: all subcontexts contained in all the supracontexts of the
         analogical set.
         """
         return {data for supra in self.get_supra_list() for data in supra.get_data()}
@@ -242,7 +227,7 @@ class AMResults:
     def get_gang_effects(self) -> list[GangEffect]:
         """
 
-        :return: The gang effects, sorted by size of the effect and then
+        :return: gang effects, sorted by size of the effect and then
         alphabetically by the subcontext display label
         """
         effects = [GangEffect(sub, self.get_exemplar_pointers()) for sub in self.get_subcontexts()]
@@ -251,8 +236,7 @@ class AMResults:
     def get_labeler(self) -> Labeler:
         """
 
-        :return: The Labeler object that was used to assign all of the
-        contextual labels.
+        :return: Labeler object that was used to assign the contextual labels.
         """
         return self.labeler
 
@@ -268,7 +252,7 @@ class AMResults:
     def get_judgement(self):
         """
 
-        :return: a judgement of the prediction
+        :return: judgement of the prediction
         """
         expected = self.get_expected_class_name()
         if expected is None:

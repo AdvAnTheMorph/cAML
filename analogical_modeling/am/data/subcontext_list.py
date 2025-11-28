@@ -1,18 +1,7 @@
-"""weka.classifiers.lazy.AM.data"""
-#  * **************************************************************************
-#  * Copyright 2021 Nathan Glenn                                              *
-#  * Licensed under the Apache License, Version 2.0 (the "License");          *
-#  * you may not use this file except in compliance with the License.         *
-#  * You may obtain a copy of the License at                                  *
-#  *                                                                          *
-#  * http://www.apache.org/licenses/LICENSE-2.0                               *
-#  *                                                                          *
-#  * Unless required by applicable law or agreed to in writing, software      *
-#  * distributed under the License is distributed on an "AS IS" BASIS,        *
-#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
-#  * See the License for the specific language governing permissions and      *
-#  * limitations under the License.                                           *
-#  ****************************************************************************
+"""SubcontextList
+
+Iterable storing subcontexts
+"""
 
 from typing import Iterable
 
@@ -50,10 +39,7 @@ class SubcontextList:
             self.add(se)
 
     def get_cardinality(self) -> int:
-        """
-
-        :return: the number of attributes used to predict an outcome
-        """
+        """Get the number of attributes used to predict an outcome"""
         return self.labeler.get_cardinality()
 
     def get_ignore_full_matches(self) -> bool:
@@ -65,11 +51,12 @@ class SubcontextList:
         return self.ignore_full_matches
 
     def add(self, exemplar: Instance):
-        """Add an exemplar
-        """
+        """Add an exemplar"""
         label = self.labeler.label(exemplar)
+
         if self.ignore_full_matches and label.all_matching():
             return
+
         if not label in self.label_to_subcontext:
             self.label_to_subcontext[label] = Subcontext(label,
                                                          self.labeler.get_context_string(label))

@@ -1,18 +1,8 @@
-"""weka.classifiers.lazy.AM.data"""
- # * **************************************************************************
- # * Copyright 2021 Nathan Glenn                                              *
- # * Licensed under the Apache License, Version 2.0 (the "License");          *
- # * you may not use this file except in compliance with the License.         *
- # * You may obtain a copy of the License at                                  *
- # *                                                                          *
- # * http://www.apache.org/licenses/LICENSE-2.0                               *
- # *                                                                          *
- # * Unless required by applicable law or agreed to in writing, software      *
- # * distributed under the License is distributed on an "AS IS" BASIS,        *
- # * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
- # * See the License for the specific language governing permissions and      *
- # * limitations under the License.                                           *
- # ****************************************************************************
+"""Subcontext
+
+A subcontext specifies all variables of its supracontext and more.
+Example: (a-cd) is a subcontext of (a-c-)
+"""
 
 from analogical_modeling.am import am_utils
 from analogical_modeling.am.label.label import Label
@@ -41,7 +31,7 @@ class Subcontext:
         self.hash: int = -1
 
     def add(self, other):
-        """Add an exemplar e to the subcontext and set the outcome accordingly.
+        """Add an exemplar to the subcontext and set the outcome accordingly.
 
         If different outcomes are present in the contained exemplars, the
         outcome is am_utils.NONDETERMINISTIC
@@ -72,7 +62,7 @@ class Subcontext:
     def get_exemplars(self) -> set[Instance]:
         """
 
-        :return: list of Exemplars contained in this subcontext
+        :return: list of exemplars contained in this subcontext
         """
         return self.data
 
@@ -103,7 +93,7 @@ class Subcontext:
             middle_part = next(iter(self.data)).class_value()
 
         # str(Instance) separates attributes with commas, so we can't
-        # use a comma here or it will be difficult to read
+        # use a comma here, or it will be difficult to read
         return f"({self.label}|{middle_part}|{'/'.join(map(str, self.data))})"
 
     def is_nondeterministic(self) -> bool:
