@@ -1,4 +1,4 @@
-"""weka.classifiers.lazy.AM.label"""
+"""Test handling of missing data"""
 
 import unittest
 

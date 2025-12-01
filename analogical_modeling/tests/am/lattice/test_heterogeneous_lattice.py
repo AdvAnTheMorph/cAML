@@ -1,4 +1,4 @@
-"""weka.classifiers.lazy.AM.lattice"""
+"""Separate test for Heterogeneous Lattice"""
 
 import unittest
 from unittest import mock

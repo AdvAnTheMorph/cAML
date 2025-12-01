@@ -1,4 +1,4 @@
-"""package weka.classifiers.lazy.AM.data"""
+"""Test Supracontext variants"""
 
 import unittest
 

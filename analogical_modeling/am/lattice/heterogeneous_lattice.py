@@ -1,19 +1,4 @@
-"""weka.classifiers.lazy.AM.lattice
- * **************************************************************************
- * Copyright 2021 Nathan Glenn                                              *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
- * you may not use this file except in compliance with the License.         *
- * You may obtain a copy of the License at                                  *
- *                                                                          *
- * http://www.apache.org/licenses/LICENSE-2.0                               *
- *                                                                          *
- * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
- * See the License for the specific language governing permissions and      *
- * limitations under the License.                                           *
- ****************************************************************************
- """
+"""Heterogeneous Lattice"""
 
 from analogical_modeling.am.lattice.lattice import Lattice
 from analogical_modeling.am.lattice.linked_lattice_node import LinkedLatticeNode
@@ -34,7 +19,7 @@ class HeterogeneousLattice(Lattice):
     determine predictions later on. When a sublattice is filled, there are two
     main differences:
 
-    - Only a part of a an exemplar's features are used to assign lattice
+    - Only a part of an exemplar's features are used to assign lattice
     locations.
     - No supracontext is ever determined to be heterogeneous. This is, of
     course, less efficient in some ways.
@@ -64,19 +49,24 @@ class HeterogeneousLattice(Lattice):
         self.lattice: dict[Label, LinkedLatticeNode] = {}
         # the current number of the subcontext being added
         self.index: int = -1
-        # All points in the lattice point to the empty supracontext by default.
+        # all points in the lattice point to the empty supracontext by default
         self.empty_supracontext = LinkedLatticeNode(BasicSupra())
         self.empty_supracontext.set_next(self.empty_supracontext)
 
         self.filled: bool = False
 
     def fill(self, sub_list: SubcontextList) -> None:
+        """Fill the lattice with given subcontexts. This is meant to be done
+        only once for a given Lattice instance.
+
+        :raises: ValueError if the lattice was already filled
+        """
         if self.filled:
             raise ValueError("Lattice is already filled and cannot be filled again.")
         self.filled = True
 
         labeler: Labeler = sub_list.get_labeler()
-        # Fill the lattice with all of the subcontexts, masking labels
+        # fill the lattice with all the subcontexts, masking labels
         for sub in sub_list:
             self.index += 1
             self.insert(sub, labeler.partition(sub.get_label(), self.partition_index))
@@ -105,20 +95,20 @@ class HeterogeneousLattice(Lattice):
         # to that one; this is a supracontext that was made in the final else
         # statement below this one.
         if self.lattice.get(label).get_next().get_index() == self.index:
-            # don't decrement count on emptySupracontext!
+            # don't decrement count on empty_supracontext!
             if self.lattice.get(label) != self.empty_supracontext:
                 self.lattice.get(label).decrement_count()
             self.lattice[label] = self.lattice.get(label).get_next()
             self.lattice.get(label).increment_count()
         # otherwise make a new Supracontext and add it
         else:
-            # don't decrement the count for the emptySupracontext!
+            # don't decrement the count for the empty_supracontext!
             if self.lattice.get(label) != self.empty_supracontext:
                 self.lattice.get(label).decrement_count()
             self.lattice[label] = self.lattice.get(label).insert_after(sub, self.index)
 
     def clean_supra(self) -> None:
-        """Cycles through the supracontexts and deletes ones with count=0"""
+        """Cycles through the supracontexts and deletes ones with count 0"""
         supra = self.empty_supracontext
         while supra.get_next() != self.empty_supracontext:
             if supra.get_next().get_count() == 0:
@@ -129,6 +119,7 @@ class HeterogeneousLattice(Lattice):
         assert self.no_zero_supras()
 
     def no_zero_supras(self) -> bool:
+        """Check for presence of supracontexts with count 0"""
         for supra in self.get_supracontexts():
             if supra.get_count() == 0:
                 return False
@@ -137,7 +128,7 @@ class HeterogeneousLattice(Lattice):
     def get_supracontexts(self) -> set[Supracontext]:
         """
 
-        :return: The list of supracontexts that were created by filling the
+        :return: the list of supracontexts that were created by filling the
         supracontextual lattice. From this, you can compute the analogical set.
         """
         sup_list = set()
@@ -151,7 +142,7 @@ class HeterogeneousLattice(Lattice):
     def supra_list_to_string(self) -> str:
         """
 
-        :return: A string representation of the list of Supracontexts created
+        :return: string representation of the list of Supracontexts created
         when the Lattice was filled
         """
         supra = self.empty_supracontext.get_next()

@@ -1,4 +1,4 @@
-"""weka.classifiers.lazy.AM"""
+"""Utils for testing"""
 
 import logging
 import random
@@ -8,15 +8,15 @@ from threading import Lock
 
 from unittest.mock import Mock
 
-
 from analogical_modeling import utils
 from analogical_modeling.am import am_utils
+from analogical_modeling.am.data.am_results import AMResults
 from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.data.classified_supra import ClassifiedSupra
 from analogical_modeling.aml import AnalogicalModeling
-from analogical_modeling.utils import Instance, Dataset
+from analogical_modeling.utils import Dataset
 
 
 # The name of the chapter 3 training data file
@@ -47,9 +47,6 @@ def get_dataset(file_in_data_folder: str, weights: str = "") -> utils.Dataset:
     :raises Exception: if there is a problem loading the dataset
     """
     source = Path("data") / file_in_data_folder
-    # instances = source.get_data_set()
-    # instances.set_class_index(instances.num_attributes() -1)
-    # return instances
     data = utils.Dataset()
     data.from_csv(source, weights=weights)
     return data
@@ -67,7 +64,6 @@ def get_instance_from_file(file_in_data_folder: str, index: int) -> utils.Instan
     :raises Exception: if there is a problem loading the instance
     """
     instances = get_dataset(file_in_data_folder)
-    # instances.set_class_index(instances.num_attributes() - 1)
     return instances[index]
 
 
@@ -82,7 +78,7 @@ def six_cardinality_data():
 
 def mock_instance(num_attributes: int):
     inst = Mock()
-    # add one attribute for the class, so that numAttributes matches the resulting label size exactly
+    # add one attribute for the class, so that num_attributes matches the resulting label size exactly
     inst.num_attributes.return_value = num_attributes + 1
     return inst
 
@@ -118,18 +114,18 @@ def get_deterministic_random_provider():
     return random_provider
 
 
-def supra_deep_equals(supra1: Supracontext, supra2: Supracontext):
+def supra_deep_equals(supra1: Supracontext, supra2: Supracontext) -> bool:
     return supra1.get_count() == supra2.get_count() and supra1.get_data() == supra2.get_data()
 
 
-def contains_supra(actual_supras: set, expected):
+def contains_supra(actual_supras: set, expected) -> bool:
     for supra in actual_supras:
         if supra_deep_equals(supra, expected):
             return True
     return False
 
 
-def leave_out_index(am: AnalogicalModeling, data: Dataset, index: int):
+def leave_out_index(am: AnalogicalModeling, data: Dataset, index: int) -> AMResults:
     # copy so that removing an instance doesn't affect the original
     train = Dataset(data)
     test = train[index]
@@ -172,7 +168,7 @@ def bits_to_bitset(bits: int) -> set[int]:
         if bits % 2 != 0:
             bitset.add(index)
         index += 1
-        bits = bits >> 1
+        bits >>= 1
     return bitset
 
 
@@ -235,7 +231,7 @@ def get_supra_from_string(supra_string: str, data):
             #     added = True
             #     seen_instances.add(inst)
             for instance in data:
-                if str(instance) == instance_string:
+                if str(instance).split(",{")[0] == instance_string:
                     if instance in seen_instances:
                         continue
                     sub.add(instance)

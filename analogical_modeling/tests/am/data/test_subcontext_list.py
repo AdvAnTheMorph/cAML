@@ -1,4 +1,4 @@
-"""weka.classifiers.lazy.AM.data"""
+"""Test SubcontextList"""
 
 import unittest
 

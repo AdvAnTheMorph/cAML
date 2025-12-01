@@ -1,52 +1,43 @@
-"""weka.classifiers.lazy.AM.lattice"""
+r"""Johnsen-Johansson Lattice
 
-# The approximation algorithm from "Efficient Modeling of Analogy", Johnsen and
-# Johansson, DOI 10.1007/978-3-540-30586-6_77.
-#
-# Terminology from the paper is as follows:
-#
-# <ul>
-# <li>$p$: the subcontext whose count is being approximated</li>
-# <li>$size(p)$: the size of the subcontext $p$; or, the number of 0's in
-# its label</li>
-# <li>$\mathcal{H}(p)$: the sets found by intersecting $p$ with any
-# subcontext that has a different outcome; the labels of such intersections</li>
-# <li>$max(p)$: the cardinality of the union of all $x\in\mathcal{H}(p)$;
-# the number of 0's in the union of the labels of all subcontexts in
-# $\mathcal{H}(p)$</li>
-# <li>$\mathcal{H}_{limit(p)}$: the heterogeneous elements under $p$ in the
-# lattice</li>
-# <li>$min(p)$: the size of the largest child of $p$; or, the number of 0's
-# in the label of the subcontext whose label has the most 0's and matches all
-# of the 1's in $p$'s label.</li>
-#
-# </ul>
-#
-# We estimate the count of each subcontext by randomly unioning sets of
-# subcontexts from $\{x_s\}$ and checking for heterogeneity (union means
-# OR'ing labels). The count of a subcontext $p$ is the size of its power set
-# minus the heterogeneous elements in this set (or $|\wp(p)| -
-# |\mathcal{H}_{limit(p)}|$). We use these bounds in approximating
-# $|\mathcal{H}_{limit(p)}|$:
-#
-# <ul>
-# <li>lower bound ($lb(p)$): the cardinality of the powerset of $min(p)$.</li>
-# <li>upper bound ($ub(p)$): $\sum_{k=1}^{min(p)}{max(p)\choose k}$</li>
-# </ul>
-#
-# The estimate $\hat{h}_p$ of $|\mathcal{H}_{limit(p)}|$ is computed by
-# sampling random sets of subcontexts ${x_s}$ and combining them with :
-#
-# $\frac{|\{x_s \in \mathcal{H}(p)|}{|\{x_s\}|}=\frac{\hat{h}_p}{ub(p)}$
-#
-# or
-#
-# $\hat{h}_p = \frac{ub(p)|x_s\in \mathcal{H}(p)|}{|\{x_s\}|}$
-#
-# <br>
-#
-# TODO: maybe if H(p) is small enough we could do exact counting with
-# include-exclude
+The approximation algorithm from "Efficient Modeling of Analogy", Johnsen and
+Johansson, DOI 10.1007/978-3-540-30586-6_77.
+
+Terminology from the paper is as follows:
+
+- $p$: the subcontext whose count is being approximated
+- $size(p)$: the size of the subcontext $p$; or, the number of 0's in its label
+- $\mathcal{H}(p)$: the sets found by intersecting $p$ with any subcontext that
+  has a different outcome; the labels of such intersections
+- $max(p)$: the cardinality of the union of all $x\in\mathcal{H}(p)$;
+  the number of 0's in the union of the labels of all subcontexts in
+  $\mathcal{H}(p)$</li>
+- $\mathcal{H}_{limit(p)}$: the heterogeneous elements under $p$ in the lattice
+- $min(p)$: the size of the largest child of $p$; or, the number of 0's in the
+  label of the subcontext whose label has the most 0's and matches all the 1's
+  in $p$'s label.
+
+We estimate the count of each subcontext by randomly unioning sets of
+subcontexts from $\{x_s\}$ and checking for heterogeneity (union means OR'ing
+labels). The count of a subcontext $p$ is the size of its power set minus the
+heterogeneous elements in this set (or $|\wp(p)| - |\mathcal{H}_{limit(p)}|$).
+We use these bounds in approximating $|\mathcal{H}_{limit(p)}|$:
+
+- lower bound ($lb(p)$): the cardinality of the powerset of $min(p)$.
+- upper bound ($ub(p)$): $\sum_{k=1}^{min(p)}{max(p)\choose k}$
+
+The estimate $\hat{h}_p$ of $|\mathcal{H}_{limit(p)}|$ is computed by
+sampling random sets of subcontexts ${x_s}$ and combining them with :
+
+$\frac{|\{x_s \in \mathcal{H}(p)|}{|\{x_s\}|}=\frac{\hat{h}_p}{ub(p)}$
+
+or
+
+$\hat{h}_p = \frac{ub(p)|x_s\in \mathcal{H}(p)|}{|\{x_s\}|}$
+
+
+TODO: maybe if H(p) is small enough we could do exact counting with include-exclude
+"""
 
 import random
 import concurrent.futures
@@ -93,6 +84,7 @@ def binomial_coefficient(p: Pair):
 
 
 class SupraApproximator():
+    """Approximator for Supracontexts"""
     def __init__(self, lattice: 'JohnsenJohanssonLattice', p: Subcontext,
                  outcome_sub_map: dict[float, list[Label]], rnd: random.Random):
         self.p = p
@@ -128,7 +120,7 @@ class SupraApproximator():
         # the upper bound on H_limit(p)
         ub_p = 0
         for k in range(1, min_p+1):
-            ub_p = ub_p + binomial_coefficient(Pair(max_p, k))
+            ub_p += binomial_coefficient(Pair(max_p, k))
         # ratio of |{x_s in H(p)}| to |{x_s}|
         hetero_ratio: float = self.estimate_hetero_ratio(hp, hp_union, NUM_EXPERIMENTS)
         # final estimation of total count of space subsumed by elements of
@@ -143,7 +135,7 @@ class SupraApproximator():
         approximated_supra.set_count(count)
         return approximated_supra
 
-    def estimate_hetero_ratio(self, hp: list[Label], hp_union: Label, num_experiments: int):
+    def estimate_hetero_ratio(self, hp: list[Label], hp_union: Label, num_experiments: int) -> float:
         """Estimate heterogeneous ratio"""
         hetero_count = 0
         cache: dict[Label, bool] = {}
@@ -187,16 +179,17 @@ class JohnsenJohanssonLattice(Lattice):
         :param random_provider: Provides randomness used for performing Monte
         Carlo simulation in child threads
         """
-        # // TODO: should run until convergence, not a constant number of times
+        # TODO: should run until convergence, not a constant number of times
         self.supras = set()
         self.filled = False
         self.bottom: Label = None
         self.random_provider = random_provider
 
-    def fill(self, sub_list: SubcontextList):
-        """
+    def fill(self, sub_list: SubcontextList) -> None:
+        """Fill the lattice with given subcontexts. This is meant to be done
+        only once for a given Lattice instance.
 
-        :raises: ValueError
+        :raises: ValueError if the lattice was already filled
         """
         if self.filled:
             raise ValueError("Lattice is already filled and cannot be filled again.")
@@ -215,7 +208,11 @@ class JohnsenJohanssonLattice(Lattice):
 
             for future in concurrent.futures.as_completed(futures):
                 self.supras.add(future.result())
-    # memoized_NcK = Memoizer.memoize(binominal_coefficient)
 
     def get_supracontexts(self):
+        """
+
+        :return: the list of supracontexts that were created by filling the
+        supracontextual lattice. From this, you can compute the analogical set.
+        """
         return self.supras

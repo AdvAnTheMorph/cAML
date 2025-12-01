@@ -1,19 +1,4 @@
-"""weka.classifiers.lazy.AM.lattice
- * **************************************************************************
- * Copyright 2021 Nathan Glenn                                              *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
- * you may not use this file except in compliance with the License.         *
- * You may obtain a copy of the License at                                  *
- *                                                                          *
- * http://www.apache.org/licenses/LICENSE-2.0                               *
- *                                                                          *
- * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
- * See the License for the specific language governing permissions and      *
- * limitations under the License.                                           *
- ****************************************************************************
- """
+"""Distributed Lattice"""
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
@@ -28,7 +13,7 @@ from analogical_modeling.am.lattice.lattice import Lattice
 
 
 class DistributedLattice(Lattice):
-    """This lass manages several smaller, heterogeneous lattices. The
+    """This class manages several smaller, heterogeneous lattices. The
     supracontexts of smaller lattices are combined to create the final
     Supracontexts.
     """
@@ -49,9 +34,7 @@ class DistributedLattice(Lattice):
         sub_list.get_labeler().num_partitions().
 
         :param sub_list: list of Subcontexts to add to the lattice
-        :raises: ExecutionException If execution is rejected for some reason,
-        :raises: InterruptedException If any thread is interrupted for any
-        reason (user presses ctrl-C, etc.)
+        :raises: ValueError if the lattice was already filled
         """
         if self.filled:
             raise ValueError("Lattice is already filled and cannot be filled again.")
@@ -81,67 +64,69 @@ class DistributedLattice(Lattice):
             self.supras = self.lattice_product(supras_futures.pop(0).result(), supras_futures.pop(0).result(), FinalizingProduct)
 
     @staticmethod
-    def fill_lattice_partition(sub_list: SubcontextList, partition_index: int) -> CanonicalizingSet:
+    def fill_lattice_partition(sub_list: SubcontextList, partition_index: int) -> set[Supracontext]:
         """Fills a heterogeneous lattice with subcontexts using the given label
         partition index."""
         lattice = HeterogeneousLattice(partition_index)
         lattice.fill(sub_list)
         return lattice.get_supracontexts()
 
-    def lattice_product_accumulate(self, supras1: list[Supracontext], supras2: list[Supracontext], supra_product_constructor) -> set[Supracontext]:
-        items1: list[tuple[frozenset, int, Supracontext]] = []
-        items2: list[tuple[frozenset, int, Supracontext]] = []
-        for supra in supras1:
-            data_fs = frozenset(supra.get_data())
-            items1.append((data_fs, supra.get_count(), supra))
-        for supra in supras2:
-            data_fs = frozenset(supra.get_data())
-            items2.append((data_fs, supra.get_count(), supra))
+    # @staticmethod
+    # def lattice_product_accumulate(supras1: list[Supracontext], supras2: list[Supracontext], supra_product_constructor) -> CanonicalizingSet:
+    #     """Finalize lattice product"""
+    #     items1: list[tuple[frozenset, int, Supracontext]] = []
+    #     items2: list[tuple[frozenset, int, Supracontext]] = []
+    #     for supra in supras1:
+    #         data_fs = frozenset(supra.get_data())
+    #         items1.append((data_fs, supra.get_count(), supra))
+    #     for supra in supras2:
+    #         data_fs = frozenset(supra.get_data())
+    #         items2.append((data_fs, supra.get_count(), supra))
+    #
+    #     # Choose smaller outer loop
+    #     if len(items2) < len(items1):
+    #         items1, items2 = items2, items1
+    #
+    #     # accumulate: key -> accumulated count (sum of products)
+    #     accum: dict[frozenset, int] = defaultdict(int)
+    #
+    #     for data1, count1, _ in items1:
+    #         for data2, count2, _ in items2:
+    #             inter = data1.intersection(data2)
+    #             if not inter:
+    #                 continue
+    #             accum[frozenset(inter)] += (count1 * count2)
+    #
+    #     if not accum:
+    #         return CanonicalizingSet.empty_set()
+    #
+    #     # Build final CanonicalizingSet (create appropriate object per intersection)
+    #     final_set = CanonicalizingSet()
+    #     # choose product constructor type to create the right object for each key
+    #     is_final = ((supra_product_constructor is FinalizingProduct)
+    #                 or isinstance(supra_product_constructor, FinalizingProduct))
+    #     for inter_fs, total_count in accum.items():
+    #         # create minimal supracontext object depending on product type
+    #         if is_final:
+    #             # create ClassifiedSupra and check heterogeneity/empty as FinalizingProduct would
+    #             supra = ClassifiedSupra()
+    #             for sub in inter_fs:
+    #                 supra.add(sub)
+    #                 if supra.is_heterogeneous():
+    #                     supra = None
+    #                     break
+    #             if supra is None or supra.is_empty():
+    #                 continue
+    #             supra.set_count(total_count)
+    #             final_set.merge(supra, lambda s1, s2: s1.set_count(s1.get_count() + s2.get_count()) or s1)
+    #         else:
+    #             # Intermediate / BasicSupra: keep BasicSupra with summed count
+    #             new_supra = BasicSupra(set(inter_fs), total_count)
+    #             final_set.merge(new_supra, lambda s1, s2: s1.set_count(s1.get_count() + s2.get_count()) or s1)
+    #
+    #     return final_set
 
-        # Choose smaller outer loop
-        if len(items2) < len(items1):
-            items1, items2 = items2, items1
-
-        # accumulate: key -> accumulated count (sum of products)
-        accum: dict[frozenset, int] = defaultdict(int)
-
-        for data1, count1, _ in items1:
-            for data2, count2, _ in items2:
-                inter = data1.intersection(data2)
-                if not inter:
-                    continue
-                accum[frozenset(inter)] += (count1 * count2)
-
-        if not accum:
-            return CanonicalizingSet.empty_set()
-
-        # Build final CanonicalizingSet (create appropriate object per intersection)
-        final_set = CanonicalizingSet()
-        # choose product constructor type to create the right object for each key
-        is_final = ((supra_product_constructor is FinalizingProduct)
-                    or isinstance(supra_product_constructor, FinalizingProduct))
-        for inter_fs, total_count in accum.items():
-            # create minimal supracontext object depending on product type
-            if is_final:
-                # create ClassifiedSupra and check heterogeneity/empty as FinalizingProduct would
-                supra = ClassifiedSupra()
-                for sub in inter_fs:
-                    supra.add(sub)
-                    if supra.is_heterogeneous():
-                        supra = None
-                        break
-                if supra is None or supra.is_empty():
-                    continue
-                supra.set_count(total_count)
-                final_set.merge(supra, lambda s1, s2: s1.set_count(s1.get_count() + s2.get_count()) or s1)
-            else:
-                # Intermediate / BasicSupra: keep BasicSupra with summed count
-                new_supra = BasicSupra(set(inter_fs), total_count)
-                final_set.merge(new_supra, lambda s1, s2: s1.set_count(s1.get_count() + s2.get_count()) or s1)
-
-        return final_set
-
-    def lattice_product(self, supras1: set[Supracontext], supras2: set[Supracontext], supra_product_constructor) -> set[Supracontext]:
+    def lattice_product(self, supras1: set[Supracontext], supras2: set[Supracontext], supra_product_constructor) -> CanonicalizingSet:
         """
         Combines two sets of Supracontexts to make a new List representing the
         intersection of two lattices. The lattice-combining step is partitioned
@@ -193,7 +178,8 @@ class IntermediateProduct:
 
         return combined_supras
 
-    def product(self, supra1: Supracontext, supra2: Supracontext) -> BasicSupra|None:
+    @staticmethod
+    def product(supra1: Supracontext, supra2: Supracontext) -> BasicSupra|None:
         """
         Combine this partial supracontext with another to make a third which
         contains the subcontexts in common between the two, and a count which is
@@ -232,7 +218,8 @@ class FinalizingProduct:
 
         return final_supras
 
-    def product(self, supra1: Supracontext, supra2: Supracontext) -> ClassifiedSupra|None:
+    @staticmethod
+    def product(supra1: Supracontext, supra2: Supracontext) -> ClassifiedSupra|None:
         """Combine this partial supracontext with another to make a
         ClassifiedSupra object.
 

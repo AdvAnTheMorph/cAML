@@ -1,4 +1,4 @@
-"""weka.classifiers.lazy.AM"""
+"""Version information of the Analogical Modeling algorithm"""
 
 from pathlib import Path
 from sys import stderr
@@ -8,7 +8,7 @@ DEFAULT_VERSION = "UNKNOWN"
 
 
 class AMVersion:
-    "Specify version of Analogical Modeling"
+    """Specify version of Analogical Modeling"""
     def __init__(self):
         self.version = self.get_version()
 
@@ -34,6 +34,3 @@ class AMVersion:
             # the whole system from loading! So we must catch everything.
             print(f"Failed to load version from Description.props: {e}", file=stderr)
             return DEFAULT_VERSION
-
-    def main(self, _args: list[str]):
-        print(self.get_version())

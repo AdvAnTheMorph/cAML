@@ -1,18 +1,4 @@
-"""weka.classifiers.lazy.AM.lattice"""
- # * **************************************************************************
- # * Copyright 2021 Nathan Glenn                                              *
- # * Licensed under the Apache License, Version 2.0 (the "License");          *
- # * you may not use this file except in compliance with the License.         *
- # * You may obtain a copy of the License at                                  *
- # *                                                                          *
- # * http://www.apache.org/licenses/LICENSE-2.0                               *
- # *                                                                          *
- # * Unless required by applicable law or agreed to in writing, software      *
- # * distributed under the License is distributed on an "AS IS" BASIS,        *
- # * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
- # * See the License for the specific language governing permissions and      *
- # * limitations under the License.                                           *
- # ****************************************************************************
+"""Basic Lattice"""
 
 from analogical_modeling.am.lattice.lattice import Lattice
 from analogical_modeling.am import am_utils
@@ -38,9 +24,9 @@ class BasicLattice(Lattice):
         Initializes Supracontextual lattice to a 2^n length array of
         Supracontexts, as well as the empty and heterogeneous supracontexts.
         """
-        # points to nothing, has no data or outcome.
+        # points to nothing, has no data or outcome
         self.hetero_supra = LinkedLatticeNode(ClassifiedSupra())
-        # All points in the lattice point to the empty supracontext by default.
+        # all points in the lattice point to the empty supracontext by default
         self.empty_supracontext = LinkedLatticeNode(ClassifiedSupra())
         self.empty_supracontext.set_next(self.empty_supracontext)
 
@@ -49,17 +35,22 @@ class BasicLattice(Lattice):
         # the current number of the subcontext being added
         self.index = -1
 
-    def fill(self, sub_list: SubcontextList):
+    def fill(self, sub_list: SubcontextList) -> None:
+        """Fill the lattice with given subcontexts. This is meant to be done
+        only once for a given Lattice instance.
+
+        :raises: ValueError if the lattice was already filled
+        """
         if self.filled:
             raise ValueError("Lattice is already filled and cannot be filled again.")
         self.filled = True
-        # Fill the lattice with all the subcontexts
+        # fill the lattice with all the subcontexts
         for sub in sub_list:
             self.index += 1
             self.insert(sub)
 
     def insert(self, sub: Subcontext):
-        """Inserts sub into the lattice.
+        """Insert sub into the lattice.
 
         :param sub: Subcontext to be inserted
         """
@@ -70,7 +61,7 @@ class BasicLattice(Lattice):
             return
         # add the sub to its label position
         self.add_to_context(sub, sub.get_label())
-        # then add the sub to all of the children of its label position
+        # then add the sub to all the children of its label position
         for el in sub.get_label().descendant_iterator():
             self.add_to_context(sub, el)
         # remove supracontexts with count = 0 after every pass
@@ -82,22 +73,20 @@ class BasicLattice(Lattice):
         :param sub: subcontext to be added
         :param label: label of supracontext to add the subcontext to
         """
-        # the default value is the empty supracontext (leave null until now to
+        # the default value is the empty supracontext (leave None until now to
         # save time/space)
         if label not in self.lattice:
             self.lattice[label] = self.empty_supracontext
 
         # if the Supracontext is heterogeneous, ignore it
-        if self.lattice.get(label) is self.hetero_supra:  # Java == corresponds to Python is
+        if self.lattice.get(label) is self.hetero_supra:
             return
 
         # if the following supracontext matches the current index, just
         # re-point to that one; this is a supracontext that was made in
         # the final else statement below this one.
         if self.lattice.get(label).get_next().get_index() == self.index:
-            # assert self.lattice.get(label).get_next().get_data().contains_all(self.lattice.get(label).get_data())
-            # TODO: assert (lattice.get(label).getNext().getData().containsAll(lattice.get(label).getData()));
-            # don't decrement count on emptySupracontext!
+            # don't decrement count on empty_supracontext!
             if self.lattice.get(label) != self.empty_supracontext:
                 self.lattice.get(label).decrement_count()
             self.lattice[label] = self.lattice.get(label).get_next()
@@ -110,13 +99,13 @@ class BasicLattice(Lattice):
             return
         # otherwise make a new Supracontext and add it
         else:
-            # don't decrement the count for the emptySupracontext!
+            # don't decrement the count for the empty_supracontext!
             if self.lattice.get(label) != self.empty_supracontext:
                 self.lattice.get(label).decrement_count()
             self.lattice[label] = self.lattice.get(label).insert_after(sub, self.index)
 
     def clean_supra(self):
-        """Cycles through the the supracontexts and deletes ones with count=0"""
+        """Cycles through the supracontexts and deletes ones with count 0"""
         supra = self.empty_supracontext
         while supra.get_next() != self.empty_supracontext:
             if supra.get_next().get_count() == 0:
@@ -126,6 +115,11 @@ class BasicLattice(Lattice):
         assert self.no_zero_supras()
 
     def get_supracontexts(self) -> set:
+        """
+
+        :return: the list of supracontexts that were created by filling the
+        supracontextual lattice. From this, you can compute the analogical set.
+        """
         sup_list = set()
         supra = self.empty_supracontext.get_next()
         while supra != self.empty_supracontext:
@@ -142,6 +136,7 @@ class BasicLattice(Lattice):
         ])
 
     def no_zero_supras(self):
+        """Check for presence of supracontexts with count 0"""
         for supra in self.get_supracontexts():
             if supra.get_count == 0:
                 return False

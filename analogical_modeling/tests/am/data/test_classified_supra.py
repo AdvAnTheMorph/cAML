@@ -1,9 +1,8 @@
-"""weka.classifiers.lazy.AM.data"""
+"""Test ClassifiedSupra."""
 
 import unittest
 from math import isnan
 
-from analogical_modeling import utils
 from analogical_modeling.am import am_utils
 from analogical_modeling.am.data.classified_supra import ClassifiedSupra
 from analogical_modeling.am.data.subcontext import Subcontext

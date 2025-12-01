@@ -1,4 +1,4 @@
-"""weka.classifiers.lazy.AM.label"""
+"""Labeler"""
 
 from math import ceil, floor
 
@@ -25,10 +25,10 @@ class Labeler:
     def __init__(self, test: Instance, ignore_unknowns: bool, mdc: MissingDataCompare):
         """
 
-        :param test: Instance being classified
+        :param test: instance being classified
         :param ignore_unknowns: True if attributes with undefined values in the
         test item should be ignored; False if not.
-        :param mdc: Specifies how to compare missing attributes
+        :param mdc: specifies how to compare missing attributes
         """
         self.mdc = mdc
         self.test_instance = test
@@ -48,31 +48,16 @@ class Labeler:
     def get_cardinality(self):
         """
 
-        :return: The cardinality of the generated labels, or how many instance
+        :return: cardinality of the generated labels, or how many instance
         attributes are considered during labeling.
         """
         return self.test_instance.num_attributes() - len(self.ignore_set) - 1
-
-    @staticmethod
-    def get_cardinality_of(test_instance: Instance, ignore_unknowns: bool):  # TODO: was get_cardinality -> check that right method used!
-        """Calculate the label cardinality for a given test instance
-
-        :param test_instance: instance to assign labels
-        :param ignore_unknowns: True if unknown values are ignored; False otherwise
-        :return: the cardinality of labels generated from testInstance and ignoreUnknowns
-        """
-        cardinality = 0
-        for i in range(test_instance.num_attributes()):
-            if (i != test_instance.class_index
-                    and not (test_instance.is_missing(i) and ignore_unknowns)):
-                cardinality += 1
-        return cardinality
 
     def get_ignore_unknowns(self):
         """
 
         :return: True if attributes with undefined values in the test item are
-        ignored during labeling; False if not.
+        ignored during labeling; False otherwise
         """
         return self.ignore_unknowns
 
@@ -91,12 +76,12 @@ class Labeler:
         return self.test_instance
 
     def is_ignored(self, index: int) -> bool:
-        """Find if the attribute at the given index is ignored during labeling.
+        """CHeck if the attribute at the given index is ignored during labeling.
 
         The default behavior is to ignore the attributes with unknown values in
         the test instance if get_ignore_unknowns() is True.
 
-        :param index: Index of the attribute being queried
+        :param index: index of the attribute being queried
         :return: True if the given attribute is ignored during labeling; False otherwise.
         """
         return index in self.ignore_set
@@ -105,11 +90,12 @@ class Labeler:
         """Create a context label for the input instance by comparing it with
         the test instance.
 
-        :param data: Instance to be labeled
-        :return: the label for the context that the instance belongs to. The
-        cardinality of the label will be the same as the test and data items.
-        At any given index i, label.matches(i) will return True if that feature
-        is the same in the test and data instances.
+        The cardinality of the label will be the same as the test and data
+        items. At any given index i, label.matches(i) will return True if that
+        feature is the same in the test and data instances.
+
+        :param data: instance to be labeled
+        :return: the label for the context that the instance belongs to
         """
         # if not data.equal_headers(self.get_test_instance()):
         #     raise ValueError("Input instance is not compatible with the test instance")
@@ -181,13 +167,13 @@ class Labeler:
             atts.append(str(instance[i]))
         return atts
 
-    def get_instance_atts_names_list(self, instance: Instance) -> list[str]:
-        atts = []
-        for i in range(instance.num_attributes()):
-            if i == instance.class_index or self.is_ignored(i):
-                continue
-            atts.append(instance.attribute_name(i))
-        return atts
+    # def get_instance_atts_names_list(self, instance: Instance) -> list[str]:
+    #     atts = []
+    #     for i in range(instance.num_attributes()):
+    #         if i == instance.class_index or self.is_ignored(i):
+    #             continue
+    #         atts.append(instance.attribute_name(i))
+    #     return atts
 
     def get_lattice_top(self):
         """
@@ -195,7 +181,7 @@ class Labeler:
         lattice formed by the subcontexts labeled by this labeler, i.e. the one
         for which every feature is a match.
 
-	    :return: A label with all matches
+	    :return: label with all matches
 	    """
         return Label(set(), self.get_cardinality())
 
@@ -205,7 +191,7 @@ class Labeler:
 	    lattice formed by the subcontexts labeled by this labeler, i.e. the one
 	    for which every feature is a mismatch.
 
-        :return: A label with all mismatches
+        :return: label with all mismatches
         """
         bottom = set(range(self.get_cardinality()))
 
@@ -236,9 +222,10 @@ class Labeler:
             process(MyLabeler.partition(my_label, i))
 
 
+        :param label: Label to create partitions for
         :param partition_index:  index of the partition to return
         :return: a new label representing a portion of the attributes
-        represented by the input label.
+        represented by the input label
         :raises: ValueError if the partitionIndex is greater than
         num_partitions() or less than zero.
         :raises: ValueError if the input label is not compatible with this
@@ -253,7 +240,7 @@ class Labeler:
         if not isinstance(label, Label):
             raise ValueError(
                 f"This labeler can only handle Labels; input label was an "
-                f"instance of {label.__class__.__name__}")
+                f"instance of {type(label)}")
 
         # create and cache the masks if they have not be created yet
         return self.partitioners[partition_index].extract(label)
@@ -261,7 +248,7 @@ class Labeler:
     def num_partitions(self) -> int:
         """
 
-        :return: The number of label partitions available via partition
+        :return: number of label partitions available via partition
         """
         if self.get_cardinality() < PARTITION_SIZE:
             return 1
@@ -271,12 +258,12 @@ class Labeler:
         """This provides a default partitioning implementation which is
         overridable by child classes.
 
-        :return: An array of partitions indicating how labels can be split
-        into partitions.
+        :return: array of partitions indicating how labels can be split
+        into partitions
         """
         spans = [Partition(0, 0) for _ in range(self.num_partitions())]
         span_size = floor(self.get_cardinality() / self.num_partitions())
-        # an extra bit will be given to remainder masks, since numMasks
+        # an extra bit will be given to remainder masks, since num_masks
         # probably does not divide cardinality
         remainder = self.get_cardinality() % self.num_partitions()
         index = 0
@@ -300,15 +287,15 @@ class Partition:
     def get_start_index(self) -> int:
         """
 
-        :return: The beginning of the span
+        :return: beginning of span
         """
         return self.start_index
 
     def get_cardinality(self) -> int:
         """
 
-        :return: The cardinality of the partition, or number of represented
-        features.
+        :return: cardinality of the partition, or number of represented
+        features
         """
         return self.cardinality
 

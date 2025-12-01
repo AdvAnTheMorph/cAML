@@ -1,7 +1,11 @@
-"""weka.classifiers.lazy.AM.lattice"""
+"""Lattice Factory
+
+Creates suitable lattice based on cardinality
+"""
 
 import random
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from analogical_modeling.am.lattice.lattice import Lattice
 from analogical_modeling.am.lattice.johnsen_johansson_lattice import JohnsenJohanssonLattice
@@ -23,7 +27,7 @@ class LatticeFactory(ABC):
 class CardinalityBasedLatticeFactory(LatticeFactory):
     """Chooses the lattice implementation based on the cardinality of
 	   the instances in the subcontext list."""
-    def __init__(self, cardinality: int, num_partitions: int, random_provider = None):
+    def __init__(self, cardinality: int, num_partitions: int, random_provider: Optional[random.Random] = None):
         self.cardinality = cardinality
         self.num_partitions = num_partitions
 

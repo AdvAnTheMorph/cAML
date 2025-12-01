@@ -12,6 +12,8 @@ import pandas as pd
 
 class Instance(pd.Series):
     """Instance Representation"""
+
+    # needed for serialization
     _metadata = ["class_index", "ignored", "real_data", "data_idx", "weight"]
 
     def __init__(self, data: pd.Series, class_column: str, ignore_list: list[str], idx: int, weight: float):
@@ -71,7 +73,7 @@ class Instance(pd.Series):
         return self.iloc[self.class_index]
 
     def __str__(self) -> str:
-        return f"{','.join(map(str, self.array))}"  #,\u007b{self.num_attributes()}\u007d"
+        return f"{','.join(map(str, self.array))},\u007b{self.weight}\u007d"
 
     def __hash__(self) -> int:
         return int(pd.util.hash_pandas_object(self, index=False).sum())+hash(37*self.data_idx)
@@ -107,7 +109,7 @@ class Dataset:
 
         self.class_index = self.num_attributes() - 1
 
-    def from_csv(self, source: str|Path, weights: str = ""):
+    def from_csv(self, source: str|Path, weights: str = "") -> 'Dataset':
         """Read dataset from csv file
 
         :param source: path to csv file
@@ -141,7 +143,7 @@ class Dataset:
         """Return the number of attributes that are not ignored."""
         return self.data.shape[1] - len(self.ignored)
 
-    def set_class_index(self, idx: int):
+    def set_class_index(self, idx: int) -> None:
         """Set the class index.
 
         :param idx: index of the class
@@ -151,7 +153,7 @@ class Dataset:
                              f"{self.num_attributes()} attributes.")
         self.class_index = idx
 
-    def filter_threshold(self, threshold: float):
+    def filter_threshold(self, threshold: float) -> None:
         """Drop all instances with a weight below the given threshold."""
         temp = pd.DataFrame(self.weights)
         if threshold != 0:
@@ -162,7 +164,7 @@ class Dataset:
             self.weights = list(filter(lambda w: w > threshold, self.weights))
         self.data.reset_index(drop=True, inplace=True)
 
-    def delete_with_missing_class(self):
+    def delete_with_missing_class(self) -> None:
         """Delete instances without a class"""
         self.data.dropna(subset=self.data.columns[self.class_index], inplace=True)
 
@@ -178,7 +180,7 @@ class Dataset:
         """Return the name of the class column."""
         return self.data.columns[self.class_index]
 
-    def set_ignored(self, ignore: list[str]):
+    def set_ignored(self, ignore: list[str]) -> None:
         """Set ignored columns.
 
         :param ignore: columns to ignore
@@ -197,7 +199,7 @@ class Dataset:
     def __len__(self):
         return self.data.shape[0]
 
-    def add(self, row: Instance):
+    def add(self, row: Instance) -> None:
         """Add an instance to the dataset.
 
         :param row: instance to add

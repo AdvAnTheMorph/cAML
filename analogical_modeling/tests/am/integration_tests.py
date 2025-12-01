@@ -1,16 +1,18 @@
-"""weka.classifiers.lazy.AM"""
+"""Integration test for Analogical Modeling."""
 
+import sys
 import unittest
 
 from analogical_modeling.aml import AnalogicalModeling
 from analogical_modeling.tests.am import test_utils
 
 
+@unittest.skipUnless("run_integration_tests" in sys.argv, "Run only during integration tests")
 class IntegrationTests(unittest.TestCase):
     def test_spanish_stress(self):
-        # This dataset has published results with AM, so we ensure our accuracy matches the publication
+        # This dataset has published results with AM, so we ensure our accuracy
+        # matches the publication
         # It's a long test, though, so only run it during integration tests
-        #Assume.assumeTrue(TestUtils.RUN_INTEGRATION_TESTS);
 
         train = test_utils.get_dataset(test_utils.SPANISH_STRESS)
         am = AnalogicalModeling()

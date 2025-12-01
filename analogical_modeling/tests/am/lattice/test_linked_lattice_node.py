@@ -1,4 +1,4 @@
-"""weka.classifiers.lazy.AM.lattice"""
+"""Test LinkedLatticeNode."""
 
 import unittest
 

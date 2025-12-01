@@ -1,4 +1,4 @@
-"""weka.classifiers.lazy.AM.data"""
+"""Test GangEffect"""
 
 
 import unittest

@@ -1,6 +1,6 @@
-"""weka.classifiers.lazy.AM.lattice"""
+"""Lattice wrapper"""
 
-from typing import TypeVar
+from typing import TypeVar, Optional
 
 from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.supracontext import Supracontext
@@ -15,7 +15,7 @@ class LinkedLatticeNode(Supracontext):
     functionality of a linked node used in certain lattice-filling algorithms.
     An index is also provided for use in determining when the node was created.
     """
-    def __init__(self, supra: T, ind: int|None = None):
+    def __init__(self, supra: T, ind: Optional[int] = None):
         """Create a new node containing the given supracontext. The index is
         set to -1.
 
@@ -58,7 +58,7 @@ class LinkedLatticeNode(Supracontext):
         """
         return self.next
 
-    def set_next(self, node: 'LinkedLatticeNode'):
+    def set_next(self, node: 'LinkedLatticeNode') -> None:
         """Set the next node linked to by this node
 
         :param node: the node to link to
@@ -68,7 +68,7 @@ class LinkedLatticeNode(Supracontext):
     def get_index(self) -> int:
         """
 
-        :return: The index of this node.
+        :return: index of this node
         """
         return self.index
 
@@ -76,12 +76,13 @@ class LinkedLatticeNode(Supracontext):
         """Increases count by one"""
         self.supra.set_count(self.supra.get_count() + 1)
 
-    def decrement_count(self):
-        """
-        Decreases the count by one; if this reaches 0, then this Supracontext
-        should be discarded (by the caller).
+    def decrement_count(self) -> None:
+        """Decreases the count by one
 
-        :raises: ValueError if the count is already zero.
+        If this reaches 0, then this Supracontext should be discarded
+        (by the caller).
+
+        :raises: ValueError if the count is already zero
         """
         if self.supra.get_count() <= 0:
             raise ValueError('Count cannot be less than zero.')
@@ -92,28 +93,36 @@ class LinkedLatticeNode(Supracontext):
         return self.supra
 
     def copy(self) -> Supracontext:
+        """Return an exact, deep copy of the supracontext.
+
+        :return: a deep copy of this supracontext.
+        """
         new_supra = self.get_supracontext().copy()
         new_node = LinkedLatticeNode(new_supra, self.index)
         new_node.set_next(self.next)
         return new_node
 
     # Below methods are delegated to the contained supracontext
-    def add(self, other: Subcontext):
+    def add(self, other: Subcontext) -> None:
+        """Add subcontext to contained supracontext"""
         self.supra.add(other)
 
     def get_data(self) -> set[Subcontext]:
+        """Get data of contained supracontext"""
         return self.supra.get_data()
 
     def is_empty(self) -> bool:
+        """Check if contained supracontext is empty"""
         return self.supra.is_empty()
 
     def get_count(self) -> int:
         return self.supra.get_count()
 
-    def set_count(self, count: int):
+    def set_count(self, count: int) -> None:
         self.supra.set_count(count)
 
     def get_context(self) -> Label:
+        """Get context of contained supracontext"""
         return self.supra.get_context()
 
     def __eq__(self, other):

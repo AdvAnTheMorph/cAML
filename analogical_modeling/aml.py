@@ -1,19 +1,4 @@
-"""weka.classifiers.lazy
- * **************************************************************************
- * Copyright 2021 Nathan Glenn                                              *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
- * you may not use this file except in compliance with the License.         *
- * You may obtain a copy of the License at                                  *
- *                                                                          *
- * http://www.apache.org/licenses/LICENSE-2.0                               *
- *                                                                          *
- * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
- * See the License for the specific language governing permissions and      *
- * limitations under the License.                                           *
- ****************************************************************************
-"""
+"""Analogical Modeling Algorithm"""
 
 import argparse
 from random import Random
@@ -465,13 +450,13 @@ class AnalogicalModeling:
         ignore_given = self.remove_test_exemplar
         count_strategy = "linear" if self.linear_count else "quadratic"
 
-        gang_header = (feats.tolist() + cls_header_gang +
+        gang_header = (feats.tolist() + ["Weight"] + cls_header_gang +
                        ["Gang pointers", "Gang pct", "Rank", "Size", "Total pointers",
                         "Classified item index", "Classified item class"] +
                        [f"Classified item {el}" for el in feats])
         analog_header = (feats.tolist() +
-                         ["Class", "Percentage", "Pointers", "Classified item index",
-                          "Classified item class"] +
+                         ["Weight", "Class", "Percentage", "Pointers",
+                          "Classified item index", "Classified item class"] +
                          [f"Classified item {el}" for el in feats])
         distr_header = (["Judgement", "Expected", "Predicted"] + feats.tolist() +
                         cls_header +
@@ -505,7 +490,7 @@ class AnalogicalModeling:
                     for cls in classes
                 ], []) for inst in effect.subcontext.data}
 
-                gangs += [inst.real_data.tolist() + cls_info[inst] + [
+                gangs += [inst.real_data.tolist() + [inst.weight] + cls_info[inst] + [
                     effect_pointers,  # gang pointers
                     round(gang_pct, 3),  # gang pct
                     rank,  # rank
@@ -521,6 +506,7 @@ class AnalogicalModeling:
             effects = res.ex_effect_map
             analogs += [
                 inst.real_data.to_list() + [
+                    inst.weight,  # weight
                     inst.class_value(),  # class
                     effects.get(inst)*100,  # percentage
                     ptrs,  # pointers

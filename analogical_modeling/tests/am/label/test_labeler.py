@@ -1,4 +1,4 @@
-"""weka.classifiers.lazy.AM.label"""
+"""Test Labeler"""
 
 
 import unittest
