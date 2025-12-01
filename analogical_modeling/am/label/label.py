@@ -1,12 +1,12 @@
 """Match/Mismatch label"""
 
-
 from typing import Iterator, Union, Optional
 
 
 class Label:
     """This Label implementations stores match and mismatch data in a BitSet."""
-    def __init__(self, l: Union[set,'Label'], c: Optional[int] = None):
+
+    def __init__(self, l: Union[set, 'Label'], c: Optional[int] = None):
         """Create a new label by storing match/mismatch information in the given
         bitset.
 
@@ -21,7 +21,9 @@ class Label:
             self.label_bits = l
             self.card = c
         else:
-            raise ValueError("Either a Label instance or a set and a cardinality must be given.")
+            raise ValueError(
+                "Either a Label instance or a set and a cardinality must be "
+                "given.")
         self.__hash_code = 37 * self.card + hash(frozenset(self.label_bits))
 
     def get_cardinality(self) -> int:
@@ -133,6 +135,7 @@ class Label:
 
 class SubsetIterator:
     """Construct an iterator over all subsets of this label"""
+
     def __init__(self, bitset_label: Label):
         self.card = bitset_label.get_cardinality()
         self.current = set(bitset_label.get_label_bits())  # copy
@@ -157,15 +160,15 @@ class SubsetIterator:
     def __next__(self):
         if not self.has_next:
             raise StopIteration
-        # we use bin_counter like a binary integer in order to permute
-        # all combinations of 1's and 0's for the gaps
-        # choose gap bit to flip; it's whichever is the rightmost
-        # 1 in bin_counter.
-        right_most = min(self.bin_counter) # since we count from 0 upward
+        # we use bin_counter like a binary integer in order to permute all
+        # combinations of 1's and 0's for the gaps
+        # choose gap bit to flip; it's whichever is the rightmost 1 in
+        # bin_counter.
+        right_most = min(self.bin_counter)  # since we count from 0 upward
         self.bin_counter.discard(right_most)
         # then subtract 1 from rightMost (do the binary arithmetic by hand here)
         if right_most != 0:
-            for i in range(right_most-1, -1, -1):
+            for i in range(right_most - 1, -1, -1):
                 self.bin_counter.add(i)
 
         # flip

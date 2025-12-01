@@ -7,8 +7,8 @@ dataset
 from abc import ABC, abstractmethod
 from functools import reduce
 
-from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.data.subcontext import Subcontext
+from analogical_modeling.am.label.label import Label
 
 
 class Supracontext(ABC):
@@ -22,6 +22,7 @@ class Supracontext(ABC):
     in a BigInteger object and starts out as 1 and is never allowed to fall
     below 0, which indicates that the object should be discarded.
     """
+
     @abstractmethod
     def copy(self) -> 'Supracontext':
         """Return an exact, deep copy of the supracontext.
@@ -86,7 +87,8 @@ class Supracontext(ABC):
         are empty
         """
         return reduce(lambda x, y: x.intersect(y),
-                      [subcontext.get_label() for subcontext in self.get_data()])
+                      [subcontext.get_label()
+                       for subcontext in self.get_data()])
 
     @abstractmethod
     def __eq__(self, other: object) -> bool:

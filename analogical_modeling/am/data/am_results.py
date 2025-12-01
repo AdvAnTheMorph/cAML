@@ -1,14 +1,14 @@
 """Result of Analogical Modeling"""
 
+from collections import defaultdict
 from enum import Enum
 from os import linesep
-from collections import defaultdict
 
-from analogical_modeling.am.data.supracontext import Supracontext
-from analogical_modeling.am.data.subcontext import Subcontext
-from analogical_modeling.am.data.gang_effect import GangEffect
-from analogical_modeling.am.data.subcontext_list import SubcontextList
 from analogical_modeling.am import am_utils
+from analogical_modeling.am.data.gang_effect import GangEffect
+from analogical_modeling.am.data.subcontext import Subcontext
+from analogical_modeling.am.data.subcontext_list import SubcontextList
+from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.label.labeler import Labeler
 from analogical_modeling.am.lattice.lattice import Lattice
 from analogical_modeling.utils import Instance
@@ -32,11 +32,11 @@ class Judgement(Enum):
     UNKNOWN = "unknown"
 
 
-
 class AMResults:
     """The results of running AM, containing the analogical effects of the
     individual training instances as well as the relevant supracontexts and
     overall class likelihoods."""
+
     def __init__(self, lattice: Lattice, sub_list: SubcontextList,
                  test_item: Instance, linear: bool, labeler: Labeler):
         """
@@ -62,7 +62,8 @@ class AMResults:
             self.pointer_counting_strategy = PointerCountingStrategy.QUADRATIC
 
         # find numbers of pointers to individual exemplars
-        self.ex_pointer_map: dict[Instance, float] = self.get_pointers(self.supra_list, linear)
+        self.ex_pointer_map: dict[Instance, float] = self.get_pointers(
+            self.supra_list, linear)
         # find the total number of pointers
         self.total_pointers: float = sum(self.ex_pointer_map.values())
 
@@ -89,7 +90,7 @@ class AMResults:
         # Find the classes with the highest likelihood (there may be a tie)
         self.predicted_classes: set = set()
         self.class_probability = -1
-        for cls_name  in self.class_likelihood_map:
+        for cls_name in self.class_likelihood_map:
             temp = self.class_likelihood_map[cls_name]
             if temp > self.get_class_probability():
                 self.class_probability = temp
@@ -98,7 +99,8 @@ class AMResults:
                 self.predicted_classes.add(cls_name)
 
     @staticmethod
-    def get_pointers(supracontexts: set[Supracontext], linear: bool) -> dict[Instance, float]:
+    def get_pointers(supracontexts: set[Supracontext], linear: bool) -> dict[
+        Instance, float]:
         """See page 392 of the red book.
 
         :param supracontexts: List of Supracontexts created by filling the
@@ -130,21 +132,23 @@ class AMResults:
                     if linear:
                         pointer_product = pointers_to_supra * e.weight
                     else:
-                        pointer_product = pointers_in_list * pointers_to_supra * e.weight
+                        pointer_product = (pointers_in_list *
+                                           pointers_to_supra * e.weight)
                     pointers[e] += pointer_product
         return pointers
 
     def __str__(self):
         effects = ""
         for k, v in self.get_exemplar_pointers().items():
-            effects += f"{k} : {v} ({v / self.total_pointers}){am_utils.LINE_SEPARATOR}"
+            effects += (f"{k} : {v} ({v / self.total_pointers})"
+                        f"{am_utils.LINE_SEPARATOR}")
         effects += f"Outcome likelihoods:{linesep}"
 
-        sorted_entries = sorted(self.get_class_pointers().items(), key=lambda entry: entry[1])
-        # Set<Entry<String, BigInteger>> sortedEntries2 = new TreeSet<>(Entry.comparingByValue());
-        # sortedEntries2.addAll(getClassPointers().entrySet());
+        sorted_entries = sorted(self.get_class_pointers().items(),
+                                key=lambda entry: entry[1])
         for k, v in sorted_entries:
-            effects += f"{k} : {v} ({v / self.total_pointers}){am_utils.LINE_SEPARATOR}"
+            effects += (f"{k} : {v} ({v / self.total_pointers})"
+                        f"{am_utils.LINE_SEPARATOR}")
 
         return f"classifying: {self.get_classified_ex()}{linesep}outcome: " \
                f"{self.predicted_classes} ({self.class_probability}){linesep}" \
@@ -222,7 +226,8 @@ class AMResults:
         :return: all subcontexts contained in all the supracontexts of the
         analogical set.
         """
-        return {data for supra in self.get_supra_list() for data in supra.get_data()}
+        return {data for supra in self.get_supra_list()
+                for data in supra.get_data()}
 
     def get_gang_effects(self) -> list[GangEffect]:
         """
@@ -230,8 +235,10 @@ class AMResults:
         :return: gang effects, sorted by size of the effect and then
         alphabetically by the subcontext display label
         """
-        effects = [GangEffect(sub, self.get_exemplar_pointers()) for sub in self.get_subcontexts()]
-        return sorted(effects, key=lambda e: (-e.total_pointers, e.subcontext.get_display_label()))
+        effects = [GangEffect(sub, self.get_exemplar_pointers())
+                   for sub in self.get_subcontexts()]
+        return sorted(effects, key=lambda e: (
+            -e.total_pointers, e.subcontext.get_display_label()))
 
     def get_labeler(self) -> Labeler:
         """

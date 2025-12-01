@@ -5,19 +5,17 @@ import random
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from threading import Lock
-
 from unittest.mock import Mock
 
 from analogical_modeling import utils
 from analogical_modeling.am import am_utils
 from analogical_modeling.am.data.am_results import AMResults
+from analogical_modeling.am.data.classified_supra import ClassifiedSupra
 from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.label.label import Label
-from analogical_modeling.am.data.classified_supra import ClassifiedSupra
 from analogical_modeling.aml import AnalogicalModeling
 from analogical_modeling.utils import Dataset
-
 
 # The name of the chapter 3 training data file
 CHAPTER_3_DATA = "ch3example.csv"
@@ -41,7 +39,8 @@ def get_dataset(file_in_data_folder: str, weights: str = "") -> utils.Dataset:
     that the file is in the project data folder, and that the class attribute
     is the last one.
 
-    :param file_in_data_folder: Name of csv file located in the project data folder
+    :param file_in_data_folder: Name of csv file located in the project data
+    folder
     :param weights: Optional column name for weights
     :return: The dataset contained in the given file.
     :raises Exception: if there is a problem loading the dataset
@@ -52,7 +51,8 @@ def get_dataset(file_in_data_folder: str, weights: str = "") -> utils.Dataset:
     return data
 
 
-def get_instance_from_file(file_in_data_folder: str, index: int) -> utils.Instance:
+def get_instance_from_file(file_in_data_folder: str,
+                           index: int) -> utils.Instance:
     """
     Read a dataset from disk and return the Instance object at the specified
     index. It is assumed that the file is in the project data folder, and
@@ -83,7 +83,8 @@ def mock_instance(num_attributes: int):
     return inst
 
 
-def get_reduced_dataset(file_in_data_folder: str, ignore_atts: list[int]) -> utils.Dataset:
+def get_reduced_dataset(file_in_data_folder: str,
+                        ignore_atts: list[int]) -> utils.Dataset:
     """Read a dataset from the given file and remove the specified attributes, then return it.
 
     :param file_in_data_folder: name of file in the project data folder
@@ -94,7 +95,7 @@ def get_reduced_dataset(file_in_data_folder: str, ignore_atts: list[int]) -> uti
     data = get_dataset(file_in_data_folder)
 
     data.data.drop(data.data.columns[ignore_atts], axis=1, inplace=True)
-    data.set_class_index(data.num_attributes() -1)
+    data.set_class_index(data.num_attributes() - 1)
     return data
 
 
@@ -125,7 +126,8 @@ def contains_supra(actual_supras: set, expected) -> bool:
     return False
 
 
-def leave_out_index(am: AnalogicalModeling, data: Dataset, index: int) -> AMResults:
+def leave_out_index(am: AnalogicalModeling, data: Dataset,
+                    index: int) -> AMResults:
     # copy so that removing an instance doesn't affect the original
     train = Dataset(data)
     test = train[index]
@@ -203,7 +205,8 @@ def get_supra_from_string(supra_string: str, data):
         if len(sub_components) != 3:
             raise ValueError(f"Incomplete subcontext specified {substring}")
         # parse label
-        label = Label(bits_to_bitset(int(sub_components[0], 2)), len(sub_components[0]))
+        label = Label(bits_to_bitset(int(sub_components[0], 2)),
+                      len(sub_components[0]))
         sub = Subcontext(label, "foo")
 
         # parse outcome
@@ -239,9 +242,11 @@ def get_supra_from_string(supra_string: str, data):
                     seen_instances.add(instance)
                     break
             if not added:
-                raise ValueError(f"{instance_string} does not specify any instance in the given dataset")
+                raise ValueError(
+                    f"{instance_string} does not specify any instance in the given dataset")
         if sub.get_outcome() != outcome:
-            raise ValueError(f"Specified instances give an outcome of {sub.get_outcome()}, not {outcome}")
+            raise ValueError(
+                f"Specified instances give an outcome of {sub.get_outcome()}, not {outcome}")
         subs.add(sub)
     return ClassifiedSupra(subs, count)
 
@@ -283,7 +288,8 @@ def test_supra_from_string():
     actual_supra = get_supra_from_string(supra_string, data)
     assert actual_supra == expected_supra
     assert supra_deep_equals(expected_supra, actual_supra)
-    assert supra_deep_equals(get_supra_from_string(str(expected_supra), data), actual_supra)
+    assert supra_deep_equals(get_supra_from_string(str(expected_supra), data),
+                             actual_supra)
 
 #         // TODO: test error conditions
 

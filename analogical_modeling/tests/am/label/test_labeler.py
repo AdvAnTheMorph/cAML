@@ -1,23 +1,25 @@
 """Test Labeler"""
 
-
 import unittest
 
+import analogical_modeling.tests.am.test_utils as test_utils
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.label.labeler import Labeler, Partition
 from analogical_modeling.am.label.missing_data_compare import MissingDataCompare
-import analogical_modeling.tests.am.test_utils as test_utils
 
 
 class LabelerTest(unittest.TestCase):
     """Test Labeler implementations"""
+
     def test_accessors(self):
-        instance = test_utils.get_instance_from_file(test_utils.CHAPTER_3_DATA, 0)
+        instance = test_utils.get_instance_from_file(test_utils.CHAPTER_3_DATA,
+                                                     0)
         labeler = Labeler(instance, False, MissingDataCompare.MATCH)
 
         self.assertEqual(labeler.get_cardinality(), 3)
         self.assertFalse(labeler.get_ignore_unknowns())
-        self.assertEqual(labeler.get_missing_data_compare(), MissingDataCompare.MATCH)
+        self.assertEqual(labeler.get_missing_data_compare(),
+                         MissingDataCompare.MATCH)
         self.assertEqual(labeler.get_test_instance().all(), instance.all())
 
     def test_is_ignored(self):
@@ -39,7 +41,8 @@ class LabelerTest(unittest.TestCase):
 
     def test_get_lattice_top(self):
         cardinality = 100
-        labeler = Labeler(test_utils.mock_instance(cardinality), False, MissingDataCompare.MATCH)
+        labeler = Labeler(test_utils.mock_instance(cardinality), False,
+                          MissingDataCompare.MATCH)
         top = labeler.get_lattice_top()
         self.assertEqual(cardinality, top.get_cardinality())
         for i in range(cardinality):
@@ -48,11 +51,13 @@ class LabelerTest(unittest.TestCase):
 
     def test_get_lattice_bottom(self):
         cardinality = 32
-        labeler = Labeler(test_utils.mock_instance(cardinality), False, MissingDataCompare.MATCH)
+        labeler = Labeler(test_utils.mock_instance(cardinality), False,
+                          MissingDataCompare.MATCH)
         bottom = labeler.get_lattice_bottom()
         self.assertEqual(cardinality, bottom.get_cardinality())
         for i in range(cardinality):
-            self.assertFalse(bottom.matches(i), f"Attribute {i} should not match")
+            self.assertFalse(bottom.matches(i),
+                             f"Attribute {i} should not match")
         self.assertEqual(0, bottom.num_matches(), "No attribute should match")
 
     def test_num_partitions(self):
@@ -74,7 +79,9 @@ class LabelerTest(unittest.TestCase):
 
     def test_partitions(self):
         """Tests the protected default partitioning scheme."""
-        def assert_partition_equals(partition: Partition, start_index: int, cardinality: int):
+
+        def assert_partition_equals(partition: Partition, start_index: int,
+                                    cardinality: int):
             self.assertEqual(start_index, partition.get_start_index())
             self.assertEqual(cardinality, partition.get_cardinality())
 
@@ -104,7 +111,6 @@ class LabelerTest(unittest.TestCase):
         self.assertEqual(labeler.partition(label, 0), Label({1, 4}, 5))
         self.assertEqual(labeler.partition(label, 1), Label({0}, 5))
 
-
     def test_label(self):
         dataset = test_utils.six_cardinality_data()
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
@@ -115,7 +121,8 @@ class LabelerTest(unittest.TestCase):
         self.assertEqual(Label({0, 1, 2, 3, 4}, 5), labeler.label(dataset[5]))
 
     def test_label_with_alternative_class_index(self):
-        """Test with a different class index to make sure its location is not hard coded."""
+        """Test with a different class index to make sure its location is not
+        hard coded."""
         dataset = test_utils.six_cardinality_data()
         dataset.set_class_index(2)
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)

@@ -1,19 +1,21 @@
 """ClassifiedSupra
 
-Supracontext which includes outcome ("classification") and determines heterogeneity
+Supracontext which includes outcome ("classification") and determines
+heterogeneity
 
-homogeneous if
+- homogeneous if
 a) deterministic
-b) non-deterministic, but all occurrences occur within only one of its subcontexts
-heterogeneous otherwise
+b) non-deterministic, but all occurrences occur within only one of its
+subcontexts
+- heterogeneous otherwise
 """
 
 from typing import Optional
 
-from analogical_modeling.am.data.supracontext import Supracontext
-from analogical_modeling.am.data.subcontext import Subcontext
-from analogical_modeling.am.data.basic_supra import BasicSupra
 from analogical_modeling.am import am_utils
+from analogical_modeling.am.data.basic_supra import BasicSupra
+from analogical_modeling.am.data.subcontext import Subcontext
+from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.label.label import Label
 
 
@@ -41,7 +43,7 @@ class ClassifiedSupra(Supracontext):
         self.supra = BasicSupra()
         # class attribute value
         # or nondeterministic, heterogeneous, or undetermined
-        self.outcome: float|str = am_utils.UNKNOWN
+        self.outcome: float | str = am_utils.UNKNOWN
 
         if data is not None:
             for sub in data:
@@ -59,7 +61,7 @@ class ClassifiedSupra(Supracontext):
             self.outcome = am_utils.HETEROGENEOUS
         self.supra.add(other)
 
-    def get_outcome(self) -> float|str:
+    def get_outcome(self) -> float | str:
         """Get the outcome of this supracontext.
 
         The outcome is:

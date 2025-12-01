@@ -4,18 +4,17 @@ import unittest
 
 from analogical_modeling.am.data.basic_supra import BasicSupra
 from analogical_modeling.am.data.classified_supra import ClassifiedSupra
-from analogical_modeling.am.data.concept import Concept
 from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.lattice.linked_lattice_node import LinkedLatticeNode
 from analogical_modeling.tests.am import test_utils
 
-
-supras = [BasicSupra, ClassifiedSupra, lambda: LinkedLatticeNode(BasicSupra()),
-          lambda: Concept(None, BasicSupra())]
+supras = [BasicSupra, ClassifiedSupra, lambda: LinkedLatticeNode(BasicSupra())]
 
 
 class SupracontextTest(unittest.TestCase):
+
+
     def test_count(self):
         for supra in supras:
             test_supra = supra()
@@ -32,15 +31,15 @@ class SupracontextTest(unittest.TestCase):
     def test_default_get_context(self):
         for supra in supras:
             test_supra = supra()
-            if isinstance(test_supra, Concept):
-                print("Concept skipped: determines context differently")
-                continue
             for bits in [{1, 3}, {1, 3}, {1, 4}, {3, 4}]:
                 test_supra.add(Subcontext(Label(bits, 5), "foo"))
-            self.assertEqual(Label({1, 3, 4}, 5), test_supra.get_context(), "Label should be intersect of subcontext labels")
+            self.assertEqual(Label({1, 3, 4}, 5), test_supra.get_context(),
+                             "Label should be intersect of subcontext labels")
 
             test_supra.add(Subcontext(Label({0, 3}, 5), "foo"))
-            self.assertEqual(Label({0, 1, 3, 4}, 5), test_supra.get_context(), "New context should be intersected with previous one")
+            self.assertEqual(Label({0, 1, 3, 4}, 5), test_supra.get_context(),
+                             "New context should be intersected with previous "
+                             "one")
 
     def test_set_count_throws_error_when_arg_is_less_than_zero(self):
         for supra in supras:
@@ -75,7 +74,8 @@ class SupracontextTest(unittest.TestCase):
 
             test_supra2 = test_supra.copy()
             self.assertEqual(type(test_supra), type(test_supra2))
-            self.assertTrue(test_utils.supra_deep_equals(test_supra, test_supra2))
+            self.assertTrue(
+                test_utils.supra_deep_equals(test_supra, test_supra2))
             self.assertIsNot(test_supra, test_supra2)
 
     def test_equals_and_hash_code(self):
@@ -83,9 +83,6 @@ class SupracontextTest(unittest.TestCase):
         sub2 = Subcontext(Label(set(), 2), "foo")
         for supra in supras:
             test_supra1 = supra()
-            # equals and hash code work different for Concept
-            if isinstance(test_supra1, Concept):
-                continue
             test_supra2 = supra()
 
             test_supra1.add(sub1)
@@ -99,5 +96,7 @@ class SupracontextTest(unittest.TestCase):
             self.assertEqual(hash(test_supra1), hash(test_supra2))
 
             test_supra1.set_count(29)
-            self.assertEqual(test_supra1, test_supra2, "Count is not compared for equality")
-            self.assertEqual(hash(test_supra1), hash(test_supra2), "Count does not affect Hash")
+            self.assertEqual(test_supra1, test_supra2,
+                             "Count is not compared for equality")
+            self.assertEqual(hash(test_supra1), hash(test_supra2),
+                             "Count does not affect Hash")

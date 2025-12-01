@@ -1,11 +1,11 @@
 """Basic Lattice"""
 
-from analogical_modeling.am.lattice.lattice import Lattice
 from analogical_modeling.am import am_utils
 from analogical_modeling.am.data.classified_supra import ClassifiedSupra
 from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.subcontext_list import SubcontextList
 from analogical_modeling.am.label.label import Label
+from analogical_modeling.am.lattice.lattice import Lattice
 from analogical_modeling.am.lattice.linked_lattice_node import LinkedLatticeNode
 
 
@@ -19,6 +19,7 @@ class BasicLattice(Lattice):
     algorithm. Using boolean algebra allows efficient computation of these as
     well as traversal of all subcontexts within a supracontext.
     """
+
     def __init__(self):
         """
         Initializes Supracontextual lattice to a 2^n length array of
@@ -42,7 +43,8 @@ class BasicLattice(Lattice):
         :raises: ValueError if the lattice was already filled
         """
         if self.filled:
-            raise ValueError("Lattice is already filled and cannot be filled again.")
+            raise ValueError(
+                "Lattice is already filled and cannot be filled again.")
         self.filled = True
         # fill the lattice with all the subcontexts
         for sub in sub_list:
@@ -102,7 +104,8 @@ class BasicLattice(Lattice):
             # don't decrement the count for the empty_supracontext!
             if self.lattice.get(label) != self.empty_supracontext:
                 self.lattice.get(label).decrement_count()
-            self.lattice[label] = self.lattice.get(label).insert_after(sub, self.index)
+            self.lattice[label] = self.lattice.get(label).insert_after(sub,
+                                                                       self.index)
 
     def clean_supra(self):
         """Cycles through the supracontexts and deletes ones with count 0"""

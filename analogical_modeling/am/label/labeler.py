@@ -6,7 +6,6 @@ from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.label.missing_data_compare import MissingDataCompare
 from analogical_modeling.utils import Instance
 
-
 # The default (max) size of a label partition
 PARTITION_SIZE = 5
 
@@ -22,7 +21,9 @@ class Labeler:
     This class is used to assign context labels to training instances by
     comparison with the instance being classified.
     """
-    def __init__(self, test: Instance, ignore_unknowns: bool, mdc: MissingDataCompare):
+
+    def __init__(self, test: Instance, ignore_unknowns: bool,
+                 mdc: MissingDataCompare):
         """
 
         :param test: instance being classified
@@ -43,7 +44,8 @@ class Labeler:
         self.ignore_set = frozenset(ignore_set)
 
         spans = self.partitions()
-        self.partitioners = [Partitioner(spans[i]) for i in range(self.num_partitions())]
+        self.partitioners = [Partitioner(spans[i]) for i in
+                             range(self.num_partitions())]
 
     def get_cardinality(self):
         """
@@ -82,7 +84,8 @@ class Labeler:
         the test instance if get_ignore_unknowns() is True.
 
         :param index: index of the attribute being queried
-        :return: True if the given attribute is ignored during labeling; False otherwise.
+        :return: True if the given attribute is ignored during labeling;
+        False otherwise.
         """
         return index in self.ignore_set
 
@@ -98,7 +101,8 @@ class Labeler:
         :return: the label for the context that the instance belongs to
         """
         # if not data.equal_headers(self.get_test_instance()):
-        #     raise ValueError("Input instance is not compatible with the test instance")
+        #     raise ValueError("Input instance is not compatible with the "
+        #     "test instance")
 
         label = set()
         length = self.get_cardinality()
@@ -111,7 +115,8 @@ class Labeler:
             att = self.get_test_instance().attribute_name(i)
             # use mdc if were are comparing a missing attribute
             if self.get_test_instance().is_missing(i) or data.is_missing(i):
-                if not self.get_missing_data_compare().matches(self.get_test_instance(), data, i):
+                if not self.get_missing_data_compare().matches(
+                        self.get_test_instance(), data, i):
                     # use length-1-index instead of index so that in binary the
                     # labels show left to right, first to last feature.
                     label.add(length - 1 - index)
@@ -151,7 +156,8 @@ class Labeler:
             label_index += 1
         return result
 
-    def get_instance_atts_string(self, instance: Instance, att_delimiter: str) -> str:
+    def get_instance_atts_string(self, instance: Instance,
+                                 att_delimiter: str) -> str:
         """Returns a string containing the attributes of the input instance
         (minus the class attribute and ignored attributes)."""
         atts = self.get_instance_atts_values_list(instance)
@@ -166,14 +172,6 @@ class Labeler:
                 continue
             atts.append(str(instance[i]))
         return atts
-
-    # def get_instance_atts_names_list(self, instance: Instance) -> list[str]:
-    #     atts = []
-    #     for i in range(instance.num_attributes()):
-    #         if i == instance.class_index or self.is_ignored(i):
-    #             continue
-    #         atts.append(instance.attribute_name(i))
-    #     return atts
 
     def get_lattice_top(self):
         """
@@ -280,6 +278,7 @@ class Labeler:
 
 class Partition:
     """Simple class for storing index spans."""
+
     def __init__(self, s: int, l: int) -> None:
         self.start_index = s
         self.cardinality = l
@@ -305,6 +304,7 @@ class Partition:
 
 class Partitioner:
     """class for storing label partitions"""
+
     def __init__(self, s: Partition):
         self.start_index = s.get_start_index()
         self.cardinality = s.get_cardinality()

@@ -35,7 +35,8 @@ class HeterogeneousLatticeTest(unittest.TestCase):
         actual_supras = hetero_lattice.get_supracontexts()
         expected_supras = ["[2x(001|&nondeterministic&|3,1,0,e/3,1,1,r)]",
                            "[1x(100|r|2,1,2,r)]",
-                           "[1x(001|&nondeterministic&|3,1,0,e/3,1,1,r),(100|r|2,1,2,r),(101|r|2,1,0,r)]",
+                           "[1x(001|&nondeterministic&|3,1,0,e/3,1,1,r),"
+                           "(100|r|2,1,2,r),(101|r|2,1,0,r)]",
                            "[1x(110|r|0,3,2,r),(100|r|2,1,2,r)]",
                            "[1x(001|&nondeterministic&|3,1,0,e/3,1,1,r),(110|r|0,3,2,r),(100|r|2,1,2,r),(101|r|2,1,0,r)]"]
         self.assertEqual(len(expected_supras), len(actual_supras))

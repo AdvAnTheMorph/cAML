@@ -9,7 +9,6 @@ from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.lattice.linked_lattice_node import LinkedLatticeNode
 from analogical_modeling.tests.am import test_utils
 
-
 supras = [BasicSupra, ClassifiedSupra]
 
 
@@ -75,4 +74,5 @@ class LinkedLatticeNodeTest(unittest.TestCase):
             self.assertIs(test_node4, test_node2.get_next())
             self.assertIs(test_node3, test_node4.get_next())
 
-        # TODO: test copy, equals and hashCode for correctness regarding next variable
+        # TODO: test copy, equals and hashCode for correctness regarding next
+        #  variable

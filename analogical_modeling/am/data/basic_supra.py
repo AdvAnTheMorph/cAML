@@ -9,6 +9,7 @@ from analogical_modeling.am.label.label import Label
 
 class BasicSupra(Supracontext):
     """Basic implementation of Supracontext with no extra features."""
+
     def __init__(self, data: Optional[set] = None, count: Optional[int] = None):
         """Creates a new supracontext with the given parameters as the contents.
         If no arguments given: create a new supracontext with an empty data set.

@@ -11,6 +11,8 @@ from analogical_modeling.tests.am import test_utils
 
 
 class SubContextListTest(unittest.TestCase):
+
+
     @staticmethod
     def get_sub_list(subcontext_list: SubcontextList) -> list[Subcontext]:
         return [s for s in subcontext_list]
@@ -53,10 +55,13 @@ class SubContextListTest(unittest.TestCase):
         all_matching_sub.add(train[0])  # 310e
 
         subs = SubcontextList(labeler, train, False)
-        self.assertTrue(all_matching_sub in self.get_sub_list(subs), "Should contain 000 sub when not ignoring full matches")
+        self.assertTrue(all_matching_sub in self.get_sub_list(subs),
+                        "Should contain 000 sub when not ignoring full matches")
 
         subs = SubcontextList(labeler, train, True)
-        self.assertFalse(all_matching_sub in self.get_sub_list(subs), "Should not contain 000 sub when ignoring full matches")
+        self.assertFalse(all_matching_sub in self.get_sub_list(subs),
+                         "Should not contain 000 sub when ignoring full "
+                         "matches")
 
     def test_accessors(self):
         train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA)
@@ -66,5 +71,7 @@ class SubContextListTest(unittest.TestCase):
         labeler = Labeler(test, False, MissingDataCompare.MATCH)
 
         subs = SubcontextList(labeler, train, False)
-        self.assertEqual(labeler, subs.get_labeler(), "getLabeler returns the labeler used in the constructor")
-        self.assertEqual(3, subs.get_cardinality(), "getCardinality returns the cardinality of the test item")
+        self.assertEqual(labeler, subs.get_labeler(),
+                         "getLabeler returns the labeler used in the constructor")
+        self.assertEqual(3, subs.get_cardinality(),
+                         "getCardinality returns the cardinality of the test item")

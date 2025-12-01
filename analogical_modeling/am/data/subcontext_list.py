@@ -19,16 +19,19 @@ class SubcontextList:
     After creating a list of subcontexts, iterate through the subcontexts using
     the Iterator returned by iterator().
     """
+
     # TODO: why use an iterator, instead of just returning a list?
 
-    def __init__(self, labeler: Labeler, data: Iterable[Instance], ignore_full_matches: bool):
+    def __init__(self, labeler: Labeler, data: Iterable[Instance],
+                 ignore_full_matches: bool):
         """
         This is the easiest to use constructor. It creates and stores a list of
         subcontexts given classified exemplars and an exemplar to be classified.
 
         :param labeler: Labeler for assigning labels to items in data
         :param data: Training data (exemplars)
-        :param ignore_full_matches: if true, will not add entirely matching contexts
+        :param ignore_full_matches: if true, will not add entirely matching
+        contexts
         """
         self.label_to_subcontext: dict[Label, Subcontext] = {}
         self.labeler: Labeler = labeler
@@ -59,7 +62,8 @@ class SubcontextList:
 
         if not label in self.label_to_subcontext:
             self.label_to_subcontext[label] = Subcontext(label,
-                                                         self.labeler.get_context_string(label))
+                                                         self.labeler.get_context_string(
+                                                             label))
         self.label_to_subcontext[label].add(exemplar)
         self.considered_exemplar_count += 1
 
@@ -80,7 +84,8 @@ class SubcontextList:
         # sort the labels by hashcode so that output is consistent for testing
         # purposes
         sorted_labels = sorted(self.label_to_subcontext.keys(), key=hash)
-        return ",".join([str(self.label_to_subcontext[label]) for label in sorted_labels])
+        return ",".join(
+            [str(self.label_to_subcontext[label]) for label in sorted_labels])
 
     def __eq__(self, other):
         """Equal if both lists contain the same data in the same subcontexts.

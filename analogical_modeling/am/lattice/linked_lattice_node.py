@@ -15,6 +15,7 @@ class LinkedLatticeNode(Supracontext):
     functionality of a linked node used in certain lattice-filling algorithms.
     An index is also provided for use in determining when the node was created.
     """
+
     def __init__(self, supra: T, ind: Optional[int] = None):
         """Create a new node containing the given supracontext. The index is
         set to -1.

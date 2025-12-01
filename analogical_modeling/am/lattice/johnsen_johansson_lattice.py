@@ -36,24 +36,24 @@ or
 $\hat{h}_p = \frac{ub(p)|x_s\in \mathcal{H}(p)|}{|\{x_s\}|}$
 
 
-TODO: maybe if H(p) is small enough we could do exact counting with include-exclude
+TODO: maybe if H(p) is small enough we could do exact counting with
+include-exclude
 """
 
-import random
 import concurrent.futures
+import random
 from collections import defaultdict
+from functools import lru_cache
 from math import comb
 from typing import Callable
-from functools import lru_cache
 
-from analogical_modeling.am.lattice.lattice import Lattice
 from analogical_modeling.am import am_utils
 from analogical_modeling.am.data.classified_supra import ClassifiedSupra
 from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.subcontext_list import SubcontextList
 from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.label.label import Label
-
+from analogical_modeling.am.lattice.lattice import Lattice
 
 NUM_EXPERIMENTS = 10
 
@@ -79,12 +79,13 @@ def binomial_coefficient(p: Pair):
     if k == 0:
         return 0
     # (n C k) and (n C (n-k)) are the same, so pick the smaller as k:
-    k = min(k, n-k)
+    k = min(k, n - k)
     return comb(n, k)
 
 
 class SupraApproximator():
     """Approximator for Supracontexts"""
+
     def __init__(self, lattice: 'JohnsenJohanssonLattice', p: Subcontext,
                  outcome_sub_map: dict[float, list[Label]], rnd: random.Random):
         self.p = p
@@ -96,7 +97,8 @@ class SupraApproximator():
         return self.approximate_supra(self.p, self.outcome_sub_map)
 
     def approximate_supra(self, p: Subcontext,
-                          outcome_sub_map: dict[float, list[Label]]) -> Supracontext:
+                          outcome_sub_map: dict[
+                              float, list[Label]]) -> Supracontext:
         """Approximate supracontext"""
         p_label = p.get_label()
         # H(p) is p intersected with labels of any subcontexts with a
@@ -104,12 +106,14 @@ class SupraApproximator():
         # (combination with these would lead to heterogeneity)
         hp = []
         for k, v in outcome_sub_map.items():
-            if p.get_outcome() != k or p.get_outcome() == am_utils.HETEROGENEOUS:
+            if (p.get_outcome() != k or p.get_outcome() ==
+                    am_utils.HETEROGENEOUS):
                 for x in v:
                     hp.append(p_label.intersect(x))
 
-        # min(p) is the number of matches in the label in H(p) with the most matches
-        # max(p) is the number of matches in the union of all labels in H(p)
+        # min(p) is the number of matches in the label in H(p) with the most
+        # matches max(p) is the number of matches in the union of all labels
+        # in H(p)
         min_p = 0
         hp_union: Label = p_label
         for l in hp:
@@ -119,10 +123,11 @@ class SupraApproximator():
         max_p = hp_union.num_matches()
         # the upper bound on H_limit(p)
         ub_p = 0
-        for k in range(1, min_p+1):
+        for k in range(1, min_p + 1):
             ub_p += binomial_coefficient(Pair(max_p, k))
         # ratio of |{x_s in H(p)}| to |{x_s}|
-        hetero_ratio: float = self.estimate_hetero_ratio(hp, hp_union, NUM_EXPERIMENTS)
+        hetero_ratio: float = self.estimate_hetero_ratio(hp, hp_union,
+                                                         NUM_EXPERIMENTS)
         # final estimation of total count of space subsumed by elements of
         # H(p); rounds down
         hetero_count_estimate = int(ub_p * hetero_ratio)
@@ -135,7 +140,8 @@ class SupraApproximator():
         approximated_supra.set_count(count)
         return approximated_supra
 
-    def estimate_hetero_ratio(self, hp: list[Label], hp_union: Label, num_experiments: int) -> float:
+    def estimate_hetero_ratio(self, hp: list[Label], hp_union: Label,
+                              num_experiments: int) -> float:
         """Estimate heterogeneous ratio"""
         hetero_count = 0
         cache: dict[Label, bool] = {}
@@ -173,6 +179,7 @@ class SupraApproximator():
 
 class JohnsenJohanssonLattice(Lattice):
     """Lattice for high cardinality data"""
+
     def __init__(self, random_provider: Callable[[], random.Random]):
         """
 
@@ -192,7 +199,8 @@ class JohnsenJohanssonLattice(Lattice):
         :raises: ValueError if the lattice was already filled
         """
         if self.filled:
-            raise ValueError("Lattice is already filled and cannot be filled again.")
+            raise ValueError(
+                "Lattice is already filled and cannot be filled again.")
         self.filled = True
         self.bottom = sub_list.get_labeler().get_lattice_bottom()
         # first organize sub labels by outcome for quick H(p) construction
@@ -203,7 +211,8 @@ class JohnsenJohanssonLattice(Lattice):
         # Estimate the counts for each supracontext in parallel
         with concurrent.futures.ThreadPoolExecutor() as executor:
             futures = [executor.submit(
-                SupraApproximator(self, p, outcome_sub_map, self.random_provider()))
+                SupraApproximator(self, p, outcome_sub_map,
+                                  self.random_provider()))
                 for p in sub_list]
 
             for future in concurrent.futures.as_completed(futures):

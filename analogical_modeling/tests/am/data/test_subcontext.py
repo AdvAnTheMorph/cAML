@@ -26,7 +26,8 @@ class SubcontextTest(unittest.TestCase):
         self.assertEqual({self.dataset[0], self.dataset[1]}, s.get_exemplars())
         self.assertEqual(am_utils.NONDETERMINISTIC, s.get_outcome())
 
-    #         // TODO: can't test toString() like this because data is an unordered
+    #         // TODO: can't test toString() like this because data is an
+    #          unordered
     #         // set
     #         // assertEquals("(0|&nondeterministic&|1,r,{2}/1,e,{2})", s.toString());
     #     }

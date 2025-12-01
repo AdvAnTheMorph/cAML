@@ -1,13 +1,13 @@
 """Heterogeneous Lattice"""
 
-from analogical_modeling.am.lattice.lattice import Lattice
-from analogical_modeling.am.lattice.linked_lattice_node import LinkedLatticeNode
 from analogical_modeling.am.data.basic_supra import BasicSupra
 from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.subcontext_list import SubcontextList
 from analogical_modeling.am.data.supracontext import Supracontext
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.label.labeler import Labeler
+from analogical_modeling.am.lattice.lattice import Lattice
+from analogical_modeling.am.lattice.linked_lattice_node import LinkedLatticeNode
 
 
 class HeterogeneousLattice(Lattice):
@@ -36,6 +36,7 @@ class HeterogeneousLattice(Lattice):
     In terms of processing power, more is required to use sublattices. However,
     using threads the processing of each can be done in parallel.
     """
+
     def __init__(self, partition_index: int):
         """
         Initializes Supracontextual lattice to a 2^n length array of
@@ -62,14 +63,16 @@ class HeterogeneousLattice(Lattice):
         :raises: ValueError if the lattice was already filled
         """
         if self.filled:
-            raise ValueError("Lattice is already filled and cannot be filled again.")
+            raise ValueError(
+                "Lattice is already filled and cannot be filled again.")
         self.filled = True
 
         labeler: Labeler = sub_list.get_labeler()
         # fill the lattice with all the subcontexts, masking labels
         for sub in sub_list:
             self.index += 1
-            self.insert(sub, labeler.partition(sub.get_label(), self.partition_index))
+            self.insert(sub, labeler.partition(sub.get_label(),
+                                               self.partition_index))
 
     def insert(self, sub: Subcontext, label: Label) -> None:
         """Inserts sub into the lattice, into location given by label
@@ -105,7 +108,8 @@ class HeterogeneousLattice(Lattice):
             # don't decrement the count for the empty_supracontext!
             if self.lattice.get(label) != self.empty_supracontext:
                 self.lattice.get(label).decrement_count()
-            self.lattice[label] = self.lattice.get(label).insert_after(sub, self.index)
+            self.lattice[label] = self.lattice.get(label).insert_after(sub,
+                                                                       self.index)
 
     def clean_supra(self) -> None:
         """Cycles through the supracontexts and deletes ones with count 0"""

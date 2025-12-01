@@ -7,8 +7,11 @@ from analogical_modeling.aml import AnalogicalModeling
 from analogical_modeling.tests.am import test_utils
 
 
-@unittest.skipUnless("run_integration_tests" in sys.argv, "Run only during integration tests")
+@unittest.skipUnless("run_integration_tests" in sys.argv,
+                     "Run only during integration tests")
 class IntegrationTests(unittest.TestCase):
+
+
     def test_spanish_stress(self):
         # This dataset has published results with AM, so we ensure our accuracy
         # matches the publication

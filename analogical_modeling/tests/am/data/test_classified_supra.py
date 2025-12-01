@@ -11,6 +11,8 @@ from analogical_modeling.utils import Dataset
 
 
 class ClassifiedSupraTest(unittest.TestCase):
+
+
     def setUp(self):
         self.dataset = Dataset([[1, "r"], [1, "e"], [0, "e"]])
 
@@ -37,7 +39,8 @@ class ClassifiedSupraTest(unittest.TestCase):
         sub.add(self.dataset[2])
         self.subs.append(sub)
 
-    def assert_causes_heterogeneity(self, supra: ClassifiedSupra, sub: Subcontext, causes: bool):
+    def assert_causes_heterogeneity(self, supra: ClassifiedSupra,
+                                    sub: Subcontext, causes: bool):
         self.assertFalse(supra.is_heterogeneous())
         self.assertEqual(causes, supra.would_be_hetero(sub))
         supra.add(sub)
@@ -52,7 +55,7 @@ class ClassifiedSupraTest(unittest.TestCase):
         self.assertFalse(test_supra.is_heterogeneous())
         self.assertEqual(test_supra, test_supra)
 
-    #　TODO: remove this test, and instead don't have a constructor that takes
+    # TODO: remove this test, and instead don't have a constructor that takes
     # data like this (add() is tested in SupracontextTest).
     def test_data(self):
         test_supra = ClassifiedSupra()
@@ -148,7 +151,9 @@ class ClassifiedSupraTest(unittest.TestCase):
         self.assertEqual("r", ClassifiedSupra(sub_set, count).get_outcome())
 
         sub_set = {self.subs[0]}  # non-deterministic
-        self.assertEqual(am_utils.NONDETERMINISTIC, ClassifiedSupra(sub_set, count).get_outcome())
+        self.assertEqual(am_utils.NONDETERMINISTIC,
+                         ClassifiedSupra(sub_set, count).get_outcome())
         test_supra = ClassifiedSupra()
         test_supra.add(self.subs[0])  # non-deterministic
-        self.assertEqual(am_utils.NONDETERMINISTIC, ClassifiedSupra(sub_set, count).get_outcome())
+        self.assertEqual(am_utils.NONDETERMINISTIC,
+                         ClassifiedSupra(sub_set, count).get_outcome())

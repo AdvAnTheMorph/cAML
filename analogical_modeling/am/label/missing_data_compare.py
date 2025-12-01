@@ -8,10 +8,13 @@ from analogical_modeling.utils import Instance
 class MissingDataCompare(Enum):
     """Enum specifying missing data comparison."""
     MATCH = ("match", "Consider the missing attribute value to match anything")
-    MISMATCH = ("mismatch", "Consider the missing attribute value to be a mismatch")
+    MISMATCH = ("mismatch",
+                "Consider the missing attribute value to be a mismatch")
     VARIABLE = ("variable",
-                "Treat the the missing attribute value as an attribute value of its own; "
-                "a missing value will match another missing value, but nothing else."
+                "Treat the the missing attribute value as an attribute value "
+                "of its own; "
+                "a missing value will match another missing value, "
+                "but nothing else."
                 )
 
     def __init__(self, option_string: str, description: str):
@@ -30,7 +33,8 @@ class MissingDataCompare(Enum):
     def get_option_string(self) -> str:
         """
 
-        :return: string used on command line to indicate the use of this strategy
+        :return: string used on command line to indicate the use of this
+        strategy
         """
         return self.option_string
 

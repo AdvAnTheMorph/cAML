@@ -22,12 +22,13 @@ class Subcontext:
         """Initializes the subcontext by creating a list to hold the data
 
         :param label: Binary label of the subcontext
-        :param display_label: user-friendly label string Labeler.get_context_string(Label)
+        :param display_label: user-friendly label string
+        Labeler.get_context_string(Label)
         """
         self.label: Label = label
         self.display_label: str = display_label
         self.data: set[Instance] = set()
-        self.outcome: str|int = ""
+        self.outcome: str | int = ""
         self.hash: int = -1
 
     def add(self, other):
@@ -43,7 +44,7 @@ class Subcontext:
             self.outcome = other.class_value()
         self.data.add(other)
 
-    def get_outcome(self) -> str|int:
+    def get_outcome(self) -> str | int:
         """Get the outcome of this subcontext."""
         return self.outcome
 

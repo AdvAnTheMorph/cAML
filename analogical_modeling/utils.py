@@ -16,7 +16,8 @@ class Instance(pd.Series):
     # needed for serialization
     _metadata = ["class_index", "ignored", "real_data", "data_idx", "weight"]
 
-    def __init__(self, data: pd.Series, class_column: str, ignore_list: list[str], idx: int, weight: float):
+    def __init__(self, data: pd.Series, class_column: str,
+                 ignore_list: list[str], idx: int, weight: float):
         """
 
         :param data: Series containing values of the Instance
@@ -76,7 +77,8 @@ class Instance(pd.Series):
         return f"{','.join(map(str, self.array))},\u007b{self.weight}\u007d"
 
     def __hash__(self) -> int:
-        return int(pd.util.hash_pandas_object(self, index=False).sum())+hash(37*self.data_idx)
+        return int(pd.util.hash_pandas_object(self, index=False).sum()) + hash(
+            37 * self.data_idx)
 
     def __eq__(self, other) -> bool:
         if isinstance(other, Instance):
@@ -86,7 +88,8 @@ class Instance(pd.Series):
 
 class Dataset:
     """Dataset representation"""
-    def __init__(self, atts: list|None = None, weights: str = ""):
+
+    def __init__(self, atts: list | None = None, weights: str = ""):
         """
 
         :param atts: if atts is None, call from_csv() to populate the dataset
@@ -109,7 +112,7 @@ class Dataset:
 
         self.class_index = self.num_attributes() - 1
 
-    def from_csv(self, source: str|Path, weights: str = "") -> 'Dataset':
+    def from_csv(self, source: str | Path, weights: str = "") -> 'Dataset':
         """Read dataset from csv file
 
         :param source: path to csv file
@@ -166,7 +169,8 @@ class Dataset:
 
     def delete_with_missing_class(self) -> None:
         """Delete instances without a class"""
-        self.data.dropna(subset=self.data.columns[self.class_index], inplace=True)
+        self.data.dropna(subset=self.data.columns[self.class_index],
+                         inplace=True)
 
     def get_classes(self) -> set:
         """Return all class values"""
@@ -194,7 +198,8 @@ class Dataset:
 
     def __iter__(self):
         for idx, el in self.data.iterrows():
-            yield Instance(el, self.class_column_name(), self.ignored, idx, self.weights[idx])
+            yield Instance(el, self.class_column_name(), self.ignored, idx,
+                           self.weights[idx])
 
     def __len__(self):
         return self.data.shape[0]
@@ -204,4 +209,5 @@ class Dataset:
 
         :param row: instance to add
         """
-        self.data = pd.concat([self.data, row.to_frame().T]).reset_index(drop=True)
+        self.data = pd.concat([self.data, row.to_frame().T]).reset_index(
+            drop=True)

@@ -7,6 +7,8 @@ from analogical_modeling.tests.am import test_utils
 
 
 class AnalogicalModelingTest(unittest.TestCase):
+
+
     @staticmethod
     def get_classifier():
         """Creates a default AnalogicalModeling"""
@@ -28,11 +30,13 @@ class AnalogicalModelingTest(unittest.TestCase):
         for k, v in {"r": 0.6923077, "e": 0.3076923}.items():
             self.assertAlmostEqual(v, prediction[k], delta=1e-7)
 
-        self.assertEqual({"r": 9, "e": 4}, am.get_results().get_class_pointers())
+        self.assertEqual({"r": 9, "e": 4},
+                         am.get_results().get_class_pointers())
 
     def test_finnverb(self):
         """
-        Test accuracy with the finnverb dataset, a real data set with 10 features
+        Test accuracy with the finnverb dataset, a real data set with 10
+        features
         and lots of unknowns. First check the class pointers on one
         classification, then do a leave-one-out classification for the whole set
         and verify the accuracy.
@@ -45,8 +49,11 @@ class AnalogicalModelingTest(unittest.TestCase):
 
         prediction = am.distribution_for_instance(test)
         for k, v in {"B": 0.0, "A": 0.9902799, "C": 0.0097201}.items():
-            self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7)  # doesn't return 0 probabilities, and I don't know why it should
-        self.assertEqual({"A": 5094, "C": 50}, am.get_results().get_class_pointers())
+            # doesn't return 0 probabilities, and I don't know why it should
+            self.assertAlmostEqual(v, prediction.get(k, 0),
+                                   delta=1e-7)
+        self.assertEqual({"A": 5094, "C": 50},
+                         am.get_results().get_class_pointers())
 
         train.add(test)
         num_correct = test_utils.leave_one_out(self.get_classifier(), train)
@@ -80,7 +87,8 @@ class AnalogicalModelingTest(unittest.TestCase):
                     "herbicide-injury": 0.0,
                     "2-4-d-injury": 0.0}
         for k, v in expected.items():
-            self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7, msg=(k,v))
+            self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7,
+                                   msg=(k, v))
 
         expected = {"anthracnose": 5358272,
                     "bacterial-blight": 2880000,
@@ -97,7 +105,6 @@ class AnalogicalModelingTest(unittest.TestCase):
                     "brown-stem-rot": 976826156}
         self.assertEqual(expected, am.get_results().get_class_pointers())
 
-
     def test_audiology(self):
         # forces use of JohnsenJohanssonLattice
         train = test_utils.get_dataset(test_utils.AUDIOLOGY)
@@ -106,12 +113,20 @@ class AnalogicalModelingTest(unittest.TestCase):
 
     def test_get_options(self):
         am = AnalogicalModeling()
-        self.assertEqual("Linear: False, Remove test exemplars: True, Ignore unknown values: False, Missing data: variable\nDrop duplicates: False, Ignore columns: --", am.get_options())
+        self.assertEqual(
+            "Linear: False, Remove test exemplars: True, Ignore unknown "
+            "values: False, Missing data: variable\nDrop duplicates: False, "
+            "Ignore columns: --",
+            am.get_options())
 
         am.set_remove_test_exemplar(False)
         am.set_missing_data_compare("mismatch")
         am.set_ignore_unknowns(True)
-        self.assertEqual("Linear: False, Remove test exemplars: False, Ignore unknown values: True, Missing data: mismatch\nDrop duplicates: False, Ignore columns: --", am.get_options())
+        self.assertEqual(
+            "Linear: False, Remove test exemplars: False, Ignore unknown "
+            "values: True, Missing data: mismatch\nDrop duplicates: False, "
+            "Ignore columns: --",
+            am.get_options())
 
     def test_weights_linear(self):
         train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA_W, "w")
@@ -125,8 +140,8 @@ class AnalogicalModelingTest(unittest.TestCase):
         distr = am.distribution_for_instance(test)
         for k, v in {"e": 0.401606426, "r": 0.598393574}.items():
             self.assertAlmostEqual(v, distr.get(k, 0), delta=1e-7)
-        prediction = am.get_results().get_class_pointers()
 
+        prediction = am.get_results().get_class_pointers()
         # without weights: {"e": 2, "r": 5}
         for k, v in {"e": 0.4, "r": 0.596}.items():
             self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7)

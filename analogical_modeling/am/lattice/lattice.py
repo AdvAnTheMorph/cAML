@@ -8,6 +8,7 @@ from analogical_modeling.am.data.supracontext import Supracontext
 
 class Lattice(ABC):
     """Abstract base class for lattices."""
+
     @abstractmethod
     def fill(self, sub_list: SubcontextList) -> None:
         """Fill the lattice with given subcontexts. This is meant to be done
