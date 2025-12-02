@@ -111,7 +111,7 @@ class BasicLattice(Lattice):
         """Cycles through the supracontexts and deletes ones with count 0"""
         supra = self.empty_supracontext
         while supra.get_next() != self.empty_supracontext:
-            if supra.get_next().get_count() == 0:
+            if supra.get_next().count == 0:
                 supra.set_next(supra.get_next().get_next())
             else:
                 supra = supra.get_next()
@@ -141,6 +141,6 @@ class BasicLattice(Lattice):
     def no_zero_supras(self):
         """Check for presence of supracontexts with count 0"""
         for supra in self.get_supracontexts():
-            if supra.get_count == 0:
+            if supra.count == 0:
                 return False
         return True

@@ -18,15 +18,15 @@ class SupracontextTest(unittest.TestCase):
     def test_count(self):
         for supra in supras:
             test_supra = supra()
-            self.assertEqual(1, test_supra.get_count())
-            test_supra.set_count(42)
-            self.assertEqual(42, test_supra.get_count())
+            self.assertEqual(1, test_supra.count)
+            test_supra.count = 42
+            self.assertEqual(42, test_supra.count)
 
     def test_set_count_throws_error_when_arg_is_none(self):
         for supra in supras:
             test_supra = supra()
             with self.assertRaises(ValueError):
-                test_supra.set_count(None)
+                test_supra.count = None
 
     def test_default_get_context(self):
         for supra in supras:
@@ -45,7 +45,7 @@ class SupracontextTest(unittest.TestCase):
         for supra in supras:
             test_supra = supra()
             with self.assertRaises(ValueError):
-                test_supra.set_count(-1)
+                test_supra.count = -1
 
     def test_is_empty(self):
         for supra in supras:
@@ -95,7 +95,7 @@ class SupracontextTest(unittest.TestCase):
             self.assertEqual(test_supra1, test_supra2)
             self.assertEqual(hash(test_supra1), hash(test_supra2))
 
-            test_supra1.set_count(29)
+            test_supra1.count = 29
             self.assertEqual(test_supra1, test_supra2,
                              "Count is not compared for equality")
             self.assertEqual(hash(test_supra1), hash(test_supra2),

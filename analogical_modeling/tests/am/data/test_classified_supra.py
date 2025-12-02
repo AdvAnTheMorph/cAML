@@ -51,7 +51,7 @@ class ClassifiedSupraTest(unittest.TestCase):
         self.assertTrue(len(test_supra.get_data()) == 0)
         self.assertTrue(test_supra.is_empty())
         # AMUtils.UNKNOWN is Double.NaN
-        self.assertTrue(isnan(test_supra.get_outcome()))
+        self.assertTrue(isnan(test_supra.outcome))
         self.assertFalse(test_supra.is_heterogeneous())
         self.assertEqual(test_supra, test_supra)
 
@@ -137,23 +137,23 @@ class ClassifiedSupraTest(unittest.TestCase):
     def test_outcome(self):
         count = 0
         sub_set = {self.subs[3], self.subs[4]}  # e, e
-        self.assertEqual("e", ClassifiedSupra(sub_set, count).get_outcome())
+        self.assertEqual("e", ClassifiedSupra(sub_set, count).outcome)
 
         test_supra = ClassifiedSupra()
         test_supra.add(self.subs[3])  # e
         test_supra.add(self.subs[4])  # e
-        self.assertEqual("e", ClassifiedSupra(sub_set, count).get_outcome())
+        self.assertEqual("e", ClassifiedSupra(sub_set, count).outcome)
 
         sub_set = {self.subs[2]}  # r
-        self.assertEqual("r", ClassifiedSupra(sub_set, count).get_outcome())
+        self.assertEqual("r", ClassifiedSupra(sub_set, count).outcome)
         test_supra = ClassifiedSupra()
         test_supra.add(self.subs[2])  # r
-        self.assertEqual("r", ClassifiedSupra(sub_set, count).get_outcome())
+        self.assertEqual("r", ClassifiedSupra(sub_set, count).outcome)
 
         sub_set = {self.subs[0]}  # non-deterministic
         self.assertEqual(am_utils.NONDETERMINISTIC,
-                         ClassifiedSupra(sub_set, count).get_outcome())
+                         ClassifiedSupra(sub_set, count).outcome)
         test_supra = ClassifiedSupra()
         test_supra.add(self.subs[0])  # non-deterministic
         self.assertEqual(am_utils.NONDETERMINISTIC,
-                         ClassifiedSupra(sub_set, count).get_outcome())
+                         ClassifiedSupra(sub_set, count).outcome)

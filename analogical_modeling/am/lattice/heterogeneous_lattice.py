@@ -67,7 +67,7 @@ class HeterogeneousLattice(Lattice):
                 "Lattice is already filled and cannot be filled again.")
         self.filled = True
 
-        labeler: Labeler = sub_list.get_labeler()
+        labeler: Labeler = sub_list.labeler
         # fill the lattice with all the subcontexts, masking labels
         for sub in sub_list:
             self.index += 1
@@ -115,7 +115,7 @@ class HeterogeneousLattice(Lattice):
         """Cycles through the supracontexts and deletes ones with count 0"""
         supra = self.empty_supracontext
         while supra.get_next() != self.empty_supracontext:
-            if supra.get_next().get_count() == 0:
+            if supra.get_next().count == 0:
                 supra.set_next(supra.get_next().get_next())
             else:
                 supra = supra.get_next()
@@ -125,7 +125,7 @@ class HeterogeneousLattice(Lattice):
     def no_zero_supras(self) -> bool:
         """Check for presence of supracontexts with count 0"""
         for supra in self.get_supracontexts():
-            if supra.get_count() == 0:
+            if supra.count == 0:
                 return False
         return True
 
@@ -138,7 +138,7 @@ class HeterogeneousLattice(Lattice):
         sup_list = set()
         supra = self.empty_supracontext.get_next()
         while supra != self.empty_supracontext:
-            assert supra.get_count() != 0
+            assert supra.count != 0
             sup_list.add(supra)
             supra = supra.get_next()
         return sup_list

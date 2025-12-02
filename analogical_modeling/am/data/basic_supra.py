@@ -21,7 +21,7 @@ class BasicSupra(Supracontext):
         if data is None and count is not None:
             raise ValueError("Data must not be None")
 
-        self.set_count(count or 1)  # validation done by method
+        self.count = count or 1  # validation done by property
         if data is None:
             self.data = set()
         else:
@@ -45,15 +45,17 @@ class BasicSupra(Supracontext):
     def is_empty(self) -> bool:
         return len(self.data) == 0
 
-    def get_count(self) -> int:
-        return self.count
+    @property
+    def count(self) -> int:
+        return self._count
 
-    def set_count(self, count: int) -> None:
+    @count.setter
+    def count(self, count: int) -> None:
         if count is None:
             raise ValueError("Count must not be None")
         if count < 0:
             raise ValueError("Count must not be less than zero")
-        self.count = count
+        self._count = count
 
     def get_context(self) -> Label:
         if not self.context:

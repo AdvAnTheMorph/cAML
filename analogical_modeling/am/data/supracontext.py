@@ -56,16 +56,18 @@ class Supracontext(ABC):
         otherwise.
         """
 
+    @property
     @abstractmethod
-    def get_count(self) -> int:
+    def count(self) -> int:
         """
 
         :return: the number of copies of this supracontext contained in the
         lattice
         """
 
+    @count.setter
     @abstractmethod
-    def set_count(self, count: int) -> None:
+    def count(self, count: int) -> None:
         """Set the count of the supracontext.
 
         :param count: the count

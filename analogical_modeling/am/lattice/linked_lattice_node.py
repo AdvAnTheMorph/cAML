@@ -45,7 +45,7 @@ class LinkedLatticeNode(Supracontext):
         :param ind: index of new node
         """
         new_supra = self.get_supracontext().copy()
-        new_supra.set_count(1)
+        new_supra.count = 1
         new_supra.add(sub)
         new_node = LinkedLatticeNode(new_supra, ind)
         new_node.set_next(self.get_next())
@@ -75,7 +75,7 @@ class LinkedLatticeNode(Supracontext):
 
     def increment_count(self):
         """Increases count by one"""
-        self.supra.set_count(self.supra.get_count() + 1)
+        self.supra.count += 1
 
     def decrement_count(self) -> None:
         """Decreases the count by one
@@ -85,9 +85,9 @@ class LinkedLatticeNode(Supracontext):
 
         :raises: ValueError if the count is already zero
         """
-        if self.supra.get_count() <= 0:
+        if self.supra.count <= 0:
             raise ValueError('Count cannot be less than zero.')
-        self.supra.set_count(self.supra.get_count() - 1)
+        self.supra.count -= 1
 
     def get_supracontext(self) -> T:
         """Return supracontext"""
@@ -116,11 +116,13 @@ class LinkedLatticeNode(Supracontext):
         """Check if contained supracontext is empty"""
         return self.supra.is_empty()
 
-    def get_count(self) -> int:
-        return self.supra.get_count()
+    @property
+    def count(self) -> int:
+        return self.supra.count
 
-    def set_count(self, count: int) -> None:
-        self.supra.set_count(count)
+    @count.setter
+    def count(self, count: int) -> None:
+        self.supra.count = count
 
     def get_context(self) -> Label:
         """Get context of contained supracontext"""

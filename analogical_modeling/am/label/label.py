@@ -15,8 +15,8 @@ class Label:
         :param c: cardinality of the label
         """
         if isinstance(l, Label):
-            self.label_bits = l.get_label_bits()
-            self.card = l.get_cardinality()
+            self.label_bits = l.label_bits
+            self.card = l.card
         elif c is not None:
             self.label_bits = l
             self.card = c
@@ -25,14 +25,6 @@ class Label:
                 "Either a Label instance or a set and a cardinality must be "
                 "given.")
         self.__hash_code = 37 * self.card + hash(frozenset(self.label_bits))
-
-    def get_cardinality(self) -> int:
-        """Return label cardinality"""
-        return self.card
-
-    def get_label_bits(self) -> set[int]:
-        """Return label bits"""
-        return self.label_bits
 
     def matches(self, index: int) -> bool:
         """Determine if the given index is marked as a match or a mismatch.
@@ -56,7 +48,7 @@ class Label:
         """
         if not isinstance(other_label, Label):
             raise ValueError("Labels can only be intersected with other Labels")
-        bits = self.label_bits.union(other_label.get_label_bits())
+        bits = self.label_bits.union(other_label.label_bits)
         return Label(bits, self.card)
 
     def union(self, other: 'Label') -> 'Label':
@@ -68,7 +60,7 @@ class Label:
         """
         if not isinstance(other, Label):
             raise ValueError("Labels can only be unioned with other Labels")
-        bits = self.label_bits.intersection(other.get_label_bits())
+        bits = self.label_bits.intersection(other.label_bits)
         return Label(bits, self.card)
 
     def all_matching(self) -> bool:
@@ -94,8 +86,7 @@ class Label:
             return False
         if not isinstance(other, Label):
             return False
-        return (other.get_cardinality() == self.card
-                and other.get_label_bits() == self.label_bits)
+        return other.card == self.card and other.label_bits == self.label_bits
 
     def __hash__(self):
         return self.__hash_code
@@ -127,7 +118,7 @@ class Label:
         # boolean lattice ancestor/descendants yield the descendant when ORed;
         # this label needs to have all of the same ones (and optionally more
         # ones)
-        for i in possible_ancestor.get_label_bits():
+        for i in possible_ancestor.label_bits:
             if i >= self.card or i not in self.label_bits:
                 return False
         return True
@@ -137,14 +128,14 @@ class SubsetIterator:
     """Construct an iterator over all subsets of this label"""
 
     def __init__(self, bitset_label: Label):
-        self.card = bitset_label.get_cardinality()
-        self.current = set(bitset_label.get_label_bits())  # copy
+        self.card = bitset_label.card
+        self.current = set(bitset_label.label_bits)  # copy
         # the indices of the 0 entries
         self.gaps = []
 
         # iterate over the clear bits and record their locations
         for i in range(self.card):
-            if i not in bitset_label.get_label_bits():
+            if i not in bitset_label.label_bits:
                 self.gaps.append(i)
         # if there were no gaps, then there is nothing to iterate over
         if not self.gaps:

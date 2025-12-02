@@ -26,9 +26,9 @@ class Labeler:
                  mdc: MissingDataCompare):
         """
 
-        :param test: instance being classified
+        :param test: instance being classified; used to label other instances
         :param ignore_unknowns: True if attributes with undefined values in the
-        test item should be ignored; False if not.
+        test item should be ignored during labeling; False otherwise
         :param mdc: specifies how to compare missing attributes
         """
         self.mdc = mdc
@@ -44,8 +44,8 @@ class Labeler:
         self.ignore_set = frozenset(ignore_set)
 
         spans = self.partitions()
-        self.partitioners = [Partitioner(spans[i]) for i in
-                             range(self.num_partitions())]
+        self.partitioners = [Partitioner(spans[i])
+                             for i in range(self.num_partitions())]
 
     def get_cardinality(self):
         """
@@ -55,30 +55,8 @@ class Labeler:
         """
         return self.test_instance.num_attributes() - len(self.ignore_set) - 1
 
-    def get_ignore_unknowns(self):
-        """
-
-        :return: True if attributes with undefined values in the test item are
-        ignored during labeling; False otherwise
-        """
-        return self.ignore_unknowns
-
-    def get_missing_data_compare(self):
-        """
-
-        :return: the MissingDataCompare strategy in use by this labeler
-        """
-        return self.mdc
-
-    def get_test_instance(self):
-        """
-
-        :return: the test instance being used to label other instances
-        """
-        return self.test_instance
-
     def is_ignored(self, index: int) -> bool:
-        """CHeck if the attribute at the given index is ignored during labeling.
+        """Check if the attribute at the given index is ignored during labeling.
 
         The default behavior is to ignore the attributes with unknown values in
         the test instance if get_ignore_unknowns() is True.
@@ -108,19 +86,19 @@ class Labeler:
         length = self.get_cardinality()
 
         index = 0
-        for i in range(self.get_test_instance().num_attributes()):
+        for i in range(self.test_instance.num_attributes()):
             # skip ignored attributes and the class attribute
-            if self.is_ignored(i) or i == self.get_test_instance().class_index:
+            if self.is_ignored(i) or i == self.test_instance.class_index:
                 continue
-            att = self.get_test_instance().attribute_name(i)
+            att = self.test_instance.attribute_name(i)
             # use mdc if were are comparing a missing attribute
-            if self.get_test_instance().is_missing(i) or data.is_missing(i):
-                if not self.get_missing_data_compare().matches(
-                        self.get_test_instance(), data, i):
+            if self.test_instance.is_missing(i) or data.is_missing(i):
+                if not self.mdc.matches(
+                        self.test_instance, data, i):
                     # use length-1-index instead of index so that in binary the
                     # labels show left to right, first to last feature.
                     label.add(length - 1 - index)
-            elif self.get_test_instance().value(att) != data.value(att):
+            elif self.test_instance.value(att) != data.value(att):
                 # same as above
                 label.add(length - 1 - index)
             index += 1
@@ -231,9 +209,9 @@ class Labeler:
         """
         if partition_index > self.num_partitions() or partition_index < 0:
             raise ValueError(f"Illegal partition index: {partition_index}")
-        if label.get_cardinality() != self.get_cardinality():
+        if label.card != self.get_cardinality():
             raise ValueError(
-                f"Label cardinality is {label.get_cardinality()}, but labeler "
+                f"Label cardinality is {label.card}, but labeler "
                 f"cardinality is {self.get_cardinality()}")
         if not isinstance(label, Label):
             raise ValueError(
@@ -280,23 +258,13 @@ class Partition:
     """Simple class for storing index spans."""
 
     def __init__(self, s: int, l: int) -> None:
+        """
+
+        :param s: index of beginning of span
+        :param l: cardinality of the partition (number of represented features)
+        """
         self.start_index = s
         self.cardinality = l
-
-    def get_start_index(self) -> int:
-        """
-
-        :return: beginning of span
-        """
-        return self.start_index
-
-    def get_cardinality(self) -> int:
-        """
-
-        :return: cardinality of the partition, or number of represented
-        features
-        """
-        return self.cardinality
 
     def __str__(self):
         return f"[{self.start_index},{self.cardinality}]"
@@ -306,8 +274,8 @@ class Partitioner:
     """class for storing label partitions"""
 
     def __init__(self, s: Partition):
-        self.start_index = s.get_start_index()
-        self.cardinality = s.get_cardinality()
+        self.start_index = s.start_index
+        self.cardinality = s.cardinality
 
     def extract(self, label: Label) -> Label:
         new_label = set()

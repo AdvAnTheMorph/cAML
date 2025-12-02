@@ -72,7 +72,7 @@ def six_cardinality_data():
             list("wxvdrr"), list("zbwdee"), ["a", "x", "w", "u", "=", "r"],
             ["a", "x", "c", "u", "=", "e"], ["a", "x", "v", "=", "s", "r"]]
     dataset = utils.Dataset(data)
-    dataset.set_class_index(dataset.num_attributes() - 1)
+    dataset.class_index = dataset.num_attributes() - 1
     return dataset
 
 
@@ -95,7 +95,7 @@ def get_reduced_dataset(file_in_data_folder: str,
     data = get_dataset(file_in_data_folder)
 
     data.data.drop(data.data.columns[ignore_atts], axis=1, inplace=True)
-    data.set_class_index(data.num_attributes() - 1)
+    data.class_index = data.num_attributes() - 1
     return data
 
 
@@ -116,7 +116,7 @@ def get_deterministic_random_provider():
 
 
 def supra_deep_equals(supra1: Supracontext, supra2: Supracontext) -> bool:
-    return supra1.get_count() == supra2.get_count() and supra1.get_data() == supra2.get_data()
+    return supra1.count == supra2.count and supra1.get_data() == supra2.get_data()
 
 
 def contains_supra(actual_supras: set, expected) -> bool:
@@ -156,7 +156,7 @@ def leave_one_out(am: AnalogicalModeling, data: Dataset) -> int:
         i = 1
         for am_set, cls in futures:
             logging.log(logging.DEBUG, f"{i}/{data.data.shape[0]}")
-            if cls in am_set.result().get_predicted_classes():
+            if cls in am_set.result().predicted_classes:
                 correct += 1
             i += 1
     logging.log(logging.DEBUG, f"{correct=}")
@@ -244,9 +244,9 @@ def get_supra_from_string(supra_string: str, data):
             if not added:
                 raise ValueError(
                     f"{instance_string} does not specify any instance in the given dataset")
-        if sub.get_outcome() != outcome:
+        if sub.outcome != outcome:
             raise ValueError(
-                f"Specified instances give an outcome of {sub.get_outcome()}, not {outcome}")
+                f"Specified instances give an outcome of {sub.outcome}, not {outcome}")
         subs.add(sub)
     return ClassifiedSupra(subs, count)
 

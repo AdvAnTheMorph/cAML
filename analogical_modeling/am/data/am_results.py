@@ -92,10 +92,10 @@ class AMResults:
         self.class_probability = -1
         for cls_name in self.class_likelihood_map:
             temp = self.class_likelihood_map[cls_name]
-            if temp > self.get_class_probability():
+            if temp > self.class_probability:
                 self.class_probability = temp
                 self.predicted_classes = {cls_name}
-            elif temp == self.get_class_probability():
+            elif temp == self.class_probability:
                 self.predicted_classes.add(cls_name)
 
     @staticmethod
@@ -124,7 +124,7 @@ class AMResults:
             # iterate subcontexts in supracontext
             for sub in supra.get_data():
                 # iterate subcontexts in supracontext
-                pointers_to_supra = supra.get_count()
+                pointers_to_supra = supra.count
                 # iterate exemplars in subcontext
                 for e in sub.get_exemplars():
                     # add together if already in the map
@@ -150,7 +150,7 @@ class AMResults:
             effects += (f"{k} : {v} ({v / self.total_pointers})"
                         f"{am_utils.LINE_SEPARATOR}")
 
-        return f"classifying: {self.get_classified_ex()}{linesep}outcome: " \
+        return f"classifying: {self.classified_exemplar}{linesep}outcome: " \
                f"{self.predicted_classes} ({self.class_probability}){linesep}" \
                f"Exemplar effects:{am_utils.LINE_SEPARATOR}{effects}"
 
@@ -170,13 +170,6 @@ class AMResults:
         """
         return self.ex_pointer_map
 
-    def get_total_pointers(self) -> float:
-        """
-
-        :return: total number of pointers in this analogical set
-        """
-        return self.total_pointers
-
     def get_class_pointers(self) -> dict[str, int]:
         """
 
@@ -191,27 +184,6 @@ class AMResults:
         :return: mapping between the class name and its selection probability
         """
         return self.class_likelihood_map
-
-    def get_classified_ex(self) -> Instance:
-        """
-
-        :return: exemplar which was classified
-        """
-        return self.classified_exemplar
-
-    def get_class_probability(self) -> float:
-        """
-
-        :return: probability of the predicted class
-        """
-        return self.class_probability
-
-    def get_predicted_classes(self) -> set[str]:
-        """
-
-        :return: index of the predicted class attribute value
-        """
-        return self.predicted_classes
 
     def get_supra_list(self) -> frozenset[Supracontext]:
         """
@@ -240,21 +212,10 @@ class AMResults:
         return sorted(effects, key=lambda e: (
             -e.total_pointers, e.subcontext.get_display_label()))
 
-    def get_labeler(self) -> Labeler:
-        """
-
-        :return: Labeler object that was used to assign the contextual labels.
-        """
-        return self.labeler
-
     def get_expected_class_name(self) -> str:
         """Return actual class"""
-        classified_ex = self.get_classified_ex()
+        classified_ex = self.classified_exemplar
         return classified_ex.class_value()
-
-    def get_sub_list(self) -> SubcontextList:
-        """Return the subcontext list"""
-        return self.sub_list
 
     def get_judgement(self):
         """
@@ -264,13 +225,9 @@ class AMResults:
         expected = self.get_expected_class_name()
         if expected is None:
             return Judgement.UNKNOWN
-        predicted = self.get_predicted_classes()
+        predicted = self.predicted_classes
         if expected in predicted:
             if len(predicted) == 1:
                 return Judgement.CORRECT
             return Judgement.TIE
         return Judgement.INCORRECT
-
-    def get_pointer_counting_strategy(self):
-        """Return pointer counting strategy (linear or quadratic)"""
-        return self.pointer_counting_strategy

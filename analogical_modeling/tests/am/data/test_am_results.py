@@ -53,7 +53,7 @@ class AMResultsTest(unittest.TestCase):
         self.assertAlmostEqual(0.2857143, effects["3,1,1,r"], delta=1e-7)
 
     def test_quadratic_pointers(self):
-        self.assertEqual(13, self.as_quadratic.get_total_pointers())
+        self.assertEqual(13, self.as_quadratic.total_pointers)
         self.assertEqual({"r": 9, "e": 4},
                          self.as_quadratic.get_class_pointers())
 
@@ -71,7 +71,7 @@ class AMResultsTest(unittest.TestCase):
         self.assertEqual(4, pointers["3,1,1,r"])
 
     def test_linear_pointers(self):
-        self.assertEqual(7, self.as_linear.get_total_pointers())
+        self.assertEqual(7, self.as_linear.total_pointers)
         self.assertEqual({"r": 5, "e": 2}, self.as_linear.get_class_pointers())
 
         pointers = {str(k).split(",{")[0]: v for k, v in
@@ -95,9 +95,9 @@ class AMResultsTest(unittest.TestCase):
         self.assertAlmostEqual(0.6923077, distr["r"], delta=1e-7)
         self.assertAlmostEqual(0.3076923, distr["e"], delta=1e-7)
 
-        self.assertEqual({"r"}, self.as_quadratic.get_predicted_classes())
+        self.assertEqual({"r"}, self.as_quadratic.predicted_classes)
         self.assertAlmostEqual(0.6923077,
-                               self.as_quadratic.get_class_probability(),
+                               self.as_quadratic.class_probability,
                                delta=1e-7)
 
     def test_linear_class_distribution(self):
@@ -108,13 +108,13 @@ class AMResultsTest(unittest.TestCase):
         self.assertAlmostEqual(0.7142857, distr["r"], delta=1e-7)
         self.assertAlmostEqual(0.2857143, distr["e"], delta=1e-7)
 
-        self.assertEqual({"r"}, self.as_linear.get_predicted_classes())
+        self.assertEqual({"r"}, self.as_linear.predicted_classes)
         self.assertAlmostEqual(0.7142857,
-                               self.as_linear.get_class_probability(),
+                               self.as_linear.class_probability,
                                delta=1e-7)
 
     def test_classified_ex(self):
-        self.assertEqual(self.test, self.as_quadratic.get_classified_ex())
+        self.assertEqual(self.test, self.as_quadratic.classified_exemplar)
 
     # TODO: test with linear counting
     # TODO: test toString

@@ -19,12 +19,12 @@ class SubcontextTest(unittest.TestCase):
         s.add(self.dataset[0])
         self.assertEqual({self.dataset[0]}, s.get_exemplars())
         self.assertEqual(Label(set(), 1), s.get_label())
-        self.assertEqual("r", s.get_outcome())
+        self.assertEqual("r", s.outcome)
         self.assertEqual("(0|r|1,r,{1})", str(s))
 
         s.add(self.dataset[1])
         self.assertEqual({self.dataset[0], self.dataset[1]}, s.get_exemplars())
-        self.assertEqual(am_utils.NONDETERMINISTIC, s.get_outcome())
+        self.assertEqual(am_utils.NONDETERMINISTIC, s.outcome)
 
     #         // TODO: can't test toString() like this because data is an
     #          unordered

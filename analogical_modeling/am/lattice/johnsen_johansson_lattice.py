@@ -106,8 +106,7 @@ class SupraApproximator():
         # (combination with these would lead to heterogeneity)
         hp = []
         for k, v in outcome_sub_map.items():
-            if (p.get_outcome() != k or p.get_outcome() ==
-                    am_utils.HETEROGENEOUS):
+            if p.outcome != k or p.outcome == am_utils.HETEROGENEOUS:
                 for x in v:
                     hp.append(p_label.intersect(x))
 
@@ -137,7 +136,7 @@ class SupraApproximator():
         # add the approximated sub as its own supra with the given count
         approximated_supra = ClassifiedSupra()
         approximated_supra.add(p)
-        approximated_supra.set_count(count)
+        approximated_supra.count = count
         return approximated_supra
 
     def estimate_hetero_ratio(self, hp: list[Label], hp_union: Label,
@@ -202,11 +201,11 @@ class JohnsenJohanssonLattice(Lattice):
             raise ValueError(
                 "Lattice is already filled and cannot be filled again.")
         self.filled = True
-        self.bottom = sub_list.get_labeler().get_lattice_bottom()
+        self.bottom = sub_list.labeler.get_lattice_bottom()
         # first organize sub labels by outcome for quick H(p) construction
         outcome_sub_map: dict[float, list[Label]] = defaultdict(list)
         for s in sub_list:
-            outcome_sub_map[s.get_outcome()].append(s.get_label())
+            outcome_sub_map[s.outcome].append(s.get_label())
 
         # Estimate the counts for each supracontext in parallel
         with concurrent.futures.ThreadPoolExecutor() as executor:

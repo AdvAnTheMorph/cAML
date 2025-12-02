@@ -17,10 +17,9 @@ class LabelerTest(unittest.TestCase):
         labeler = Labeler(instance, False, MissingDataCompare.MATCH)
 
         self.assertEqual(labeler.get_cardinality(), 3)
-        self.assertFalse(labeler.get_ignore_unknowns())
-        self.assertEqual(labeler.get_missing_data_compare(),
-                         MissingDataCompare.MATCH)
-        self.assertEqual(labeler.get_test_instance().all(), instance.all())
+        self.assertFalse(labeler.ignore_unknowns)
+        self.assertEqual(labeler.mdc, MissingDataCompare.MATCH)
+        self.assertEqual(labeler.test_instance.all(), instance.all())
 
     def test_is_ignored(self):
         """Test the default behavior for Labeler.is_ignored(int).
@@ -44,7 +43,7 @@ class LabelerTest(unittest.TestCase):
         labeler = Labeler(test_utils.mock_instance(cardinality), False,
                           MissingDataCompare.MATCH)
         top = labeler.get_lattice_top()
-        self.assertEqual(cardinality, top.get_cardinality())
+        self.assertEqual(cardinality, top.card)
         for i in range(cardinality):
             self.assertTrue(top.matches(i))
         self.assertEqual(cardinality, top.num_matches())
@@ -54,7 +53,7 @@ class LabelerTest(unittest.TestCase):
         labeler = Labeler(test_utils.mock_instance(cardinality), False,
                           MissingDataCompare.MATCH)
         bottom = labeler.get_lattice_bottom()
-        self.assertEqual(cardinality, bottom.get_cardinality())
+        self.assertEqual(cardinality, bottom.card)
         for i in range(cardinality):
             self.assertFalse(bottom.matches(i),
                              f"Attribute {i} should not match")
@@ -82,8 +81,8 @@ class LabelerTest(unittest.TestCase):
 
         def assert_partition_equals(partition: Partition, start_index: int,
                                     cardinality: int):
-            self.assertEqual(start_index, partition.get_start_index())
-            self.assertEqual(cardinality, partition.get_cardinality())
+            self.assertEqual(start_index, partition.start_index)
+            self.assertEqual(cardinality, partition.cardinality)
 
         data = test_utils.get_dataset(test_utils.FINNVERB)
         labeler = Labeler(data[0], False, MissingDataCompare.VARIABLE)
@@ -124,7 +123,7 @@ class LabelerTest(unittest.TestCase):
         """Test with a different class index to make sure its location is not
         hard coded."""
         dataset = test_utils.six_cardinality_data()
-        dataset.set_class_index(2)
+        dataset.class_index = 2
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
         self.assertEqual(Label({2, 4}, 5), labeler.label(dataset[2]))
         self.assertEqual(Label({0, 1, 2}, 5), labeler.label(dataset[3]))
@@ -187,7 +186,7 @@ class LabelerTest(unittest.TestCase):
 
     def test_get_context_list_with_alternative_class_index(self):
         dataset = test_utils.six_cardinality_data()
-        dataset.set_class_index(2)
+        dataset.class_index = 2
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
         label = Label({0, 1, 3}, 5)
         actual = labeler.get_context_list(label, "*")
@@ -195,7 +194,7 @@ class LabelerTest(unittest.TestCase):
 
     def test_get_instance_atts_string_with_alternative_class_index(self):
         dataset = test_utils.six_cardinality_data()
-        dataset.set_class_index(2)
+        dataset.class_index = 2
         labeler = Labeler(dataset[0], False, MissingDataCompare.MATCH)
         actual = labeler.get_instance_atts_values_list(dataset[0])
         self.assertEqual(list("axusr"), actual)

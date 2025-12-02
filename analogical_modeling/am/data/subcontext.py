@@ -44,10 +44,6 @@ class Subcontext:
             self.outcome = other.class_value()
         self.data.add(other)
 
-    def get_outcome(self) -> str | int:
-        """Get the outcome of this subcontext."""
-        return self.outcome
-
     def get_label(self) -> Label:
         """Get binary label of this subcontext"""
         return self.label

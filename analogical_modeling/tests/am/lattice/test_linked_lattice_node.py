@@ -30,16 +30,16 @@ class LinkedLatticeNodeTest(unittest.TestCase):
     def test_count(self):
         for supra in supras:
             test_node = LinkedLatticeNode(supra())
-            self.assertEqual(1, test_node.get_count())
+            self.assertEqual(1, test_node.count)
             test_node.increment_count()
-            self.assertEqual(2, test_node.get_count())
+            self.assertEqual(2, test_node.count)
             test_node.decrement_count()
-            self.assertEqual(1, test_node.get_count())
+            self.assertEqual(1, test_node.count)
 
     def test_decrement_count_throws_error_when_count_is_zero(self):
         for supra in supras:
             test_node = LinkedLatticeNode(supra())
-            test_node.set_count(0)
+            test_node.count = 0
             with self.assertRaises(ValueError):
                 test_node.decrement_count()
 

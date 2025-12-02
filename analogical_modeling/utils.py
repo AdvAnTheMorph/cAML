@@ -4,7 +4,7 @@ remains from weka:
 - Attributes = columns
 - Instances = rows
 """
-
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -98,18 +98,12 @@ class Dataset:
         self.ignored: list[str] = []
         if atts is None:
             self.data = pd.DataFrame()
-            self.class_index = None
+            self._class_index = None
             self.weights = []
             return
         self.data = pd.DataFrame(atts)
 
-        # remove weights from dataset, as they are no features
-        if weights:
-            self.weights = self.data[weights].tolist()
-            self.data.drop(columns=[weights], inplace=True)
-        else:
-            self.weights = [1] * self.data.shape[0]
-
+        self.weights = self.set_weights_by_column(weights)
         self.class_index = self.num_attributes() - 1
 
     def from_csv(self, source: str | Path, weights: str = "") -> 'Dataset':
@@ -120,17 +114,30 @@ class Dataset:
         """
         self.data = pd.read_csv(Path(__file__).parent / source)
 
-        # remove weights from dataset, as they are no features
-        if weights:
-            self.weights = self.data[weights].tolist()
-            self.data.drop(columns=[weights], inplace=True)
-        else:
-            self.weights = [1] * self.data.shape[0]
+        self.weights = self.set_weights_by_column(weights)
 
         # set class index only afterwards (possibly one column less than before)
         self.class_index = self.num_attributes() - 1
 
         return self
+
+    def set_weights_by_column(self, weights_column: str) -> list:
+        """Set instance weights
+
+        The weights column is then dropped from the dataset.
+
+        :param weights_column: name of column with weights, if given
+        """
+        # remove weights from dataset, as they are no features
+        if weights_column:
+            try:
+                weights = self.data[weights_column].tolist()
+                self.data.drop(columns=[weights_column], inplace=True)
+            except KeyError:
+                sys.exit(f"Column '{weights_column}' not found in dataset.")
+        else:
+            weights = [1] * self.data.shape[0]
+        return weights
 
     def get_instance(self, idx) -> Instance:
         """Get an instance of the given index
@@ -146,7 +153,13 @@ class Dataset:
         """Return the number of attributes that are not ignored."""
         return self.data.shape[1] - len(self.ignored)
 
-    def set_class_index(self, idx: int) -> None:
+    @property
+    def class_index(self) -> int:
+        """Get class index"""
+        return self._class_index
+
+    @class_index.setter
+    def class_index(self, idx: int) -> None:
         """Set the class index.
 
         :param idx: index of the class
@@ -154,7 +167,9 @@ class Dataset:
         if idx > self.num_attributes():
             raise ValueError(f"Index out of range: There are only "
                              f"{self.num_attributes()} attributes.")
-        self.class_index = idx
+        if not isinstance(idx, int):
+            raise TypeError(f"Index must be an integer, not {type(idx)}.")
+        self._class_index = idx
 
     def filter_threshold(self, threshold: float) -> None:
         """Drop all instances with a weight below the given threshold."""

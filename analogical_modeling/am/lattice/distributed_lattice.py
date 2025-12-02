@@ -1,6 +1,7 @@
 """Distributed Lattice"""
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import TypeVar
 
 from analogical_modeling.am.data.basic_supra import BasicSupra
 from analogical_modeling.am.data.classified_supra import ClassifiedSupra
@@ -10,6 +11,13 @@ from analogical_modeling.am.lattice.canonicalizing_set import CanonicalizingSet
 from analogical_modeling.am.lattice.heterogeneous_lattice import \
     HeterogeneousLattice
 from analogical_modeling.am.lattice.lattice import Lattice
+
+T = TypeVar('T')
+
+def merge_counts(s1: T, s2: T) -> T:
+    """Merges supracontext counts"""
+    s1.count += s2.count
+    return s1
 
 
 class DistributedLattice(Lattice):
@@ -43,7 +51,7 @@ class DistributedLattice(Lattice):
         self.filled = True
         if len(sub_list) == 0:
             return
-        labeler = sub_list.get_labeler()
+        labeler = sub_list.labeler
         num_lattices = labeler.num_partitions()
 
         with ThreadPoolExecutor() as executor:
@@ -121,8 +129,7 @@ class DistributedLattice(Lattice):
         for supra in supras2:
             # add to the existing count if the same supra was formed from a
             # previous combination
-            supras1.merge(supra, lambda s1, s2: s1.set_count(
-                s1.get_count() + s2.get_count()) or s1)
+            supras1.merge(supra, lambda s1, s2: merge_counts(s1, s2))
         return supras1
 
 
@@ -135,8 +142,7 @@ class IntermediateProduct:
             if new_supra is not None:
                 # add to the existing count if the same supra was formed from a
                 # previous combination
-                combined_supras.merge(new_supra, lambda s1, s2: s1.set_count(
-                    s1.get_count() + s2.get_count()) or s1)
+                combined_supras.merge(new_supra, lambda s1, s2: merge_counts(s1, s2))
 
         return combined_supras
 
@@ -165,8 +171,7 @@ class IntermediateProduct:
 
         if not combined_subs:
             return None
-        return BasicSupra(combined_subs,
-                          supra1.get_count() * supra2.get_count())
+        return BasicSupra(combined_subs, supra1.count * supra2.count)
 
 
 class FinalizingProduct:
@@ -180,8 +185,7 @@ class FinalizingProduct:
                 continue
             # add to the existing count if the same supra was formed from a
             # previous combination
-            final_supras.merge(supra, lambda s1, s2: s1.set_count(
-                s1.get_count() + s2.get_count()) or s1)
+            final_supras.merge(supra, lambda s1, s2: merge_counts(s1, s2))
 
         return final_supras
 
@@ -218,5 +222,5 @@ class FinalizingProduct:
 
         if supra.is_empty():
             return None
-        supra.set_count(supra1.get_count() * supra2.get_count())
+        supra.count = supra1.count * supra2.count
         return supra

@@ -41,14 +41,20 @@ class ClassifiedSupra(Supracontext):
         if data is None and count is not None:
             raise ValueError("data must not be None")
         self.supra = BasicSupra()
-        # class attribute value
-        # or nondeterministic, heterogeneous, or undetermined
-        self.outcome: float | str = am_utils.UNKNOWN
+
+        # The outcome is:
+        # - am_utils.UNKNOWN, if there are no subcontexts in this supracontext
+        # - am_utils.NONDETERMINISTIC,
+        # - am_utils.HETEROGENEOUS, if there are multiple subcontexts with the
+        #   outcome am_utils.NONDETERMINISTIC, or subcontexts have differing
+        #   outcomes
+        # - the outcome of the contained subcontexts, otherwise
+        self.outcome: float|str = am_utils.UNKNOWN
 
         if data is not None:
             for sub in data:
                 self.add(sub)
-            self.supra.set_count(count)
+            self.supra.count = count
 
     def add(self, other: Subcontext) -> None:
         """Add a subcontext to this supracontext.
@@ -56,25 +62,10 @@ class ClassifiedSupra(Supracontext):
         :param other: subcontext to add to the supracontext
         """
         if self.supra.is_empty():
-            self.outcome = other.get_outcome()
+            self.outcome = other.outcome
         elif not self.is_heterogeneous() and self.would_be_hetero(other):
             self.outcome = am_utils.HETEROGENEOUS
         self.supra.add(other)
-
-    def get_outcome(self) -> float | str:
-        """Get the outcome of this supracontext.
-
-        The outcome is:
-        - am_utils.UNKNOWN, if there are no subcontexts in this supracontext
-        - am_utils.NONDETERMINISTIC,
-        - am_utils.HETEROGENEOUS, if there are multiple subcontexts with the
-          outcome am_utils.NONDETERMINISTIC, or subcontexts have differing
-          outcomes
-        - the outcome of the contained subcontexts, otherwise
-
-        :return: outcome of this supracontext
-        """
-        return self.outcome
 
     def is_heterogeneous(self) -> bool:
         """
@@ -99,9 +90,9 @@ class ClassifiedSupra(Supracontext):
         # - there are more than one subcontext which are non-deterministic
         if self.supra.is_empty():
             return False
-        if other.get_outcome() != self.outcome:
+        if other.outcome != self.outcome:
             return True
-        return other.get_outcome() == am_utils.NONDETERMINISTIC
+        return other.outcome == am_utils.NONDETERMINISTIC
 
     def copy(self) -> 'ClassifiedSupra':
         """Return an exact, deep copy of the supracontext."""
@@ -117,11 +108,13 @@ class ClassifiedSupra(Supracontext):
     def is_empty(self) -> bool:
         return self.supra.is_empty()
 
-    def get_count(self) -> int:
-        return self.supra.get_count()
+    @property
+    def count(self) -> int:
+        return self.supra.count
 
-    def set_count(self, count: int):
-        self.supra.set_count(count)
+    @count.setter
+    def count(self, count: int):
+        self.supra.count = count
 
     def get_context(self) -> Label:
         return self.supra.get_context()

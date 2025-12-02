@@ -30,21 +30,6 @@ class MissingDataCompare(Enum):
         # string which describes comparison strategy for a given entry
         self.description = description
 
-    def get_option_string(self) -> str:
-        """
-
-        :return: string used on command line to indicate the use of this
-        strategy
-        """
-        return self.option_string
-
-    def get_description(self) -> str:
-        """
-
-        :return: string which describes comparison strategy for a given entry
-        """
-        return self.description
-
     def matches(self, i1: Instance, i2: Instance, idx: int) -> bool:
         """Compare the two instances and return the comparison result.
 

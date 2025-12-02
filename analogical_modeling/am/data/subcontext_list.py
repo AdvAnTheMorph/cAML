@@ -36,6 +36,8 @@ class SubcontextList:
         self.label_to_subcontext: dict[Label, Subcontext] = {}
         self.labeler: Labeler = labeler
         self.ignore_full_matches: bool = ignore_full_matches
+        # number of exemplars considered accepted into the list,
+        # i.e. added and not ignored
         self.considered_exemplar_count: int = 0
 
         for se in data:
@@ -44,14 +46,6 @@ class SubcontextList:
     def get_cardinality(self) -> int:
         """Get the number of attributes used to predict an outcome"""
         return self.labeler.get_cardinality()
-
-    def get_ignore_full_matches(self) -> bool:
-        """
-
-        :return: True if instances with exact same attribute values as the
-        test instance are removed from the list.
-        """
-        return self.ignore_full_matches
 
     def add(self, exemplar: Instance):
         """Add an exemplar"""
@@ -109,18 +103,3 @@ class SubcontextList:
 
     def __len__(self) -> int:
         return len(self.label_to_subcontext)
-
-    def get_considered_exemplar_count(self) -> int:
-        """
-
-        :return: The number of exemplars considered accepted into the list,
-        e.g. added and not ignored
-        """
-        return self.considered_exemplar_count
-
-    def get_labeler(self) -> Labeler:
-        """
-
-        :return: The labeler object used to assign incoming data to subcontexts.
-        """
-        return self.labeler

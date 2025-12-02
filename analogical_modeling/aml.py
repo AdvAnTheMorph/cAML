@@ -166,7 +166,7 @@ class AnalogicalModeling:
         # 2. Create a supracontextual lattice and fill it with subcontexts
         lattice_factory = CardinalityBasedLatticeFactory(
             sub_list.get_cardinality(),
-            sub_list.get_labeler().num_partitions(),
+            sub_list.labeler.num_partitions(),
             self.random_provider)
 
         lattice = lattice_factory.create_lattice()
@@ -315,13 +315,16 @@ class AnalogicalModeling:
             self.check_header(instances)
 
         results = []
-        for instance in instances:
+        total = len(instances)
+        for t, instance in enumerate(instances, 1):
             self.distribution_for_instance(instance)
             results.append(self.get_results())
+            if t % 100 == 0:
+                print(f"{t}/{total} ({round(t/total*100, 2)}%) classified")
 
         acc, conf_matrix = self.evaluate(instances, results)
         print(f"Accuracy: {round(acc * 100, 3)}%")
-        self.create_output_files(out_path, results, instances)
+        # self.create_output_files(out_path, results, instances)
         conf_matrix.plot()
         plt.show()
 
@@ -335,7 +338,7 @@ class AnalogicalModeling:
         """
         print("Generating output files...")
         # information equal for all exemplars
-        feats = results[0].get_classified_ex().real_data.keys()
+        feats = results[0].classified_exemplar.real_data.keys()
         classes = list(instances.get_classes())
         cls_header = ([f"Class {i + 1}" for i in range(len(classes))] +
                       sum([[f"{cls}: pointers", f"{cls}: pct"] for cls in
@@ -369,7 +372,7 @@ class AnalogicalModeling:
         analogs = []
         distributions = []
         for idx, res in enumerate(results):
-            classified = res.get_classified_ex()
+            classified = res.classified_exemplar
 
             # gang effects
             effects = res.get_gang_effects()
@@ -424,9 +427,9 @@ class AnalogicalModeling:
                 pointers.items()]
 
             # distribution
-            pred = res.get_predicted_classes()
+            pred = res.predicted_classes
             gold = res.get_expected_class_name()
-            train_size = res.get_sub_list().get_considered_exemplar_count()
+            train_size = res.sub_list.considered_exemplar_count
 
             cls_info = classes + sum([[
                 res.class_pointer_map.get(cls, 0),  # cls: pointers
@@ -472,12 +475,12 @@ class AnalogicalModeling:
         :return: accuracy
         """
         # inaccurate in the case of ties
-        preds = [list(res.get_predicted_classes())[0] for res in results]
+        preds = [list(res.predicted_classes)[0] for res in results]
         golds = [inst.class_value() for inst in instances]
 
         correct = sum(
-            [inst.class_value() in res.get_predicted_classes() for inst, res in
-             zip(instances, results)])
+            [inst.class_value() in res.predicted_classes
+            for inst, res in zip(instances, results)])
         acc = correct / len(results)
         cnf = confusion_matrix(golds, preds,
                                labels=list(instances.get_classes()))
@@ -498,7 +501,7 @@ class AnalogicalModeling:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-l", "--lexicon",
+    parser.add_argument("-l", "--lexicon", type=Path,
                         help="csv containing the data", required=True)
     parser.add_argument("-t", "--test",
                         help="csv containing test data")
@@ -521,22 +524,28 @@ if __name__ == "__main__":
                         help="Ignore attributes with unknown values in the "
                              "test exemplar")
     parser.add_argument("-D", "--debug", action="store_true",
-                        help="Run classifier in debug mode and may output "
+                        help="Run classifier in debug mode; may output "
                              "additional info to the console")
     parser.add_argument("-M", "--missing_data",
                         choices=["match", "mismatch", "variable"],
                         default="variable",
                         help="Method of dealing with missing data. The options "
-                             "are variable, match or mismatch; 'variable' "
-                             "means to treat missing data as a all one " \
-                             "variable, 'match' means that missing data will " \
-                             "be considered the same as whatever it is " \
+                             "are 'variable', 'match' or 'mismatch'; "
+                             "'variable' means to treat missing data as a all "
+                             "one variable, 'match' means that missing data "
+                             "will be considered the same as whatever it is "
                              "compared with, and 'mismatch' means that "
-                             "missing data will always be unequal to " \
-                             "whatever it is compared with. Default is " \
+                             "missing data will always be unequal to "
+                             "whatever it is compared with. Default is "
                              "'variable'")
 
     args = parser.parse_args()
+
+    # validation
+    if not args.lexicon.exists():
+        sys.exit(f"File {args.lexicon} not found.")
+    if args.test and not Path(args.test).exists():
+        sys.exit(f"Test file given, but {args.test} not found.")
 
     am = AnalogicalModeling()
     am.set_linear_count(args.linear)

@@ -42,7 +42,7 @@ class TestLabel(unittest.TestCase):
     def test_get_cardinality(self):
         labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
         test_label = labeler.from_bits(0b001)
-        self.assertEqual(test_label.get_cardinality(), 3)
+        self.assertEqual(test_label.card, 3)
 
     def test_matches(self):
         labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
@@ -72,7 +72,7 @@ class TestLabel(unittest.TestCase):
         label1 = labeler.from_bits(0b001)
         label2 = labeler.from_bits(0b100)
         unioned = label1.union(label2)
-        for i in range(unioned.get_cardinality()):
+        for i in range(unioned.card):
             self.assertTrue(unioned.matches(i))
 
     def test_all_matching(self):
@@ -153,13 +153,13 @@ class TestLabel(unittest.TestCase):
 
     def test_constructor(self):
         label = Label({0, 2}, 3)
-        self.assertEqual(3, label.get_cardinality())
+        self.assertEqual(3, label.card)
         self.assertFalse(label.matches(0))
         self.assertTrue(label.matches(1))
         self.assertFalse(label.matches(2))
 
         label = Label({0, 2, 32}, 33)
-        self.assertEqual(33, label.get_cardinality())
+        self.assertEqual(33, label.card)
         self.assertFalse(label.matches(0))
         self.assertTrue(label.matches(1))
         self.assertFalse(label.matches(2))
@@ -169,10 +169,10 @@ class TestLabel(unittest.TestCase):
 
     def test_label_bits(self):
         label = Label({0, 1}, 4)
-        self.assertEqual({0, 1}, label.get_label_bits())
+        self.assertEqual({0, 1}, label.label_bits)
 
         label = Label({0, 1, 32}, 33)
-        self.assertEqual({0, 1, 32}, label.get_label_bits())
+        self.assertEqual({0, 1, 32}, label.label_bits)
 
     def test_copy_constructor(self):
         first_label = Label({2}, 3)
