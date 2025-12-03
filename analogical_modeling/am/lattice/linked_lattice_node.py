@@ -48,23 +48,9 @@ class LinkedLatticeNode(Supracontext):
         new_supra.count = 1
         new_supra.add(sub)
         new_node = LinkedLatticeNode(new_supra, ind)
-        new_node.set_next(self.get_next())
-        self.set_next(new_node)
+        new_node.next = self.next
+        self.next = new_node
         return new_node
-
-    def get_next(self) -> 'LinkedLatticeNode':
-        """
-
-        :return: the next node linked to by this node
-        """
-        return self.next
-
-    def set_next(self, node: 'LinkedLatticeNode') -> None:
-        """Set the next node linked to by this node
-
-        :param node: the node to link to
-        """
-        self.next = node
 
     def get_index(self) -> int:
         """
@@ -100,7 +86,7 @@ class LinkedLatticeNode(Supracontext):
         """
         new_supra = self.get_supracontext().copy()
         new_node = LinkedLatticeNode(new_supra, self.index)
-        new_node.set_next(self.next)
+        new_node.next = self.next
         return new_node
 
     # Below methods are delegated to the contained supracontext

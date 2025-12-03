@@ -129,7 +129,7 @@ class DistributedLattice(Lattice):
         for supra in supras2:
             # add to the existing count if the same supra was formed from a
             # previous combination
-            supras1.merge(supra, lambda s1, s2: merge_counts(s1, s2))
+            supras1.merge(supra, merge_counts)
         return supras1
 
 
@@ -142,7 +142,7 @@ class IntermediateProduct:
             if new_supra is not None:
                 # add to the existing count if the same supra was formed from a
                 # previous combination
-                combined_supras.merge(new_supra, lambda s1, s2: merge_counts(s1, s2))
+                combined_supras.merge(new_supra, merge_counts)
 
         return combined_supras
 
@@ -185,7 +185,7 @@ class FinalizingProduct:
                 continue
             # add to the existing count if the same supra was formed from a
             # previous combination
-            final_supras.merge(supra, lambda s1, s2: merge_counts(s1, s2))
+            final_supras.merge(supra, merge_counts)
 
         return final_supras
 

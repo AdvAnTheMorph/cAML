@@ -23,9 +23,9 @@ class LinkedLatticeNodeTest(unittest.TestCase):
     def test_next(self):
         for supra in supras:
             test_node = LinkedLatticeNode(supra())
-            self.assertIsNone(test_node.get_next())
-            test_node.set_next(test_node)
-            self.assertEqual(test_node.get_next(), test_node)
+            self.assertIsNone(test_node.next)
+            test_node.next = test_node
+            self.assertEqual(test_node.next, test_node)
 
     def test_count(self):
         for supra in supras:
@@ -58,21 +58,21 @@ class LinkedLatticeNodeTest(unittest.TestCase):
             expected = BasicSupra({sub1}, 1)
             self.assertEqual(test_node2, expected)
             self.assertEqual(11, test_node2.get_index())
-            self.assertIs(test_node2, test_node1.get_next())
-            self.assertIsNone(test_node2.get_next())
+            self.assertIs(test_node2, test_node1.next)
+            self.assertIsNone(test_node2.next)
 
             test_node3 = test_node2.insert_after(sub2, 29)
             expected = BasicSupra({sub1, sub2}, 0)
             self.assertEqual(test_node3, expected)
             self.assertEqual(29, test_node3.get_index())
-            self.assertIs(test_node3, test_node2.get_next())
-            self.assertIsNone(test_node3.get_next())
+            self.assertIs(test_node3, test_node2.next)
+            self.assertIsNone(test_node3.next)
 
             test_node4 = test_node2.insert_after(sub3, 37)
             expected = BasicSupra({sub1, sub3}, 0)
             self.assertEqual(test_node4, expected)
-            self.assertIs(test_node4, test_node2.get_next())
-            self.assertIs(test_node3, test_node4.get_next())
+            self.assertIs(test_node4, test_node2.next)
+            self.assertIs(test_node3, test_node4.next)
 
         # TODO: test copy, equals and hashCode for correctness regarding next
         #  variable

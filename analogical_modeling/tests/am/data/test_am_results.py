@@ -122,4 +122,4 @@ class AMResultsTest(unittest.TestCase):
     def test_get_gang_effects(self):
         effects = self.as_quadratic.get_gang_effects()
         self.assertEqual(["3 1 *", "* 1 2", "* * 2"],
-                         [e.subcontext.get_display_label() for e in effects])
+                         [e.subcontext.display_label for e in effects])

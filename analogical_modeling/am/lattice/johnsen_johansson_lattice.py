@@ -100,7 +100,7 @@ class SupraApproximator():
                           outcome_sub_map: dict[
                               float, list[Label]]) -> Supracontext:
         """Approximate supracontext"""
-        p_label = p.get_label()
+        p_label = p.label
         # H(p) is p intersected with labels of any subcontexts with a
         # different class, or all other sub labels if p is non-deterministic
         # (combination with these would lead to heterogeneity)
@@ -205,7 +205,7 @@ class JohnsenJohanssonLattice(Lattice):
         # first organize sub labels by outcome for quick H(p) construction
         outcome_sub_map: dict[float, list[Label]] = defaultdict(list)
         for s in sub_list:
-            outcome_sub_map[s.outcome].append(s.get_label())
+            outcome_sub_map[s.outcome].append(s.label)
 
         # Estimate the counts for each supracontext in parallel
         with concurrent.futures.ThreadPoolExecutor() as executor:

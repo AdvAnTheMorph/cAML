@@ -89,8 +89,7 @@ class Supracontext(ABC):
         are empty
         """
         return reduce(lambda x, y: x.intersect(y),
-                      [subcontext.get_label()
-                       for subcontext in self.get_data()])
+                      [subcontext.label for subcontext in self.get_data()])
 
     @abstractmethod
     def __eq__(self, other: object) -> bool:

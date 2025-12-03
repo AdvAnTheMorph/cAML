@@ -29,7 +29,7 @@ class BasicLattice(Lattice):
         self.hetero_supra = LinkedLatticeNode(ClassifiedSupra())
         # all points in the lattice point to the empty supracontext by default
         self.empty_supracontext = LinkedLatticeNode(ClassifiedSupra())
-        self.empty_supracontext.set_next(self.empty_supracontext)
+        self.empty_supracontext.next = self.empty_supracontext
 
         self.lattice: dict[Label, LinkedLatticeNode] = {}
         self.filled = False
@@ -59,12 +59,12 @@ class BasicLattice(Lattice):
         # skip this if the supracontext to be added to is already heterogeneous;
         # it would not be possible to make any non-heterogeneous supracontexts.
 
-        if self.lattice.get(sub.get_label()) is self.hetero_supra:
+        if self.lattice.get(sub.label) is self.hetero_supra:
             return
         # add the sub to its label position
-        self.add_to_context(sub, sub.get_label())
+        self.add_to_context(sub, sub.label)
         # then add the sub to all the children of its label position
-        for el in sub.get_label().descendant_iterator():
+        for el in sub.label.descendant_iterator():
             self.add_to_context(sub, el)
         # remove supracontexts with count = 0 after every pass
         self.clean_supra()
@@ -87,11 +87,11 @@ class BasicLattice(Lattice):
         # if the following supracontext matches the current index, just
         # re-point to that one; this is a supracontext that was made in
         # the final else statement below this one.
-        if self.lattice.get(label).get_next().get_index() == self.index:
+        if self.lattice.get(label).next.get_index() == self.index:
             # don't decrement count on empty_supracontext!
             if self.lattice.get(label) != self.empty_supracontext:
                 self.lattice.get(label).decrement_count()
-            self.lattice[label] = self.lattice.get(label).get_next()
+            self.lattice[label] = self.lattice.get(label).next
             self.lattice[label].increment_count()
         # we now know that we will have to make a new Supracontext to contain
         # this subcontext; don't bother making heterogeneous supracontexts
@@ -110,11 +110,11 @@ class BasicLattice(Lattice):
     def clean_supra(self):
         """Cycles through the supracontexts and deletes ones with count 0"""
         supra = self.empty_supracontext
-        while supra.get_next() != self.empty_supracontext:
-            if supra.get_next().count == 0:
-                supra.set_next(supra.get_next().get_next())
+        while supra.next != self.empty_supracontext:
+            if supra.next.count == 0:
+                supra.next = supra.next.next
             else:
-                supra = supra.get_next()
+                supra = supra.next
         assert self.no_zero_supras()
 
     def get_supracontexts(self) -> set:
@@ -124,10 +124,10 @@ class BasicLattice(Lattice):
         supracontextual lattice. From this, you can compute the analogical set.
         """
         sup_list = set()
-        supra = self.empty_supracontext.get_next()
+        supra = self.empty_supracontext.next
         while supra != self.empty_supracontext:
             sup_list.add(supra)
-            supra = supra.get_next()
+            supra = supra.next
         return sup_list
 
     # Below methods are for private debugging and asserting

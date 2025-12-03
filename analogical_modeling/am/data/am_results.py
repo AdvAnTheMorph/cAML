@@ -210,7 +210,7 @@ class AMResults:
         effects = [GangEffect(sub, self.get_exemplar_pointers())
                    for sub in self.get_subcontexts()]
         return sorted(effects, key=lambda e: (
-            -e.total_pointers, e.subcontext.get_display_label()))
+            -e.total_pointers, e.subcontext.display_label))
 
     def get_expected_class_name(self) -> str:
         """Return actual class"""

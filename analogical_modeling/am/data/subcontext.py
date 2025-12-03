@@ -44,18 +44,6 @@ class Subcontext:
             self.outcome = other.class_value()
         self.data.add(other)
 
-    def get_label(self) -> Label:
-        """Get binary label of this subcontext"""
-        return self.label
-
-    def get_display_label(self) -> str:
-        """
-        see Labeler.get_context_string(Label)
-
-        :return: user-friendly label string
-        """
-        return self.display_label
-
     def get_exemplars(self) -> set[Instance]:
         """
 

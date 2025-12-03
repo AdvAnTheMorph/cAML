@@ -14,6 +14,7 @@ from random import Random
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from tqdm import tqdm
 
 am_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(am_path, '..'))
@@ -316,15 +317,14 @@ class AnalogicalModeling:
 
         results = []
         total = len(instances)
-        for t, instance in enumerate(instances, 1):
-            self.distribution_for_instance(instance)
+        for i in tqdm(range(total), desc="Classifying instances",
+                      colour="green", leave=False):
+            self.distribution_for_instance(instances[i])
             results.append(self.get_results())
-            if t % 100 == 0:
-                print(f"{t}/{total} ({round(t/total*100, 2)}%) classified")
 
         acc, conf_matrix = self.evaluate(instances, results)
         print(f"Accuracy: {round(acc * 100, 3)}%")
-        # self.create_output_files(out_path, results, instances)
+        self.create_output_files(out_path, results, instances)
         conf_matrix.plot()
         plt.show()
 
@@ -480,7 +480,7 @@ class AnalogicalModeling:
 
         correct = sum(
             [inst.class_value() in res.predicted_classes
-            for inst, res in zip(instances, results)])
+             for inst, res in zip(instances, results)])
         acc = correct / len(results)
         cnf = confusion_matrix(golds, preds,
                                labels=list(instances.get_classes()))

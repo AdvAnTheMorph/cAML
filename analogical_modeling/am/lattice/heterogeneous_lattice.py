@@ -52,7 +52,7 @@ class HeterogeneousLattice(Lattice):
         self.index: int = -1
         # all points in the lattice point to the empty supracontext by default
         self.empty_supracontext = LinkedLatticeNode(BasicSupra())
-        self.empty_supracontext.set_next(self.empty_supracontext)
+        self.empty_supracontext.next = self.empty_supracontext
 
         self.filled: bool = False
 
@@ -71,8 +71,7 @@ class HeterogeneousLattice(Lattice):
         # fill the lattice with all the subcontexts, masking labels
         for sub in sub_list:
             self.index += 1
-            self.insert(sub, labeler.partition(sub.get_label(),
-                                               self.partition_index))
+            self.insert(sub, labeler.partition(sub.label, self.partition_index))
 
     def insert(self, sub: Subcontext, label: Label) -> None:
         """Inserts sub into the lattice, into location given by label
@@ -97,11 +96,11 @@ class HeterogeneousLattice(Lattice):
         # if the following supracontext matches the current index, just repoint
         # to that one; this is a supracontext that was made in the final else
         # statement below this one.
-        if self.lattice.get(label).get_next().get_index() == self.index:
+        if self.lattice.get(label).next.get_index() == self.index:
             # don't decrement count on empty_supracontext!
             if self.lattice.get(label) != self.empty_supracontext:
                 self.lattice.get(label).decrement_count()
-            self.lattice[label] = self.lattice.get(label).get_next()
+            self.lattice[label] = self.lattice.get(label).next
             self.lattice.get(label).increment_count()
         # otherwise make a new Supracontext and add it
         else:
@@ -114,11 +113,11 @@ class HeterogeneousLattice(Lattice):
     def clean_supra(self) -> None:
         """Cycles through the supracontexts and deletes ones with count 0"""
         supra = self.empty_supracontext
-        while supra.get_next() != self.empty_supracontext:
-            if supra.get_next().count == 0:
-                supra.set_next(supra.get_next().get_next())
+        while supra.next != self.empty_supracontext:
+            if supra.next.count == 0:
+                supra.next = supra.next.next
             else:
-                supra = supra.get_next()
+                supra = supra.next
 
         assert self.no_zero_supras()
 
@@ -136,11 +135,11 @@ class HeterogeneousLattice(Lattice):
         supracontextual lattice. From this, you can compute the analogical set.
         """
         sup_list = set()
-        supra = self.empty_supracontext.get_next()
+        supra = self.empty_supracontext.next
         while supra != self.empty_supracontext:
             assert supra.count != 0
             sup_list.add(supra)
-            supra = supra.get_next()
+            supra = supra.next
         return sup_list
 
     def supra_list_to_string(self) -> str:
@@ -149,11 +148,11 @@ class HeterogeneousLattice(Lattice):
         :return: string representation of the list of Supracontexts created
         when the Lattice was filled
         """
-        supra = self.empty_supracontext.get_next()
+        supra = self.empty_supracontext.next
         if supra == self.empty_supracontext:
             return "EMPTY"
         string = ""
         while supra != self.empty_supracontext:
             string += f"{supra}->"
-            supra = supra.get_next()
+            supra = supra.next
         return string

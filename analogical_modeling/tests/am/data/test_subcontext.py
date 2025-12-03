@@ -18,7 +18,7 @@ class SubcontextTest(unittest.TestCase):
         s = Subcontext(label, "foo")
         s.add(self.dataset[0])
         self.assertEqual({self.dataset[0]}, s.get_exemplars())
-        self.assertEqual(Label(set(), 1), s.get_label())
+        self.assertEqual(Label(set(), 1), s.label)
         self.assertEqual("r", s.outcome)
         self.assertEqual("(0|r|1,r,{1})", str(s))
 
