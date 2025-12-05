@@ -22,6 +22,7 @@ following packages:
 - pandas
 - matplotlib (for the evaluation output)
 - scikit-learn (for the evaluation output)
+- tqdm
 
 You can install the requirements from `requirements.txt`:
 ```bash
