@@ -10,6 +10,7 @@ import os
 import sys
 from pathlib import Path
 from random import Random
+from typing import Iterable
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -18,6 +19,7 @@ from tqdm import tqdm
 
 am_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(am_path, '..'))
+from analogical_modeling.am.data.gang_effect import GangEffect
 from analogical_modeling.am.data.am_results import AMResults
 from analogical_modeling.am.data.subcontext_list import SubcontextList
 from analogical_modeling.am.label.labeler import Labeler
@@ -315,6 +317,10 @@ class AnalogicalModeling:
             instances.set_ignored(self.ignore_columns)
             self.check_header(instances)
 
+        # do this first, just in case it fails
+        if not out_path.parent.exists():
+            out_path.parent.mkdir(parents=True)
+
         results = []
         total = len(instances)
         for i in tqdm(range(total), desc="Classifying instances",
@@ -328,6 +334,148 @@ class AnalogicalModeling:
         conf_matrix.plot()
         plt.show()
 
+    @staticmethod
+    def create_headers(feats: pd.Index, classes: list) -> tuple[
+        list, list, list]:
+        """Create headers for output files
+
+        :param feats: attributes
+        :param classes: possible class values
+        :return:
+        """
+
+        feats_list = feats.tolist()
+        cls_header = ([f"Class {i + 1}" for i in range(len(classes))] +
+                      sum([[f"{cls}: pointers", f"{cls}: pct"]
+                           for cls in classes], []))
+        cls_header_gang = sum(
+            [[f"{cls}: pointers", f"{cls}: pct", f"{cls}: size"]
+             for cls in classes], [])
+
+        gang_header = (feats_list + ["Weight"] + cls_header_gang +
+                       ["Gang pointers", "Gang pct", "Rank", "Size",
+                        "Total pointers", "Classified item index",
+                        "Classified item class"] +
+                       [f"Classified item {el}" for el in feats])
+        analog_header = (feats_list +
+                         ["Weight", "Class", "Percentage", "Pointers",
+                          "Classified item index", "Classified item class"] +
+                         [f"Classified item {el}" for el in feats])
+        distr_header = (
+                ["Judgement", "Expected", "Predicted"] + feats_list +
+                cls_header +
+                ["Train size", "Num feats", "Ignore unknown values",
+                 "Missing data compare", "Ignore given",
+                 "Count strategy", "Classified item index"])
+
+        return gang_header, analog_header, distr_header
+
+    @staticmethod
+    def create_gangs(effects: Iterable[GangEffect], classified: Instance,
+                     classes: Iterable[str], idx: int) -> list:
+        """Create list of gang effects for output
+
+        :param effects: Gang effects for classified instance
+        :param classified: instance for which to store gang effects
+        :param classes: possible classes
+        :param idx: index of the instance
+        """
+        total_pointers = sum(effect.total_pointers for effect in effects)
+        pointers_rank = sorted(
+            list(set(effect.total_pointers for effect in effects)),
+            reverse=True
+        )
+        for effect in effects:
+            effect_pointers = effect.total_pointers
+            rank = pointers_rank.index(effect_pointers) + 1
+            gang_pct = effect_pointers / total_pointers * 100
+
+            cls_info = {inst: sum([
+                [effect.class_to_pointers.get(cls, 0),  # cls: pointers
+                 round(effect.class_to_pointers.get(cls, 0)
+                       / effect_pointers * gang_pct,
+                       3),  # cls: pct
+                 len(effect.class_to_instances.get(cls, []))  # cls: size
+                 ] if inst in effect.class_to_instances.get(cls, []) else [
+                    0, 0, 0]
+                for cls in classes
+            ], []) for inst in effect.subcontext.data}
+
+            return [
+                inst.real_data.tolist() + [inst.weight] + cls_info[inst] + [
+                    effect_pointers,  # gang pointers
+                    round(gang_pct, 3),  # gang pct
+                    rank,  # rank
+                    sum(map(len, effect.class_to_instances.values())),
+                    # size
+                    total_pointers,  # total pointers
+                    idx,  # classified item index
+                    classified.class_value()  # classified item class
+                ] + classified.real_data.tolist()
+                for inst in
+                sum(map(list, effect.class_to_instances.values()), [])]
+
+    @staticmethod
+    def create_analogical_set(res: AMResults, classified: Instance,
+                              idx: int) -> list:
+        """Create list of analogical sets for output
+
+        :param res: result of AnalogicalModeling
+        :param classified: instance for which to create analogical sets
+        :param idx: index of instance
+        """
+        pointers = res.exemplar_pointers
+        effects = res.exemplar_effects
+        return [
+            inst.real_data.to_list() + [
+                inst.weight,  # weight
+                inst.class_value(),  # class
+                effects.get(inst) * 100,  # percentage
+                ptrs,  # pointers
+                idx,  # index
+                classified.class_value()  # instance class
+            ] + classified.real_data.tolist() for inst, ptrs in
+            pointers.items()]
+
+    def create_distribution(self, res: AMResults, classified: Instance,
+                            classes: list[str], idx: int,
+                            instances: Dataset) -> list:
+        """Create list of distribution information for output
+
+        :param res: result of AnalogicalModeling
+        :param classified: instance for which to create distribution
+        :param classes: possible classes
+        :param idx: index of instance
+        :param instances: dataset from which the instance comes
+        """
+        pred = res.predicted_classes
+        gold = res.get_expected_class_name()
+        train_size = res.sub_list.considered_exemplar_count
+        num_feats = instances.num_attributes() - 1  # - class attribute
+        ignore = self.ignore_unknowns
+        mdc = self.mdc.name
+        ignore_given = self.remove_test_exemplar
+        count_strategy = "linear" if self.linear_count else "quadratic"
+
+        cls_info = classes + sum([[
+            res.class_pointers.get(cls, 0),  # cls: pointers
+            res.class_likelihood_map.get(cls, 0.0) * 100]  # cls: pct
+            for cls in classes], [])
+
+        return [
+            [res.get_judgement().value,  # judgement
+             gold,  # expected
+             '|'.join(pred)  # predicted
+             ] + classified.real_data.tolist() + cls_info + [
+                train_size,  # train size
+                num_feats,  # num feats
+                ignore,  # ignore unknown values
+                mdc,  # missing data compare
+                ignore_given,  # ignore given
+                count_strategy,  # count strategy
+                idx  # index
+            ]]
+
     def create_output_files(self, dest: Path, results: list[AMResults],
                             instances: Dataset) -> None:
         """Store information on analogical sets, gang effects and distributions
@@ -337,36 +485,11 @@ class AnalogicalModeling:
         :param instances: dataset used for prediction
         """
         print("Generating output files...")
-        # information equal for all exemplars
-        feats = results[0].classified_exemplar.real_data.keys()
-        classes = list(instances.get_classes())
-        cls_header = ([f"Class {i + 1}" for i in range(len(classes))] +
-                      sum([[f"{cls}: pointers", f"{cls}: pct"] for cls in
-                           classes], []))
-        cls_header_gang = sum(
-            [[f"{cls}: pointers", f"{cls}: pct", f"{cls}: size"] for cls in
-             classes], [])
-        num_feats = instances.num_attributes() - 1  # - class attribute
-        ignore = self.ignore_unknowns
-        mdc = self.mdc.name
-        ignore_given = self.remove_test_exemplar
-        count_strategy = "linear" if self.linear_count else "quadratic"
 
-        gang_header = (feats.tolist() + ["Weight"] + cls_header_gang +
-                       ["Gang pointers", "Gang pct", "Rank", "Size",
-                        "Total pointers", "Classified item index",
-                        "Classified item class"] +
-                       [f"Classified item {el}" for el in feats])
-        analog_header = (feats.tolist() +
-                         ["Weight", "Class", "Percentage", "Pointers",
-                          "Classified item index", "Classified item class"] +
-                         [f"Classified item {el}" for el in feats])
-        distr_header = (
-                ["Judgement", "Expected", "Predicted"] + feats.tolist() +
-                cls_header +
-                ["Train size", "Num feats", "Ignore unknown values",
-                 "Missing data compare", "Ignore given",
-                 "Count strategy", "Classified item index"])
+        # headers
+        classes = list(instances.get_classes())
+        gang_header, analog_header, distr_header = self.create_headers(
+            results[0].classified_exemplar.real_data.keys(), classes)
 
         gangs = []
         analogs = []
@@ -375,79 +498,13 @@ class AnalogicalModeling:
             classified = res.classified_exemplar
 
             # gang effects
-            effects = res.get_gang_effects()
-            total_pointers = sum(effect.total_pointers for effect in effects)
-            pointers_rank = sorted(
-                list(set(effect.total_pointers for effect in effects)),
-                reverse=True
-            )
-            for effect in effects:
-                effect_pointers = effect.total_pointers
-                rank = pointers_rank.index(effect_pointers) + 1
-                gang_pct = effect_pointers / total_pointers * 100
-
-                cls_info = {inst: sum([
-                    [effect.class_to_pointers.get(cls, 0),  # cls: pointers
-                     round(effect.class_to_pointers.get(cls,
-                                                        0) / effect_pointers
-                           * gang_pct,
-                           3),  # cls: pct
-                     len(effect.class_to_instances.get(cls, []))  # cls: size
-                     ] if inst in effect.class_to_instances.get(cls, []) else [
-                        0, 0, 0]
-                    for cls in classes
-                ], []) for inst in effect.subcontext.data}
-
-                gangs += [
-                    inst.real_data.tolist() + [inst.weight] + cls_info[inst] + [
-                        effect_pointers,  # gang pointers
-                        round(gang_pct, 3),  # gang pct
-                        rank,  # rank
-                        sum(map(len, effect.class_to_instances.values())),
-                        # size
-                        total_pointers,  # total pointers
-                        idx,  # classified item index
-                        classified.class_value()  # classified item class
-                    ] + classified.real_data.tolist()
-                    for inst in
-                    sum(map(list, effect.class_to_instances.values()), [])]
-
+            gangs += self.create_gangs(res.get_gang_effects(), classified,
+                                       classes, idx)
             # analogical sets
-            pointers = res.ex_pointer_map
-            effects = res.ex_effect_map
-            analogs += [
-                inst.real_data.to_list() + [
-                    inst.weight,  # weight
-                    inst.class_value(),  # class
-                    effects.get(inst) * 100,  # percentage
-                    ptrs,  # pointers
-                    idx,  # index
-                    classified.class_value()  # instance class
-                ] + classified.real_data.tolist() for inst, ptrs in
-                pointers.items()]
-
+            analogs += self.create_analogical_set(res, classified, idx)
             # distribution
-            pred = res.predicted_classes
-            gold = res.get_expected_class_name()
-            train_size = res.sub_list.considered_exemplar_count
-
-            cls_info = classes + sum([[
-                res.class_pointer_map.get(cls, 0),  # cls: pointers
-                res.class_likelihood_map.get(cls, 0.0) * 100]  # cls: pct
-                for cls in classes], [])
-            distributions += [
-                [res.get_judgement().value,  # judgement
-                 gold,  # expected
-                 '|'.join(pred)  # predicted
-                 ] + classified.real_data.tolist() + cls_info + [
-                    train_size,  # train size
-                    num_feats,  # num feats
-                    ignore,  # ignore unknown values
-                    mdc,  # missing data compare
-                    ignore_given,  # ignore given
-                    count_strategy,  # count strategy
-                    idx  # index
-                ]]
+            distributions += self.create_distribution(res, classified, classes,
+                                                      idx, instances)
 
         gang = pd.DataFrame(gangs, columns=gang_header)
         analog = pd.DataFrame(analogs, columns=analog_header)
@@ -456,9 +513,6 @@ class AnalogicalModeling:
         out_gang = dest.with_name(dest.stem + "_gangs.csv")
         out_analog = dest.with_name(dest.stem + "_analogical_sets.csv")
         out_distribution = dest.with_name(dest.stem + "_distributions.csv")
-
-        if not dest.parent.exists():
-            dest.parent.mkdir(parents=True)
 
         gang.to_csv(out_gang, index=False)
         analog.to_csv(out_analog, index=False)
