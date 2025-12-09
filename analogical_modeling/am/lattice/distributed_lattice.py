@@ -15,7 +15,7 @@ from analogical_modeling.am.lattice.lattice import Lattice
 T = TypeVar('T')
 
 def merge_counts(s1: T, s2: T) -> T:
-    """Merges supracontext counts"""
+    """Merge supracontext counts"""
     s1.count += s2.count
     return s1
 

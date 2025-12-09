@@ -72,6 +72,7 @@ class Pair:
 
 @lru_cache(maxsize=None)
 def binomial_coefficient(p: Pair):
+    """Calculate binomial coefficient."""
     n = p.first
     k = p.second
     if n == 0:

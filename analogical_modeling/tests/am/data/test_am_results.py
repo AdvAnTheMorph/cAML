@@ -26,7 +26,7 @@ class AMResultsTest(unittest.TestCase):
 
     def test_exemplar_quadratic_effects(self):
         effects = {str(k).split(",{")[0]: v for k, v in
-                   self.as_quadratic.get_exemplar_effect_map().items()}
+                   self.as_quadratic.exemplar_effects.items()}
         self.assertEqual(4, len(effects))
 
         self.assertIn("3,1,0,e", effects)
@@ -40,7 +40,7 @@ class AMResultsTest(unittest.TestCase):
 
     def test_exemplar_linear_effects(self):
         effects = {str(k).split(",{")[0]: v for k, v in
-                   self.as_linear.get_exemplar_effect_map().items()}
+                   self.as_linear.exemplar_effects.items()}
         self.assertEqual(4, len(effects))
 
         self.assertIn("3,1,0,e", effects)
@@ -58,7 +58,7 @@ class AMResultsTest(unittest.TestCase):
                          self.as_quadratic.get_class_pointers())
 
         pointers = {str(k).split(",{")[0]: v for k, v in
-                    self.as_quadratic.get_exemplar_pointers().items()}
+                    self.as_quadratic.exemplar_pointers.items()}
         self.assertEqual(4, len(pointers))
 
         self.assertIn("3,1,0,e", pointers)
@@ -75,7 +75,7 @@ class AMResultsTest(unittest.TestCase):
         self.assertEqual({"r": 5, "e": 2}, self.as_linear.get_class_pointers())
 
         pointers = {str(k).split(",{")[0]: v for k, v in
-                    self.as_linear.get_exemplar_pointers().items()}
+                    self.as_linear.exemplar_pointers.items()}
         self.assertEqual(4, len(pointers))
 
         self.assertIn("3,1,0,e", pointers)

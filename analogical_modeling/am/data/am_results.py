@@ -62,29 +62,29 @@ class AMResults:
             self.pointer_counting_strategy = PointerCountingStrategy.QUADRATIC
 
         # find numbers of pointers to individual exemplars
-        self.ex_pointer_map: dict[Instance, float] = self.get_pointers(
+        self.exemplar_pointers: dict[Instance, float] = self.get_pointers(
             self.supra_list, linear)
         # find the total number of pointers
-        self.total_pointers: float = sum(self.ex_pointer_map.values())
+        self.total_pointers: float = sum(self.exemplar_pointers.values())
 
         # find the analogical effect of an exemplar by dividing its pointer
         # count by the total pointer count
-        self.ex_effect_map: dict[Instance, float] = {
-            e: self.ex_pointer_map[e] / self.total_pointers
-            for e in self.ex_pointer_map
+        self.exemplar_effects: dict[Instance, float] = {
+            e: self.exemplar_pointers[e] / self.total_pointers
+            for e in self.exemplar_pointers
         }
 
         # find the likelihood for a given outcome based on the pointers
-        self.class_pointer_map: dict[str, int] = defaultdict(int)
-        for e in self.ex_pointer_map:
+        self.class_pointers: dict[str, int] = defaultdict(int)
+        for e in self.exemplar_pointers:
             class_name = e.class_value()
-            self.class_pointer_map[class_name] += self.ex_pointer_map[e]
+            self.class_pointers[class_name] += self.exemplar_pointers[e]
 
         # set the likelihood of each possible class index to be its share of
         # the total pointers
         self.class_likelihood_map: dict[str, float] = {
-            name: self.class_pointer_map[name] / self.total_pointers
-            for name in self.class_pointer_map
+            name: self.class_pointers[name] / self.total_pointers
+            for name in self.class_pointers
         }
 
         # Find the classes with the highest likelihood (there may be a tie)
@@ -139,7 +139,7 @@ class AMResults:
 
     def __str__(self):
         effects = ""
-        for k, v in self.get_exemplar_pointers().items():
+        for k, v in self.exemplar_pointers.items():
             effects += (f"{k} : {v} ({v / self.total_pointers})"
                         f"{am_utils.LINE_SEPARATOR}")
         effects += f"Outcome likelihoods:{linesep}"
@@ -154,29 +154,13 @@ class AMResults:
                f"{self.predicted_classes} ({self.class_probability}){linesep}" \
                f"Exemplar effects:{am_utils.LINE_SEPARATOR}{effects}"
 
-    def get_exemplar_effect_map(self) -> dict[Instance, float]:
-        """
-
-        :return: mapping between exemplars and their analogical effect
-        (decimal percentage)
-        """
-        return self.ex_effect_map
-
-    def get_exemplar_pointers(self) -> dict[Instance, float]:
-        """
-
-        :return: mapping of exemplars in the analogical set to the number of
-        pointers to it
-        """
-        return self.ex_pointer_map
-
     def get_class_pointers(self) -> dict[str, int]:
         """
 
         :return: mapping between a class value index the number of pointers
         pointing to it
         """
-        return self.class_pointer_map
+        return self.class_pointers
 
     def get_class_likelihood(self) -> dict[str, float]:
         """
@@ -207,15 +191,14 @@ class AMResults:
         :return: gang effects, sorted by size of the effect and then
         alphabetically by the subcontext display label
         """
-        effects = [GangEffect(sub, self.get_exemplar_pointers())
+        effects = [GangEffect(sub, self.exemplar_pointers)
                    for sub in self.get_subcontexts()]
         return sorted(effects, key=lambda e: (
             -e.total_pointers, e.subcontext.display_label))
 
     def get_expected_class_name(self) -> str:
         """Return actual class"""
-        classified_ex = self.classified_exemplar
-        return classified_ex.class_value()
+        return self.classified_exemplar.class_value()
 
     def get_judgement(self):
         """

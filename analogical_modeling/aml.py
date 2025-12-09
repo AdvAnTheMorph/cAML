@@ -6,6 +6,7 @@ behavior.
 """
 
 import argparse
+import logging
 import os
 import sys
 from pathlib import Path
@@ -28,6 +29,11 @@ from analogical_modeling.am.label.missing_data_compare import \
 from analogical_modeling.am.lattice.lattice_factory import \
     CardinalityBasedLatticeFactory
 from analogical_modeling.utils import Instance, Dataset
+
+logging.basicConfig(format="({asctime}) {name} {levelname}: {message}",
+                    datefmt="%H:%M:%S", style="{", filename=".log")
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class HeaderMissmatchError(Exception):
@@ -54,7 +60,7 @@ class AnalogicalModeling:
         self.random_provider: Random | None = None
 
         # instances with a weight below this threshold will be ignored
-        self.threshold = None
+        self._threshold = None
 
         # The analogical set from the last call to distributionForInstance
         self.results: AMResults = None
@@ -71,16 +77,6 @@ class AnalogicalModeling:
         # indices of columns to ignore
         self.ignore_columns = []
 
-        # debugging
-        self.debug = False
-
-    def get_linear_count(self):
-        """
-
-        :return: True if counting of pointers is linear; False if quadratic.
-        """
-        return self.linear_count
-
     def set_linear_count(self, linear: bool):
         """
 
@@ -90,19 +86,8 @@ class AnalogicalModeling:
         """
         self.linear_count = linear
 
-    def get_ignore_unknowns(self) -> bool:
-        return self.ignore_unknowns
-
     def set_ignore_unknowns(self, ignore_unknowns: bool):
         self.ignore_unknowns = ignore_unknowns
-
-    def get_remove_test_exemplar(self) -> bool:
-        """
-
-        :return: True if we remove a test instance from training before
-        predicting its outcome
-        """
-        return self.remove_test_exemplar
 
     def set_remove_test_exemplar(self, remove_test_exemplar: bool):
         """
@@ -113,85 +98,26 @@ class AnalogicalModeling:
         """
         self.remove_test_exemplar = remove_test_exemplar
 
-    def get_drop_duplicates(self) -> bool:
-        return self.drop_duplicates
-
     def set_drop_duplicates(self, drop_duplicates: bool):
         self.drop_duplicates = drop_duplicates
-
-    def get_ignore_columns(self) -> list[str]:
-        return self.ignore_columns
 
     def set_ignore_columns(self, ignore_list: list[str]):
         self.ignore_columns = ignore_list
 
-    def set_threshold(self, threshold: float | None):
+    @property
+    def threshold(self) -> float:
+        """Get minimum weight threshold for instances to be considered"""
+        return self._threshold
+
+    @threshold.setter
+    def threshold(self, threshold: float | None):
         if threshold is None:
-            self.threshold = None
+            self._threshold = None
             return
-        self.threshold = max(threshold, 0.0)  # no negative thresholds
-
-    def get_threshold(self) -> float | None:
-        return self.threshold
-
-    def classify(self, test_item: Instance) -> AMResults:
-        """
-        This method is where all of the action happens! Given a test item,
-        it uses existing exemplars to assign outcome probabilities to it.
-
-        Note that this method sets the results variable without any
-        synchronization.
-        This means that if you want to print results from multiple calls
-        to this method, you should not call it in parallel. If you want
-        to make multiple classify() calls in parallel, you should
-        create multiple classifier instances. This sort of parallelism
-        for large-cardinality datasets is inadvisable, anyway, since a
-        single classifier instance will attempt to saturate all of the
-        available CPUs.
-
-        :param test_item: Item to make context base on
-        :return: Analogical set which holds results of the classification
-        for the given item
-        :raises: RuntimeError if execution is rejected for some reason
-        # @throws InterruptedException If any thread is interrupted for
-        any reason (user presses ctrl-C, etc.)
-        """
-        if self.debug:
-            print(f"Classifying {test_item}")
-        labeler = Labeler(test_item, self.ignore_unknowns, self.mdc)
-
-        # 3 steps to assigning outcome probabilities:
-
-        # 1. Place each data item in a subcontext
-        sub_list = SubcontextList(labeler, self.training_exemplars,
-                                  self.get_remove_test_exemplar())
-
-        # 2. Create a supracontextual lattice and fill it with subcontexts
-        lattice_factory = CardinalityBasedLatticeFactory(
-            sub_list.get_cardinality(),
-            sub_list.labeler.num_partitions(),
-            self.random_provider)
-
-        lattice = lattice_factory.create_lattice()
-        lattice.fill(sub_list)
-
-        # 3. record the analogical set and other statistics from the pointers
-        # in the resulting homogeneous supracontexts
-        # we save the results for use with AnalogicalModelingOutput
-        return AMResults(lattice, sub_list, test_item, self.linear_count,
-                         labeler)
-
-    def get_missing_data_compare(self):
-        """
-
-        :return: Selected strategy used when comparing missing values with
-        other data
-        """
-        return self.mdc.name
-        # return SelectedTag(self.mdc.ordinal(), TAGS_MISSING)
+        self._threshold = max(threshold, 0.0)  # no negative thresholds
 
     def set_missing_data_compare(self, new_mode: str):
-        """Return method to deal with missing data"""
+        """Set method to deal with missing data"""
         match new_mode:
             case "match":
                 self.mdc = MissingDataCompare.MATCH
@@ -216,16 +142,63 @@ class AnalogicalModeling:
                f"Drop duplicates: {self.drop_duplicates}, " \
                f"Ignore columns: {self.ignore_columns or '--'}"
 
+    def classify(self, test_item: Instance) -> AMResults:
+        """
+        This method is where all of the action happens! Given a test item,
+        it uses existing exemplars to assign outcome probabilities to it.
+
+        Note that this method sets the results variable without any
+        synchronization.
+        This means that if you want to print results from multiple calls
+        to this method, you should not call it in parallel. If you want
+        to make multiple classify() calls in parallel, you should
+        create multiple classifier instances. This sort of parallelism
+        for large-cardinality datasets is inadvisable, anyway, since a
+        single classifier instance will attempt to saturate all of the
+        available CPUs.
+
+        :param test_item: Item to make context base on
+        :return: Analogical set which holds results of the classification
+        for the given item
+        :raises: RuntimeError if execution is rejected for some reason
+        # @throws InterruptedException If any thread is interrupted for
+        any reason (user presses ctrl-C, etc.)
+        """
+        logger.debug(f"Classifying {test_item}")
+        labeler = Labeler(test_item, self.ignore_unknowns, self.mdc)
+
+        # 3 steps to assigning outcome probabilities:
+
+        # 1. Place each data item in a subcontext
+        sub_list = SubcontextList(labeler, self.training_exemplars,
+                                  self.remove_test_exemplar)
+
+        # 2. Create a supracontextual lattice and fill it with subcontexts
+        lattice_factory = CardinalityBasedLatticeFactory(
+            sub_list.get_cardinality(),
+            sub_list.labeler.num_partitions(),
+            self.random_provider)
+
+        lattice = lattice_factory.create_lattice()
+        lattice.fill(sub_list)
+
+        # 3. record the analogical set and other statistics from the pointers
+        # in the resulting homogeneous supracontexts
+        # we save the results for use with AnalogicalModelingOutput
+        return AMResults(lattice, sub_list, test_item, self.linear_count,
+                         labeler)
+
     def build_classifier(self, instances: Dataset):
         """This is used to build the classifier; it specifies the
         capabilities of the classifier and loads in exemplars to be used for
         prediction. No actual analysis happens here because AM is a lazy
         classifier."""
 
-        # remove instances with missing class value,
+        # remove instances with missing class value
         instances.delete_with_missing_class()
 
         self.cardinality = instances.num_counted_attributes()
+        logger.debug(f"Cardinality is {self.cardinality}")
         # save instances for checking headers
         self.training_instances = instances  # , 0, instances.num_attributes())
 
@@ -240,8 +213,7 @@ class AnalogicalModeling:
             return
         self.training_instances.add(instance)
         self.training_exemplars.append(instance)
-        if self.debug:
-            print(f"Added instance: {instance}")
+        logger.debug(f"Added instance: {instance}")
 
     def distribution_for_instance(self, instance: Instance) -> dict[str, float]:
         """Calculate class distribution for instance
@@ -256,8 +228,7 @@ class AnalogicalModeling:
             raise RuntimeError("No training instances!")
 
         if self.training_instances.num_classes() == 1:
-            if self.debug:
-                print("Training data have only one class")
+            logger.debug("Only one class in training data.")
             # 100 percent likelihood of belonging to the one class
             return {self.training_instances[0].class_value(): 1.0}
 
@@ -277,18 +248,13 @@ class AnalogicalModeling:
                 "Call distributionForInstance before calling this")
         return self.results
 
-    @staticmethod
-    def to_summary_string() -> str:
-        """Return summary"""
-        return "Analogical Modeling module (2021) by Nathan Glenn"
-
     def __str__(self) -> str:
         """
 
         :return: String containing name of the classifier and number of
         training instances.
         """
-        string = "Analogical Modeling Classifier (2021 Nathan Glenn)\n"
+        string = "Analogical Modeling Classifier (2025 Jasmin Wiese)\n"
         if self.training_exemplars:
             return string + (f"Training instances: "
                              f"{len(self.training_exemplars)}\n")
@@ -303,16 +269,20 @@ class AnalogicalModeling:
         :param weights: column name for weights in dataset, if given
         """
         instances = Dataset().from_csv(csv, weights)
-        if self.threshold is not None:
-            instances.filter_threshold(self.threshold)
+        if self._threshold is not None:
+            logger.debug(
+                f"Threshold set to {self._threshold}, filtering instances")
+            instances.filter_threshold(self._threshold)
 
         instances.set_ignored(self.ignore_columns)
         if self.drop_duplicates:
+            logger.debug("Dropping duplicates")
             instances.data.drop_duplicates(inplace=True)
         self.build_classifier(instances)
 
         # use test set, if available
         if test:
+            logger.debug(f"Using testset {test}")
             instances = Dataset().from_csv(test)
             instances.set_ignored(self.ignore_columns)
             self.check_header(instances)
@@ -578,8 +548,8 @@ if __name__ == "__main__":
                         help="Ignore attributes with unknown values in the "
                              "test exemplar")
     parser.add_argument("-D", "--debug", action="store_true",
-                        help="Run classifier in debug mode; may output "
-                             "additional info to the console")
+                        help="Run classifier in debug mode; will write "
+                             "additional information to .log")
     parser.add_argument("-M", "--missing_data",
                         choices=["match", "mismatch", "variable"],
                         default="variable",
@@ -601,14 +571,16 @@ if __name__ == "__main__":
     if args.test and not Path(args.test).exists():
         sys.exit(f"Test file given, but {args.test} not found.")
 
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+
     am = AnalogicalModeling()
     am.set_linear_count(args.linear)
     am.set_remove_test_exemplar(args.keep_test)
     am.set_ignore_unknowns(args.ignore_unknowns)
-    am.debug = args.debug
     am.set_missing_data_compare(args.missing_data)
     am.set_drop_duplicates(args.drop_duplicates)
     am.set_ignore_columns(args.ignore_columns)
-    am.set_threshold(args.threshold)
+    am.threshold = args.threshold
     am.run_classifier(args.lexicon, args.output.with_suffix(".csv"), args.test,
                       args.weight_colum)
