@@ -4,6 +4,7 @@ remains from weka:
 - Attributes = columns
 - Instances = rows
 """
+import math
 import sys
 from pathlib import Path
 
@@ -101,7 +102,7 @@ class Dataset:
             self._class_index = None
             self.weights = []
             return
-        self.data = pd.DataFrame(atts)
+        self.data = pd.DataFrame(atts).replace(math.nan, None)
 
         self.weights = self.set_weights_by_column(weights)
         self.class_index = self.num_attributes() - 1
@@ -112,7 +113,7 @@ class Dataset:
         :param source: path to csv file
         :param weights: name of column with weights, if given
         """
-        self.data = pd.read_csv(Path(__file__).parent / source)
+        self.data = pd.read_csv(Path(__file__).parent / source).replace(math.nan, None)
 
         self.weights = self.set_weights_by_column(weights)
 
@@ -198,6 +199,10 @@ class Dataset:
     def class_column_name(self) -> str:
         """Return the name of the class column."""
         return self.data.columns[self.class_index]
+
+    def add_class_column(self, name: str) -> None:
+        """Add class column to data"""
+        self.data[name] = [None] * self.data.shape[0]
 
     def set_ignored(self, ignore: list[str]) -> None:
         """Set ignored columns.

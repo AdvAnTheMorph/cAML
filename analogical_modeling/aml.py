@@ -7,6 +7,7 @@ behavior.
 
 import argparse
 import logging
+import math
 import os
 import sys
 from pathlib import Path
@@ -284,6 +285,9 @@ class AnalogicalModeling:
         if test:
             logger.debug(f"Using testset {test}")
             instances = Dataset().from_csv(test)
+            if self.training_instances.class_column_name() not in instances.data.columns:
+                instances.add_class_column(self.training_instances.class_column_name())
+                instances.class_index = instances.num_attributes() - 1
             instances.set_ignored(self.ignore_columns)
             self.check_header(instances)
 
@@ -297,6 +301,11 @@ class AnalogicalModeling:
                       colour="green", leave=False):
             self.distribution_for_instance(instances[i])
             results.append(self.get_results())
+
+        # evaluate if there is a ground truth answer
+        if results[0].get_expected_class_name() is None:
+            self.create_output_files(out_path, results, instances)
+            return
 
         acc, conf_matrix = self.evaluate(instances, results)
         print(f"Accuracy: {round(acc * 100, 3)}%")
@@ -515,8 +524,16 @@ class AnalogicalModeling:
 
     def check_header(self, instances):
         """Headers of lexicon and test data must be equal"""
+        class_column = self.training_instances.class_column_name()
         l_header = self.training_instances.data.columns.tolist()
         t_header = instances.data.columns.tolist()
+
+        # ignore the class column (might not be specified in test data)
+        if class_column in l_header:
+            l_header.remove(class_column)
+        if class_column in t_header:
+            t_header.remove(class_column)
+
         if t_header != l_header:
             raise HeaderMissmatchError(
                 f"Expected header is {l_header}, but test data header is "
