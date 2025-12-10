@@ -2,7 +2,12 @@
 
 
 ## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Analogical Modeling (Skousen, 1989) is an exemplar-based approach to predict
+language behavior. Its predictions are based on a dataset of occurrences
+(lexicon).
+
+This is a Python implementation of the algorithm extended by an optional
+numerical parameter to modify each exemplar's weight.
 
 ## Installation
 
