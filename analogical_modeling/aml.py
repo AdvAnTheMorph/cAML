@@ -7,7 +7,6 @@ behavior.
 
 import argparse
 import logging
-import math
 import os
 import sys
 from pathlib import Path
@@ -34,7 +33,7 @@ from analogical_modeling.utils import Instance, Dataset
 logging.basicConfig(format="({asctime}) {name} {levelname}: {message}",
                     datefmt="%H:%M:%S", style="{", filename=".log")
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 class HeaderMissmatchError(Exception):
@@ -285,9 +284,13 @@ class AnalogicalModeling:
         if test:
             logger.debug(f"Using testset {test}")
             instances = Dataset().from_csv(test)
-            if self.training_instances.class_column_name() not in instances.data.columns:
-                instances.add_class_column(self.training_instances.class_column_name())
+
+            # add class column, if necessary
+            class_column_name = self.training_instances.class_column_name()
+            if class_column_name not in instances.data.columns:
+                instances.add_class_column(class_column_name)
                 instances.class_index = instances.num_attributes() - 1
+
             instances.set_ignored(self.ignore_columns)
             self.check_header(instances)
 
@@ -599,5 +602,9 @@ if __name__ == "__main__":
     am.set_drop_duplicates(args.drop_duplicates)
     am.set_ignore_columns(args.ignore_columns)
     am.threshold = args.threshold
-    am.run_classifier(args.lexicon, args.output.with_suffix(".csv"), args.test,
-                      args.weight_colum)
+    try:
+        am.run_classifier(args.lexicon, args.output.with_suffix(".csv"),
+                          args.test, args.weight_colum)
+    except Exception as e:
+        logger.exception(e)
+        raise e
