@@ -469,7 +469,7 @@ class AnalogicalModeling:
         print("Generating output files...")
 
         # headers
-        classes = list(instances.get_classes())
+        classes = list(self.training_instances.get_classes())
         gang_header, analog_header, distr_header = self.create_headers(
             results[0].classified_exemplar.real_data.keys(), classes)
 
