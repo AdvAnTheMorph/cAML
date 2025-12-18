@@ -9,6 +9,7 @@ import argparse
 import logging
 import os
 import sys
+from os import PathLike
 from pathlib import Path
 from random import Random
 from typing import Iterable
@@ -260,7 +261,7 @@ class AnalogicalModeling:
                              f"{len(self.training_exemplars)}\n")
         return string
 
-    def run_classifier(self, csv: str, out_path: Path, test: str, weights: str):
+    def run_classifier(self, csv: PathLike, out_path: Path, test: str, weights: str):
         """runs the classifier instance with the given options.
 
         :param csv: lexicon
