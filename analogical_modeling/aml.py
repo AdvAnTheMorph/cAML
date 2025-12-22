@@ -497,9 +497,9 @@ class AnalogicalModeling:
         out_analog = dest.with_name(dest.stem + "_analogical_sets.csv")
         out_distribution = dest.with_name(dest.stem + "_distributions.csv")
 
-        gang.to_csv(out_gang, index=False)
-        analog.to_csv(out_analog, index=False)
-        distr.to_csv(out_distribution, index=False)
+        # gang.to_csv(out_gang, index=False)
+        # analog.to_csv(out_analog, index=False)
+        # distr.to_csv(out_distribution, index=False)
         print(f"Outputs saved to {out_gang}, {out_analog}, {out_distribution}.")
 
     @staticmethod
