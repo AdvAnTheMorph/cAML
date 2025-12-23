@@ -1,6 +1,7 @@
 """Graphical user interface for analogical modeling."""
 
 import sys
+
 # import multiprocessing as mp
 
 import pandas as pd
@@ -9,24 +10,15 @@ from tkinter import messagebox
 from pathlib import Path
 from tkinter import ttk, filedialog
 
-from analogical_modeling.gui_utils import AMWrapper
+from analogical_modeling.am.gui.vis import TableVisualization, \
+    MatrixVisualization
+from analogical_modeling.am.gui.gui_utils import AMWrapper
 
 root = tk.Tk()
-stdout = sys.stdout  # original stdout # TODO: do I need that?
-
-# def center_window(window):
-#     window.update_idletasks()
-#     width = window.winfo_width()
-#     height = window.winfo_height()
-#     screen_width = window.winfo_screenwidth()
-#     screen_height = window.winfo_screenheight()
-#     x = (screen_width - width) // 2
-#     y = (screen_height - height) // 2
-#     window.geometry(f"{width}x{height}+{x}+{y}")
 
 root.title('Analogical Modeling')
 #root.configure()
-root.minsize(600, 500)
+root.minsize(600, 550)
 # root.maxsize(1400, 1200)
 root.geometry("300x300+50+50")
 
@@ -44,63 +36,87 @@ processes = []
 
 wrapper = AMWrapper()
 
-def run():
+
+def run_button():
+    # runs in separate thread
     try:
         wrapper.ignored = [ignored.get(i) for i in ignored.curselection()]
-        wrapper.run()
+        if wrapper.run():
+            cancel_button.grid()
+            start_button.grid_remove()
+            root.after(100, check_completion)
     except Exception as e:
-        # logger.exception(e)
         raise e
-    # TODO:
-    # - could return conf_matrix + output dirs
-    # - then open all in files
 
+def stop_aml():
+    # stop thread
+    wrapper.cancel()
+    cancel_button.grid_remove()
+    start_button.grid()
+
+def check_completion():
+    if wrapper.res:
+        on_completion()
+    else:
+        root.after(100, check_completion)
+
+def make_table(parent, file_):
+    res_frame = tk.Frame(parent)
+    res_frame.grid()
+    TableVisualization(res_frame, file_)
+
+def vis_files(files):
+    if not hasattr(root, "gangs"):
+        root.gangs = ttk.Frame(notebook)
+        notebook.add(root.gangs, text="Gangs")
+        make_table(root.gangs, files[0])
+    else:
+        # Update existing tab
+        for widget in root.gangs.winfo_children():
+            widget.destroy()
+        make_table(root.gangs, files[0])
+    if not hasattr(root, "analog"):
+        root.analog = ttk.Frame(notebook)
+        notebook.add(root.analog, text="Analogical Sets")
+        make_table(root.analog, files[1])
+    else:
+        # Update existing tab
+        for widget in root.analog.winfo_children():
+            widget.destroy()
+        make_table(root.analog, files[1])
+    if not hasattr(root, "distr"):
+        root.distr = ttk.Frame(notebook)
+        notebook.add(root.distr, text="Distribution")
+        make_table(root.distr, files[2])
+    else:
+        # Update existing tab
+        for widget in root.distr.winfo_children():
+            widget.destroy()
+        make_table(root.distr, files[2])
+
+def vis_matrix(matrix, acc):
     if not hasattr(root, "conf_mat_tab"):
         root.conf_mat_tab = ttk.Frame(notebook)
-        notebook.add(root.conf_mat_tab, text="Results")
-        result_label = tk.Label(root.conf_mat_tab, text="test")
-        result_label.grid()
+        notebook.add(root.conf_mat_tab, text="Confusion Matrix")
+        result_label = tk.Label(root.conf_mat_tab, text=f"Accuracy: {acc*100}%")
+        result_label.pack()
+        MatrixVisualization(root.conf_mat_tab, matrix)
     else:
         # Update existing tab
         for widget in root.conf_mat_tab.winfo_children():
             widget.destroy()
-        tk.Label(root.conf_mat_tab, text="test").grid()
-    # tab = ttk.Notebook(root)
-    # tab_2 = ttk.Frame(tab)
-    # tab.add(tab_2, text="Confusion Matrix")
-    # tab.grid()
+        result_label = tk.Label(root.conf_mat_tab, text=f"Accuracy: {acc*100}%")
+        result_label.pack()
+        MatrixVisualization(root.conf_mat_tab, matrix)
 
-
-def run_button():
-    # tk.messagebox.showerror("title", "desc") / showinfo
-    # TODO: more validation
-    # validation
-    # if not wrapper.lexicon:
-    #     sys.exit("Please specify a lexicon.")
-    # if not Path(wrapper.lexicon).exists():
-    #     sys.exit(f"File {wrapper.lexicon} not found.")
-    # if wrapper.testset and not Path(wrapper.testset).exists():
-    #     sys.exit(f"Test file given, but {wrapper.testset} not found.")
-
-    # if args.debug:
-    #     logger.setLevel(logging.DEBUG)
-
-
-    # FIXME:
-    # run in separate process
-    run()
-    # process = mp.Process(target=run, args=(am,), daemon=True)
-    # process.start()
-    # processes.append(process)
-    # start_button.grid_remove()
-    # cancel_button.grid()
-
-
-def stop_aml():
-    for process in processes:
-        process.terminate()
+def on_completion():
     cancel_button.grid_remove()
     start_button.grid()
+    acc, matrix, files = wrapper.res
+
+    if matrix is not None:
+        vis_matrix(matrix, acc)
+    vis_files(files)
 
 
 # TODO: Must be removable
@@ -240,13 +256,3 @@ cancel_button.grid_remove()
 
 
 root.mainloop()
-
-
-# # adding menu bar in root window
-# # new item in menu bar labelled as 'New'
-# # adding more items in the menu bar
-# menu = Menu(root)
-# item = Menu(menu)
-# item.add_command(label='New')
-# menu.add_cascade(label='File', menu=item)
-# root.config(menu=menu)

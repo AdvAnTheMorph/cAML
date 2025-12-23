@@ -78,6 +78,9 @@ class AnalogicalModeling:
         # indices of columns to ignore
         self.ignore_columns = []
 
+        # used by GUI to cancel program
+        self.cancel_event = False
+
     def set_linear_count(self, linear: bool):
         """
 
@@ -261,7 +264,7 @@ class AnalogicalModeling:
                              f"{len(self.training_exemplars)}\n")
         return string
 
-    def run_classifier(self, csv: PathLike, out_path: Path, test: str, weights: str):
+    def run_classifier(self, csv: PathLike, out_path: Path, test: str, weights: str) -> tuple[float|None, ConfusionMatrixDisplay|None, tuple]:
         """runs the classifier instance with the given options.
 
         :param csv: lexicon
@@ -269,6 +272,9 @@ class AnalogicalModeling:
         :param test: test data (use lexicon if not given)
         :param weights: column name for weights in dataset, if given
         """
+        if self.cancel_event:
+            sys.exit()
+
         instances = Dataset().from_csv(csv, weights)
         if self._threshold is not None:
             logger.debug(
@@ -303,19 +309,22 @@ class AnalogicalModeling:
         total = len(instances)
         for i in tqdm(range(total), desc="Classifying instances",
                       colour="green", leave=False):
+            if self.cancel_event:
+                sys.exit()
             self.distribution_for_instance(instances[i])
             results.append(self.get_results())
 
         # evaluate if there is a ground truth answer
         if results[0].get_expected_class_name() is None:
-            self.create_output_files(out_path, results, instances)
-            return
+            files = self.create_output_files(out_path, results, instances)
+            return None, None, files
 
         acc, conf_matrix = self.evaluate(instances, results)
         print(f"Accuracy: {round(acc * 100, 3)}%")
-        self.create_output_files(out_path, results, instances)
-        conf_matrix.plot()
-        plt.show()
+        files = self.create_output_files(out_path, results, instances)
+
+        # for GUI
+        return acc, conf_matrix, files
 
     @staticmethod
     def create_headers(feats: pd.Index, classes: list) -> tuple[
@@ -460,13 +469,16 @@ class AnalogicalModeling:
             ]]
 
     def create_output_files(self, dest: Path, results: list[AMResults],
-                            instances: Dataset) -> None:
+                            instances: Dataset) -> tuple:
         """Store information on analogical sets, gang effects and distributions
 
         :param dest: start name for output files
         :param results: list of AMResults
         :param instances: dataset used for prediction
         """
+        if self.cancel_event:
+            sys.exit()
+
         print("Generating output files...")
 
         # headers
@@ -478,6 +490,8 @@ class AnalogicalModeling:
         analogs = []
         distributions = []
         for idx, res in enumerate(results):
+            if self.cancel_event:
+                sys.exit()
             classified = res.classified_exemplar
 
             # gang effects
@@ -497,10 +511,13 @@ class AnalogicalModeling:
         out_analog = dest.with_name(dest.stem + "_analogical_sets.csv")
         out_distribution = dest.with_name(dest.stem + "_distributions.csv")
 
-        # gang.to_csv(out_gang, index=False)
-        # analog.to_csv(out_analog, index=False)
-        # distr.to_csv(out_distribution, index=False)
+        if self.cancel_event:
+            sys.exit()
+        gang.to_csv(out_gang, index=False)
+        analog.to_csv(out_analog, index=False)
+        distr.to_csv(out_distribution, index=False)
         print(f"Outputs saved to {out_gang}, {out_analog}, {out_distribution}.")
+        return gang, analog, distr
 
     @staticmethod
     def evaluate(instances: Dataset, results: list[AMResults]) -> tuple[
@@ -604,8 +621,11 @@ if __name__ == "__main__":
     am.set_ignore_columns(args.ignore_columns)
     am.threshold = args.threshold
     try:
-        am.run_classifier(args.lexicon, args.output.with_suffix(".csv"),
+        _, matrix, _ = am.run_classifier(args.lexicon, args.output.with_suffix(".csv"),
                           args.test, args.weight_colum)
+        if matrix:
+            matrix.plot()
+            plt.show()
     except Exception as e:
         logger.exception(e)
         raise e
