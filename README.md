@@ -63,3 +63,12 @@ python3 aml.py -l <data.csv> -o <output>
   - match: missing values match anything
   - mismatch: missing values don't match anything
   - variable: missing values are treated like a variable, thus only matching other missing values
+
+
+
+## Alternative Versions
+- [weka version](https://github.com/garfieldnate/Weka_AnalogicalModeling) (Java) by Nathan Glenn
+- [TrAML](https://github.com/SabineArndtLappe/TrAML) (Perl) by ???
+
+## License
+Released under the MIT license (see the LICENSE file for details). Copyright Jasmin Wiese, 2025.
