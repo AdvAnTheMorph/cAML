@@ -80,6 +80,7 @@ class AnalogicalModeling:
 
         # used by GUI to cancel program
         self.cancel_event = False
+        self.gui_queue = None
 
     def set_linear_count(self, linear: bool):
         """
@@ -273,6 +274,7 @@ class AnalogicalModeling:
         :param weights: column name for weights in dataset, if given
         """
         if self.cancel_event:
+            logger.info("Cancelled by user")
             sys.exit()
 
         instances = Dataset().from_csv(csv, weights)
@@ -307,10 +309,21 @@ class AnalogicalModeling:
 
         results = []
         total = len(instances)
+
+        # progress bar for GUI
+        if self.gui_queue:
+            self.gui_queue.put((0, total))
+
         for i in tqdm(range(total), desc="Classifying instances",
                       colour="green", leave=False):
+
+            # GUI things
+            if self.gui_queue:
+                self.gui_queue.put((i+1, total))
             if self.cancel_event:
+                logger.info(f"Cancelled by user at step {i} of {total}")
                 sys.exit()
+
             self.distribution_for_instance(instances[i])
             results.append(self.get_results())
 
@@ -477,6 +490,7 @@ class AnalogicalModeling:
         :param instances: dataset used for prediction
         """
         if self.cancel_event:
+            logger.info("Cancelled by user before generating output")
             sys.exit()
 
         print("Generating output files...")
@@ -491,6 +505,7 @@ class AnalogicalModeling:
         distributions = []
         for idx, res in enumerate(results):
             if self.cancel_event:
+                logger.info("Cancelled by user")
                 sys.exit()
             classified = res.classified_exemplar
 
@@ -512,6 +527,7 @@ class AnalogicalModeling:
         out_distribution = dest.with_name(dest.stem + "_distributions.csv")
 
         if self.cancel_event:
+            logger.info("Cancelled by user before saving")
             sys.exit()
         gang.to_csv(out_gang, index=False)
         analog.to_csv(out_analog, index=False)

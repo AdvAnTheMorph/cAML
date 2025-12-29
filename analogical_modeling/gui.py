@@ -7,7 +7,8 @@ from tkinter import ttk, filedialog
 
 import pandas as pd
 
-import analogical_modeling.am.gui.gui_utils as gui_utils
+from analogical_modeling.am.gui.aml_wrapper import AMWrapper
+from analogical_modeling.am.gui.gui_utils import CheckboxFrames, CountFrame
 from analogical_modeling.am.gui.vis import TableVisualization, \
     MatrixVisualization
 
@@ -24,32 +25,18 @@ root = tk.Tk()
 #     window.geometry(f"{width}x{height}+{x}+{y}")
 
 root.title('Analogical Modeling')
-# root.configure()
 root.minsize(600, 550)
 root.geometry("300x300+50+50")
 
 notebook = ttk.Notebook(root)
-notebook.pack(fill='both', expand=True)
+notebook.pack(fill=tk.BOTH, expand=True)
 
-main_tab = ttk.Frame(notebook)
+main_tab = ttk.Frame(notebook, padding=10)
 notebook.add(main_tab, text="Configuration")
 
-tk.Label(main_tab, text="Configuration").pack(expand=True, fill=tk.BOTH)
+tk.Label(main_tab, text="Configuration", font=("", 15)).pack(expand=True, fill=tk.BOTH)
 
-wrapper = gui_utils.AMWrapper()
-
-
-def make_error_msg(errors):
-    msg = ""
-    if errors & gui_utils.MISSING_LEXICON:
-        msg += "Lexicon file not provided.\n"
-    if errors & gui_utils.INVALID_LEXICON:
-        msg += "Lexicon file does not exist.\n"
-    if errors & gui_utils.INVALID_TEST:
-        msg += "Test file given, but does not exist.\n"
-    if errors & gui_utils.MISSING_OUT:
-        msg += "Output not specified.\n"
-    return msg
+wrapper = AMWrapper()
 
 
 def run_button():
@@ -58,19 +45,23 @@ def run_button():
         wrapper.ignored = [ignored.get(i) for i in ignored.curselection()]
         errors = wrapper.run_in_thread()
         if not errors:
+            bar.pack(expand=True, fill=tk.X)
             cancel_button.pack(expand=True, fill=tk.X)
             start_button.pack_forget()
             root.after(100, check_completion)
         else:
-            messagebox.showerror("Missing parameters", make_error_msg(errors))
+            messagebox.showerror("Missing parameters", errors)
     except Exception as e:
         raise e
 
 
 def stop_aml():
     # stop thread
+    bar["value"] = 0
+    bar_label.pack_forget()
     wrapper.cancel()
     messagebox.showinfo("Stop AML", "Stopping AML")
+    bar.pack_forget()
     cancel_button.pack_forget()
     start_button.pack(expand=True, fill=tk.X)
 
@@ -78,7 +69,16 @@ def stop_aml():
 def check_completion():
     if wrapper.res:
         on_completion()
+    elif wrapper.am.cancel_event:
+        return
     else:
+        while not wrapper.queue.empty():
+            val, max_ = wrapper.queue.get()
+            # print(max_, val)
+            bar["maximum"] = max_
+            bar["value"] = max(val, bar["value"])
+            if val == max_:
+                bar_label.pack(in_=bar)
         root.after(100, check_completion)
 
 
@@ -91,7 +91,7 @@ def make_table(parent, file_):
 def vis_files(files):
     if not hasattr(root, "gangs"):
         root.gangs = ttk.Frame(notebook)
-        notebook.add(root.gangs, text="Gangs")
+        notebook.add(root.gangs, text="Gang Effects")
         make_table(root.gangs, files[0])
     else:
         # Update existing tab
@@ -137,6 +137,9 @@ def vis_matrix(matrix, acc):
 
 
 def on_completion():
+    bar["value"] = 0
+    bar.pack_forget()
+    bar_label.pack_forget()
     cancel_button.pack_forget()
     start_button.pack(expand=True, fill=tk.X)
     acc, matrix, files = wrapper.res
@@ -207,11 +210,10 @@ def clear_test():
 
 def update_name(_arg=None):
     if wrapper.out_name.get():
-        print(wrapper.out_dir, wrapper.out_name.get())
-        wrapper.out = Path(wrapper.out_dir or ".") / wrapper.out_name.get()
+        wrapper.out = Path(wrapper.out_dir) / wrapper.out_name.get()
         out_label.config(
             text=f"Results will be saved to "
-                 f"{Path(wrapper.out_dir).name or '.'}/{out_name.get()}_*")
+                 f"{Path(wrapper.out_dir).name}/{out_name.get()}_*")
     else:
         out_label.config(text="")
 
@@ -234,7 +236,7 @@ def validate_numeric(val):
 
 # Lexicon
 lex_spec_frame = tk.Frame(main_tab)
-lex_spec_frame.pack(fill='both', expand=True)
+lex_spec_frame.pack(fill=tk.BOTH, expand=True)
 lex_frame = tk.Frame(lex_spec_frame)
 lex_frame.pack(expand=True, fill=tk.X)
 tk.Label(lex_frame, text="Lexicon file:").pack(side=tk.LEFT, expand=True,
@@ -251,9 +253,12 @@ tk.Label(ignored_frame, text="Select columns to ignore:").pack(side=tk.LEFT,
                                                                fill=tk.X)
 ignored = tk.Listbox(ignored_frame, selectmode=tk.MULTIPLE, height=4)
 ignored.pack(side=tk.RIGHT, expand=True, fill=tk.X)
-# scrollbar = tk.Scrollbar(frame, orient=tk.VERTICAL)
-# scrollbar.config(command=ignored.yview)
-# scrollbar.grid()
+scrollbar = tk.Scrollbar(ignored_frame, orient=tk.VERTICAL)
+scrollbar.pack(expand=False, fill=tk.Y, before=ignored, side=tk.RIGHT)
+# link scrollbar and listbox
+scrollbar.config(command=ignored.yview)
+ignored.config(yscrollcommand=scrollbar.set)
+
 weights_frame = tk.Frame(frame)
 tk.Label(weights_frame, text="Select weights column (if any):").pack(
     side=tk.LEFT, expand=True, fill=tk.X)
@@ -265,7 +270,7 @@ weights_box.pack(side=tk.RIGHT, expand=True, fill=tk.X)
 threshold_frame = tk.Frame(frame)
 tk.Label(threshold_frame, text="Ignore instances with weights below:").pack(
     side=tk.LEFT, expand=True, fill=tk.X)
-tk.Spinbox(threshold_frame, increment=0.1, from_=0.0, to=100.0,
+tk.Spinbox(threshold_frame, increment=0.01, from_=0.0, to=1.0,
            textvariable=wrapper.threshold,
            validate='key',
            validatecommand=(frame.register(validate_numeric), '%P')).pack(
@@ -292,8 +297,11 @@ out_button.pack(side=tk.RIGHT, expand=True, fill=tk.X)
 prefix_frame = tk.Frame(out_frame)
 prefix_frame.pack(expand=True, fill=tk.X)
 tk.Label(prefix_frame, text="Prefix for output:").pack(side=tk.LEFT,
-                                                       expand=True, fill=tk.X)
+                                                       expand=True,
+                                                       fill=tk.X)
 out_name = tk.Entry(prefix_frame, textvariable=wrapper.out_name)
+# TODO: maybe default value
+# out_name.insert(0, "am_output")
 out_name.pack(side=tk.RIGHT, expand=True, fill=tk.X)
 out_name.bind("<KeyRelease>", update_name)
 out_label = tk.Label(out_frame)
@@ -301,20 +309,11 @@ out_label.pack(side=tk.RIGHT, expand=True, fill=tk.X)
 
 ttk.Separator(main_tab, orient="horizontal").pack(expand=True, fill=tk.BOTH)
 
-tk.Label(main_tab, text="Additional Options", pady=10).pack(expand=True,
+tk.Label(main_tab, text="Additional Options", pady=10, font=("", 12)).pack(expand=True,
                                                             fill=tk.X)
 
 # count strategy
-count_frame = tk.Frame(main_tab)
-count_frame.pack(expand=True, fill=tk.X)
-tk.Label(count_frame, text="Count strategy:").pack(side=tk.LEFT, expand=True,
-                                                   fill=tk.X)
-tk.Radiobutton(count_frame, text="quadratic count", value=0,
-               variable=wrapper.linear).pack(side=tk.LEFT, expand=True,
-                                             fill=tk.X)
-tk.Radiobutton(count_frame, text="linear count", value=1,
-               variable=wrapper.linear).pack(side=tk.LEFT, expand=True,
-                                             fill=tk.X)
+CountFrame(main_tab, wrapper)
 
 # mdc
 mdc_frame = tk.Frame(main_tab)
@@ -326,25 +325,12 @@ mdc_selection = ttk.Combobox(mdc_frame,
                              values=["match", "mismatch", "variable"],
                              textvariable=wrapper.mdc, state="readonly")
 mdc_selection.current(2)
-mdc_selection.pack(side=tk.LEFT, expand=True, fill=tk.X)
+mdc_selection.pack(side=tk.LEFT, expand=True)
 
 # rest
 rest_frame = tk.Frame(main_tab)
-rest_frame.pack(expand=True, fill=tk.X)
-a_frame = tk.Frame(rest_frame)
-a_frame.pack(expand=True, fill=tk.X)
-tk.Checkbutton(a_frame, text="Drop duplicated instances",
-               variable=wrapper.drop_duplicates).pack(side=tk.LEFT, expand=True,
-                                                      fill=tk.X)
-tk.Checkbutton(a_frame, text="Keep test exemplar in training set", onvalue=0,
-               offvalue=1).pack(side=tk.LEFT, expand=True, fill=tk.X)
-b_frame = tk.Frame(rest_frame)
-b_frame.pack(expand=True, fill=tk.X)
-tk.Checkbutton(b_frame, text="Ignore attributes with unknown values",
-               variable=wrapper.ignore_unknowns).pack(side=tk.LEFT, expand=True,
-                                                      fill=tk.X)
-tk.Checkbutton(b_frame, text="Debug mode", variable=wrapper.debug).pack(
-    side=tk.LEFT, expand=True, fill=tk.X)
+rest_frame.pack(expand=True, anchor=tk.CENTER)  # don't fill
+CheckboxFrames(rest_frame, wrapper)
 
 # run/cancel
 run_frame = tk.Frame(main_tab)
@@ -353,4 +339,9 @@ start_button = tk.Button(run_frame, text="Run algorithm", command=run_button)
 start_button.pack(side=tk.TOP, expand=True, fill=tk.X)
 cancel_button = tk.Button(run_frame, text="Cancel", command=stop_aml)
 
+bar = ttk.Progressbar(run_frame, orient=tk.HORIZONTAL, mode="determinate")
+bar_label = tk.Label(run_frame, text="Creating output files...")  # TODO: no background
+
+# FIXME: pops up at base position first
+# center_window(root)
 root.mainloop()
