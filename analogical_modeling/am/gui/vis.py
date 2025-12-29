@@ -8,8 +8,7 @@ from pandastable import Table
 
 
 class TableVisualization:
-
-
+    """Visualize tables in tkinter"""
     def __init__(self, root, df):
         self.frame = tk.Frame(root)
         self.frame.pack(padx=10, pady=10, expand=True, fill=tk.BOTH)
@@ -20,9 +19,8 @@ class TableVisualization:
 
 
 class MatrixVisualization:
-
-
-    def __init__(self, root, matrix):
+    """Visualize confusion matrix in tkinter"""
+    def __init__(self, root, matrix, save=None):
         self.frame = tk.Frame(root)
         self.frame.pack(padx=10, pady=10, expand=True, fill=tk.BOTH)
 
@@ -31,3 +29,6 @@ class MatrixVisualization:
         canvas = FigureCanvasTkAgg(fig, master=self.frame)
         canvas.draw()
         canvas.get_tk_widget().pack(side='left', fill='both', expand=True)
+
+        if save:
+            fig.savefig(save.stem + "_matrix.png")

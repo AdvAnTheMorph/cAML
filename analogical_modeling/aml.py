@@ -12,7 +12,7 @@ import sys
 from os import PathLike
 from pathlib import Path
 from random import Random
-from typing import Iterable
+from typing import Iterable, Optional
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -265,7 +265,9 @@ class AnalogicalModeling:
                              f"{len(self.training_exemplars)}\n")
         return string
 
-    def run_classifier(self, csv: PathLike, out_path: Path, test: str, weights: str) -> tuple[float|None, ConfusionMatrixDisplay|None, tuple]:
+    def run_classifier(self, csv: PathLike, out_path: Optional[Path], test: str,
+                       weights: str) -> tuple[
+        Optional[float], Optional[ConfusionMatrixDisplay], tuple]:
         """runs the classifier instance with the given options.
 
         :param csv: lexicon
@@ -304,7 +306,7 @@ class AnalogicalModeling:
             self.check_header(instances)
 
         # do this first, just in case it fails
-        if not out_path.parent.exists():
+        if out_path and not out_path.parent.exists():
             out_path.parent.mkdir(parents=True)
 
         results = []
@@ -319,7 +321,7 @@ class AnalogicalModeling:
 
             # GUI things
             if self.gui_queue:
-                self.gui_queue.put((i+1, total))
+                self.gui_queue.put((i + 1, total))
             if self.cancel_event:
                 logger.info(f"Cancelled by user at step {i} of {total}")
                 sys.exit()
@@ -522,17 +524,19 @@ class AnalogicalModeling:
         analog = pd.DataFrame(analogs, columns=analog_header)
         distr = pd.DataFrame(distributions, columns=distr_header)
 
-        out_gang = dest.with_name(dest.stem + "_gangs.csv")
-        out_analog = dest.with_name(dest.stem + "_analogical_sets.csv")
-        out_distribution = dest.with_name(dest.stem + "_distributions.csv")
-
         if self.cancel_event:
             logger.info("Cancelled by user before saving")
             sys.exit()
-        gang.to_csv(out_gang, index=False)
-        analog.to_csv(out_analog, index=False)
-        distr.to_csv(out_distribution, index=False)
-        print(f"Outputs saved to {out_gang}, {out_analog}, {out_distribution}.")
+
+        if dest:
+            out_gang = dest.with_name(dest.stem + "_gangs.csv")
+            out_analog = dest.with_name(dest.stem + "_analogical_sets.csv")
+            out_distribution = dest.with_name(dest.stem + "_distributions.csv")
+
+            gang.to_csv(out_gang, index=False)
+            analog.to_csv(out_analog, index=False)
+            distr.to_csv(out_distribution, index=False)
+            print(f"Outputs saved to {out_gang}, {out_analog}, {out_distribution}.")
         return gang, analog, distr
 
     @staticmethod
@@ -637,8 +641,9 @@ if __name__ == "__main__":
     am.set_ignore_columns(args.ignore_columns)
     am.threshold = args.threshold
     try:
-        _, matrix, _ = am.run_classifier(args.lexicon, args.output.with_suffix(".csv"),
-                          args.test, args.weight_colum)
+        _, matrix, _ = am.run_classifier(args.lexicon,
+                                         args.output,
+                                         args.test, args.weight_colum)
         if matrix:
             matrix.plot()
             plt.show()

@@ -53,9 +53,6 @@ class AMWrapper:
         if self.testset and not Path(self.testset).exists():
             print("Testset doesn't exist")
             problems += "Test file given, but does not exist.\n"
-        if not self.out:
-            print("No output path provided")
-            problems += "Output not specified.\n"
         return problems
 
         # TODO (not validation)
@@ -72,7 +69,7 @@ class AMWrapper:
     def run(self) -> None:
         """Run AML"""
         self.res = self.am.run_classifier(self.lexicon,
-                                          Path(self.out).with_suffix(".csv"),
+                                          self.out or None,
                                           self.testset,
                                           self.weights)
 
@@ -88,6 +85,7 @@ class AMWrapper:
         self.am.gui_queue = self.queue = Queue()
 
         print(self.am.get_options())
+        print(f"Saving to {self.out}")
 
         errors = self.validate()
         if not errors:

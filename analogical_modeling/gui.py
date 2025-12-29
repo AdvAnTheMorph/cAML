@@ -5,6 +5,7 @@ from pathlib import Path
 from tkinter import messagebox
 from tkinter import ttk, filedialog
 
+import matplotlib.pyplot as plt
 import pandas as pd
 
 from analogical_modeling.am.gui.aml_wrapper import AMWrapper
@@ -38,6 +39,10 @@ tk.Label(main_tab, text="Configuration", font=("", 15)).pack(expand=True, fill=t
 
 wrapper = AMWrapper()
 
+create_analog = tk.BooleanVar()
+create_gangs = tk.BooleanVar()
+create_distr = tk.BooleanVar()
+
 
 def run_button():
     # runs in separate thread
@@ -48,6 +53,7 @@ def run_button():
             bar.pack(expand=True, fill=tk.X)
             cancel_button.pack(expand=True, fill=tk.X)
             start_button.pack_forget()
+            out_name.configure(state="readonly")  # don't change name
             root.after(100, check_completion)
         else:
             messagebox.showerror("Missing parameters", errors)
@@ -64,6 +70,7 @@ def stop_aml():
     bar.pack_forget()
     cancel_button.pack_forget()
     start_button.pack(expand=True, fill=tk.X)
+    out_name.configure(state=tk.NORMAL)  # name changeable
 
 
 def check_completion():
@@ -89,7 +96,9 @@ def make_table(parent, file_):
 
 
 def vis_files(files):
-    if not hasattr(root, "gangs"):
+    if not create_gangs.get():
+        pass
+    elif not hasattr(root, "gangs"):
         root.gangs = ttk.Frame(notebook)
         notebook.add(root.gangs, text="Gang Effects")
         make_table(root.gangs, files[0])
@@ -98,7 +107,10 @@ def vis_files(files):
         for widget in root.gangs.winfo_children():
             widget.destroy()
         make_table(root.gangs, files[0])
-    if not hasattr(root, "analog"):
+
+    if not create_analog.get():
+        pass
+    elif not hasattr(root, "analog"):
         root.analog = ttk.Frame(notebook)
         notebook.add(root.analog, text="Analogical Sets")
         make_table(root.analog, files[1])
@@ -107,7 +119,10 @@ def vis_files(files):
         for widget in root.analog.winfo_children():
             widget.destroy()
         make_table(root.analog, files[1])
-    if not hasattr(root, "distr"):
+
+    if not create_distr.get():
+        pass
+    elif not hasattr(root, "distr"):
         root.distr = ttk.Frame(notebook)
         notebook.add(root.distr, text="Distribution")
         make_table(root.distr, files[2])
@@ -125,7 +140,7 @@ def vis_matrix(matrix, acc):
         result_label = tk.Label(root.conf_mat_tab,
                                 text=f"Accuracy: {acc * 100}%")
         result_label.pack()
-        MatrixVisualization(root.conf_mat_tab, matrix)
+        MatrixVisualization(root.conf_mat_tab, matrix, wrapper.out)
     else:
         # Update existing tab
         for widget in root.conf_mat_tab.winfo_children():
@@ -142,6 +157,8 @@ def on_completion():
     bar_label.pack_forget()
     cancel_button.pack_forget()
     start_button.pack(expand=True, fill=tk.X)
+    out_name.configure(state=tk.NORMAL)  # name changeable
+
     acc, matrix, files = wrapper.res
 
     if matrix is not None:
@@ -210,16 +227,20 @@ def clear_test():
 
 def update_name(_arg=None):
     if wrapper.out_name.get():
-        wrapper.out = Path(wrapper.out_dir) / wrapper.out_name.get()
+        wrapper.out = Path(wrapper.out_dir).resolve() / wrapper.out_name.get()
         out_label.config(
             text=f"Results will be saved to "
                  f"{Path(wrapper.out_dir).name}/{out_name.get()}_*")
     else:
-        out_label.config(text="")
+        out_label.config(text="Results won't be saved automatically.")
 
 
 def get_out_dir():
-    wrapper.out_dir = filedialog.askdirectory(initialdir="./..", )
+    tmp = filedialog.askdirectory(initialdir="./..")
+    if not tmp:
+        return
+
+    wrapper.out_dir = tmp
     update_name()
     if wrapper.out_dir:
         out_button.configure(text=f"Selected: */{Path(wrapper.out_dir).name}/")
@@ -304,8 +325,23 @@ out_name = tk.Entry(prefix_frame, textvariable=wrapper.out_name)
 # out_name.insert(0, "am_output")
 out_name.pack(side=tk.RIGHT, expand=True, fill=tk.X)
 out_name.bind("<KeyRelease>", update_name)
-out_label = tk.Label(out_frame)
+out_label = tk.Label(out_frame, text="Results won't be saved automatically.")
 out_label.pack(side=tk.RIGHT, expand=True, fill=tk.X)
+
+ttk.Separator(main_tab, orient="horizontal").pack(expand=True, fill=tk.BOTH)
+
+df_frame = tk.Frame(main_tab)
+df_frame.pack(expand=True)
+tk.Label(df_frame, text="Create:").pack(side=tk.LEFT,)
+gangs = tk.Checkbutton(df_frame, text="Gang effects", variable=create_gangs)
+gangs.select()
+gangs.pack(side=tk.LEFT)
+analogs = tk.Checkbutton(df_frame, text="Analogical sets", variable=create_analog)
+analogs.select()
+analogs.pack(side=tk.LEFT)
+distr = tk.Checkbutton(df_frame, text="Distributions", variable=create_distr)
+distr.select()
+distr.pack(side=tk.LEFT)
 
 ttk.Separator(main_tab, orient="horizontal").pack(expand=True, fill=tk.BOTH)
 
