@@ -265,7 +265,8 @@ class AnalogicalModeling:
                              f"{len(self.training_exemplars)}\n")
         return string
 
-    def run_classifier(self, csv: PathLike, out_path: Optional[Path], test: str,
+    def run_classifier(self, csv: PathLike | pd.DataFrame,
+                       out_path: Optional[Path], test: str,
                        weights: str) -> tuple[
         Optional[float], Optional[ConfusionMatrixDisplay], tuple]:
         """runs the classifier instance with the given options.
@@ -279,7 +280,11 @@ class AnalogicalModeling:
             logger.info("Cancelled by user")
             sys.exit()
 
-        instances = Dataset().from_csv(csv, weights)
+        if isinstance(csv, pd.DataFrame):
+            instances = Dataset(csv, weights)
+        else:
+            instances = Dataset().from_csv(csv, weights)
+
         if self._threshold is not None:
             logger.debug(
                 f"Threshold set to {self._threshold}, filtering instances")
@@ -536,7 +541,8 @@ class AnalogicalModeling:
             gang.to_csv(out_gang, index=False)
             analog.to_csv(out_analog, index=False)
             distr.to_csv(out_distribution, index=False)
-            print(f"Outputs saved to {out_gang}, {out_analog}, {out_distribution}.")
+            print(f"Outputs saved to {out_gang}, {out_analog}, "
+                  f"{out_distribution}.")
         return gang, analog, distr
 
     @staticmethod

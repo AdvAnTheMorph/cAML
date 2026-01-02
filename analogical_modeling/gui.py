@@ -5,7 +5,6 @@ from pathlib import Path
 from tkinter import messagebox
 from tkinter import ttk, filedialog
 
-import matplotlib.pyplot as plt
 import pandas as pd
 
 from analogical_modeling.am.gui.aml_wrapper import AMWrapper
@@ -26,7 +25,7 @@ root = tk.Tk()
 #     window.geometry(f"{width}x{height}+{x}+{y}")
 
 root.title('Analogical Modeling')
-root.minsize(600, 550)
+root.minsize(600, 600)
 root.geometry("300x300+50+50")
 
 notebook = ttk.Notebook(root)
@@ -47,6 +46,7 @@ create_distr = tk.BooleanVar()
 def run_button():
     # runs in separate thread
     try:
+        wrapper.class_idx = cls_column.current()
         wrapper.ignored = [ignored.get(i) for i in ignored.curselection()]
         errors = wrapper.run_in_thread()
         if not errors:
@@ -189,7 +189,10 @@ def get_lexicon():
     ignored.delete(0, tk.END)  # remove old elements
     for col in cols:
         ignored.insert(tk.END, col)
-        weights_box["values"] = [""] + cols
+    cls_column["values"] = cols
+    cls_column.current(len(cols) - 1)
+    weights_box["values"] = [""] + cols
+    cls_frame.pack(side=tk.TOP, fill=tk.X, expand=True)
     ignored_frame.pack(side=tk.TOP, fill=tk.X, expand=True)
     weights_frame.pack(side=tk.TOP, expand=True, fill=tk.X)
 
@@ -268,6 +271,13 @@ lexicon_button.pack(side=tk.RIGHT, expand=True, fill=tk.X)
 # configurations once lexicon has been selected
 frame = tk.Frame(lex_spec_frame)
 frame.pack(side=tk.BOTTOM, expand=True, fill=tk.X)
+cls_frame = tk.Frame(frame)
+tk.Label(cls_frame, text="Class column:").pack(side=tk.LEFT, expand=True, fill=tk.X)
+cls_column = ttk.Combobox(cls_frame,
+                          textvariable=wrapper.class_idx,
+                          state="readonly")
+cls_column.pack(side=tk.LEFT, expand=True, fill=tk.X)
+
 ignored_frame = tk.Frame(frame)
 tk.Label(ignored_frame, text="Select columns to ignore:").pack(side=tk.LEFT,
                                                                expand=True,

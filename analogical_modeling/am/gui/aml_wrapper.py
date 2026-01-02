@@ -1,11 +1,14 @@
 """Wrapper for running AML with GUI"""
 
+import logging
 import threading
 import tkinter as tk
 from pathlib import Path
 from queue import Queue
 
-from analogical_modeling.aml import AnalogicalModeling
+import pandas as pd
+
+from analogical_modeling.aml import AnalogicalModeling, logger
 
 
 class AMWrapper:
@@ -14,6 +17,7 @@ class AMWrapper:
     def __init__(self):
         self.am = AnalogicalModeling()
         self.lexicon = ""
+        self.class_idx = -1
         self.testset = ""
         self.out = ""
         self.out_dir = Path("../..").resolve()
@@ -32,6 +36,19 @@ class AMWrapper:
         self.thread = None
         self.res = None
         self.queue = Queue()
+
+    def adjust_data_to_class_idx(self):
+        """Permute lexicon such that class column comes last"""
+        data = pd.read_csv(self.lexicon)
+        print(self.class_idx)
+        cols = data.columns.tolist()
+        if self.class_idx == -1:
+            self.class_idx = len(cols) - 1
+        if self.class_idx != len(cols)-1:
+            before, after = cols[:self.class_idx], cols[self.class_idx+1:]
+            data = data.loc[:, before + after + [cols[self.class_idx]]]
+        print(data)
+        return data
 
     def validate_threshold(self, *_args):
         """Make sure that threshold non-negative float"""
@@ -68,7 +85,8 @@ class AMWrapper:
 
     def run(self) -> None:
         """Run AML"""
-        self.res = self.am.run_classifier(self.lexicon,
+        lex = self.adjust_data_to_class_idx()
+        self.res = self.am.run_classifier(lex,
                                           self.out or None,
                                           self.testset,
                                           self.weights)
@@ -84,8 +102,13 @@ class AMWrapper:
         self.am.threshold = self.threshold.get()
         self.am.gui_queue = self.queue = Queue()
 
+        if self.debug:
+            logger.setLevel(logging.DEBUG)
+        else:
+            logger.setLevel(logging.INFO)
+
         print(self.am.get_options())
-        print(f"Saving to {self.out}")
+        print(f"Saving to {self.out or '--'}")
 
         errors = self.validate()
         if not errors:
