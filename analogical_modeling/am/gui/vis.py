@@ -31,4 +31,4 @@ class MatrixVisualization:
         canvas.get_tk_widget().pack(side='left', fill='both', expand=True)
 
         if save:
-            fig.savefig(save.stem + "_matrix.png")
+            fig.savefig(save.with_name(save.stem + "_matrix.png"))

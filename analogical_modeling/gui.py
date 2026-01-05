@@ -8,7 +8,8 @@ from tkinter import ttk, filedialog
 import pandas as pd
 
 from analogical_modeling.am.gui.aml_wrapper import AMWrapper
-from analogical_modeling.am.gui.gui_utils import CheckboxFrames, CountFrame
+from analogical_modeling.am.gui.gui_utils import CheckboxFrames, CountFrame, \
+    StartFrame
 from analogical_modeling.am.gui.vis import TableVisualization, \
     MatrixVisualization
 
@@ -43,127 +44,102 @@ create_gangs = tk.BooleanVar()
 create_distr = tk.BooleanVar()
 
 
-def run_button():
-    # runs in separate thread
-    try:
-        wrapper.class_idx = cls_column.current()
-        wrapper.ignored = [ignored.get(i) for i in ignored.curselection()]
-        errors = wrapper.run_in_thread()
-        if not errors:
-            bar.pack(expand=True, fill=tk.X)
-            cancel_button.pack(expand=True, fill=tk.X)
-            start_button.pack_forget()
-            out_name.configure(state="readonly")  # don't change name
-            root.after(100, check_completion)
-        else:
+class GUI:
+    def __init__(self, root):
+        self.root = root
+
+    def run(self):
+        """Run AML through wrapper"""
+        # runs in separate thread
+        try:
+            print(wrapper.weights)
+            wrapper.class_idx = cls_column.current()
+            wrapper.ignored = [ignored.get(i) for i in ignored.curselection()]
+
+
+            if wrapper.class_idx in ignored.curselection():
+                messagebox.showerror("Class column ignored",
+                                     "The class column cannot be ignored.")
+                return False
+            if wrapper.weights in wrapper.ignored:
+                messagebox.showerror("Weights column ignored",
+                                     "The weights column cannot be ignored.")
+                return False
+            if wrapper.weights == cls_column["values"][wrapper.class_idx]:
+                messagebox.showerror("Weights column is class column",
+                                     "The weights column cannot be the class column.")
+                return False
+
+            errors = wrapper.run_in_thread()
+            if not errors:
+                return True
             messagebox.showerror("Missing parameters", errors)
-    except Exception as e:
-        raise e
+            return False
+        except Exception as e:
+            raise e
 
+    def on_completion(self):
+        """Plot matrix and output files"""
+        acc, matrix, files = wrapper.res
+        if matrix is not None:
+            self.vis_matrix(matrix, acc)
+        self.vis_files(files)
 
-def stop_aml():
-    # stop thread
-    bar["value"] = 0
-    bar_label.pack_forget()
-    wrapper.cancel()
-    messagebox.showinfo("Stop AML", "Stopping AML")
-    bar.pack_forget()
-    cancel_button.pack_forget()
-    start_button.pack(expand=True, fill=tk.X)
-    out_name.configure(state=tk.NORMAL)  # name changeable
-
-
-def check_completion():
-    if wrapper.res:
-        on_completion()
-    elif wrapper.am.cancel_event:
-        return
-    else:
-        while not wrapper.queue.empty():
-            val, max_ = wrapper.queue.get()
-            # print(max_, val)
-            bar["maximum"] = max_
-            bar["value"] = max(val, bar["value"])
-            if val == max_:
-                bar_label.pack(in_=bar)
-        root.after(100, check_completion)
-
-
-def make_table(parent, file_):
-    res_frame = tk.Frame(parent)
-    res_frame.pack(expand=True, fill=tk.BOTH)
-    TableVisualization(res_frame, file_)
-
-
-def vis_files(files):
-    if not create_gangs.get():
-        pass
-    elif not hasattr(root, "gangs"):
-        root.gangs = ttk.Frame(notebook)
-        notebook.add(root.gangs, text="Gang Effects")
-        make_table(root.gangs, files[0])
-    else:
-        # Update existing tab
-        for widget in root.gangs.winfo_children():
+    @staticmethod
+    def clear_frame(frame):
+        """Remove all widgets from a frame"""
+        for widget in frame.winfo_children():
             widget.destroy()
-        make_table(root.gangs, files[0])
 
-    if not create_analog.get():
-        pass
-    elif not hasattr(root, "analog"):
-        root.analog = ttk.Frame(notebook)
-        notebook.add(root.analog, text="Analogical Sets")
-        make_table(root.analog, files[1])
-    else:
-        # Update existing tab
-        for widget in root.analog.winfo_children():
-            widget.destroy()
-        make_table(root.analog, files[1])
-
-    if not create_distr.get():
-        pass
-    elif not hasattr(root, "distr"):
-        root.distr = ttk.Frame(notebook)
-        notebook.add(root.distr, text="Distribution")
-        make_table(root.distr, files[2])
-    else:
-        # Update existing tab
-        for widget in root.distr.winfo_children():
-            widget.destroy()
-        make_table(root.distr, files[2])
-
-
-def vis_matrix(matrix, acc):
-    if not hasattr(root, "conf_mat_tab"):
-        root.conf_mat_tab = ttk.Frame(notebook)
-        notebook.add(root.conf_mat_tab, text="Confusion Matrix")
+    def vis_matrix(self, matrix, acc):
+        if not hasattr(root, "conf_mat_tab"):
+            root.conf_mat_tab = ttk.Frame(notebook)
+            notebook.add(root.conf_mat_tab, text="Confusion Matrix")
+        else:
+            # Update existing tab
+            self.clear_frame(root.conf_mat_tab)
         result_label = tk.Label(root.conf_mat_tab,
                                 text=f"Accuracy: {acc * 100}%")
         result_label.pack()
         MatrixVisualization(root.conf_mat_tab, matrix, wrapper.out)
-    else:
-        # Update existing tab
-        for widget in root.conf_mat_tab.winfo_children():
-            widget.destroy()
-        result_label = tk.Label(root.conf_mat_tab,
-                                text=f"Accuracy: {acc * 100}%")
-        result_label.pack()
-        MatrixVisualization(root.conf_mat_tab, matrix)
+
+    def make_table(self, parent, file_):
+        res_frame = tk.Frame(parent)
+        res_frame.pack(expand=True, fill=tk.BOTH)
+        TableVisualization(res_frame, file_)
+
+    def vis_files(self, files):
+        """Visualize tables"""
+        if create_gangs.get():
+            if not hasattr(root, "gangs"):
+                root.gangs = ttk.Frame(notebook)
+                notebook.add(root.gangs, text="Gang Effects")
+            else:
+                # Update existing tab
+                self.clear_frame(root.gangs)
+            self.make_table(root.gangs, files[0])
+
+        if create_analog.get():
+            if not hasattr(root, "analog"):
+                root.analog = ttk.Frame(notebook)
+                notebook.add(root.analog, text="Analogical Sets")
+            else:
+                # Update existing tab
+                self.clear_frame(root.analog)
+            self.make_table(root.analog, files[1])
+
+        if create_distr.get():
+            if not hasattr(root, "distr"):
+                root.distr = ttk.Frame(notebook)
+                notebook.add(root.distr, text="Distribution")
+            else:
+                # Update existing tab
+                self.clear_frame(root.distr)
+            self.make_table(root.distr, files[2])
 
 
-def on_completion():
-    bar["value"] = 0
-    bar.pack_forget()
-    bar_label.pack_forget()
-    cancel_button.pack_forget()
-    start_button.pack(expand=True, fill=tk.X)
-    out_name.configure(state=tk.NORMAL)  # name changeable
+gui = GUI(root)
 
-    acc, matrix, files = wrapper.res
-
-    if matrix is not None:
-        vis_matrix(matrix, acc)
-    vis_files(files)
 
 
 def get_file(button):
@@ -198,13 +174,14 @@ def get_lexicon():
 
 
 def val_and_vis(_arg=None):
+    value = weights_box.get()
     if not weights_box.get():  # = no weights
         threshold_frame.pack_forget()
+        wrapper.weights = value
         return
 
     # validate and set
     temp = pd.read_csv(wrapper.lexicon)
-    value = weights_box.get()
     if pd.api.types.is_numeric_dtype(temp[value]):
         wrapper.weights = value
         threshold_frame.pack(side=tk.BOTTOM, fill=tk.X, expand=True)
@@ -359,7 +336,7 @@ tk.Label(main_tab, text="Additional Options", pady=10, font=("", 12)).pack(expan
                                                             fill=tk.X)
 
 # count strategy
-CountFrame(main_tab, wrapper)
+count = CountFrame(main_tab, wrapper)
 
 # mdc
 mdc_frame = tk.Frame(main_tab)
@@ -378,15 +355,7 @@ rest_frame = tk.Frame(main_tab)
 rest_frame.pack(expand=True, anchor=tk.CENTER)  # don't fill
 CheckboxFrames(rest_frame, wrapper)
 
-# run/cancel
-run_frame = tk.Frame(main_tab)
-run_frame.pack(expand=True, fill=tk.X)
-start_button = tk.Button(run_frame, text="Run algorithm", command=run_button)
-start_button.pack(side=tk.TOP, expand=True, fill=tk.X)
-cancel_button = tk.Button(run_frame, text="Cancel", command=stop_aml)
-
-bar = ttk.Progressbar(run_frame, orient=tk.HORIZONTAL, mode="determinate")
-bar_label = tk.Label(run_frame, text="Creating output files...")  # TODO: no background
+run_stop = StartFrame(gui, main_tab, wrapper)
 
 # FIXME: pops up at base position first
 # center_window(root)

@@ -40,14 +40,12 @@ class AMWrapper:
     def adjust_data_to_class_idx(self):
         """Permute lexicon such that class column comes last"""
         data = pd.read_csv(self.lexicon)
-        print(self.class_idx)
         cols = data.columns.tolist()
         if self.class_idx == -1:
             self.class_idx = len(cols) - 1
         if self.class_idx != len(cols)-1:
             before, after = cols[:self.class_idx], cols[self.class_idx+1:]
             data = data.loc[:, before + after + [cols[self.class_idx]]]
-        print(data)
         return data
 
     def validate_threshold(self, *_args):
