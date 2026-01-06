@@ -8,8 +8,7 @@ from tkinter import ttk, filedialog
 import pandas as pd
 
 from analogical_modeling.am.gui.aml_wrapper import AMWrapper
-from analogical_modeling.am.gui.gui_utils import CheckboxFrames, CountFrame, \
-    StartFrame
+import analogical_modeling.am.gui.gui_utils as utils
 from analogical_modeling.am.gui.vis import TableVisualization, \
     MatrixVisualization
 
@@ -35,7 +34,8 @@ notebook.pack(fill=tk.BOTH, expand=True)
 main_tab = ttk.Frame(notebook, padding=10)
 notebook.add(main_tab, text="Configuration")
 
-tk.Label(main_tab, text="Configuration", font=("", 15)).pack(expand=True, fill=tk.BOTH)
+tk.Label(main_tab, text="Configuration", font=("", 15)).pack(expand=True,
+                                                             fill=tk.BOTH)
 
 wrapper = AMWrapper()
 
@@ -53,11 +53,10 @@ class GUI:
         # runs in separate thread
         try:
             print(wrapper.weights)
-            wrapper.class_idx = cls_column.current()
-            wrapper.ignored = [ignored.get(i) for i in ignored.curselection()]
+            wrapper.class_idx = cls.get()
+            wrapper.ignored = ignored.list_selected()
 
-
-            if wrapper.class_idx in ignored.curselection():
+            if wrapper.class_idx in ignored.box.curselection():
                 messagebox.showerror("Class column ignored",
                                      "The class column cannot be ignored.")
                 return False
@@ -65,9 +64,10 @@ class GUI:
                 messagebox.showerror("Weights column ignored",
                                      "The weights column cannot be ignored.")
                 return False
-            if wrapper.weights == cls_column["values"][wrapper.class_idx]:
+            if wrapper.weights == cls.get(wrapper.class_idx):
                 messagebox.showerror("Weights column is class column",
-                                     "The weights column cannot be the class column.")
+                                     "The weights column cannot be the class "
+                                     "column.")
                 return False
 
             errors = wrapper.run_in_thread()
@@ -141,7 +141,6 @@ class GUI:
 gui = GUI(root)
 
 
-
 def get_file(button):
     filename = filedialog.askopenfilename(initialdir="./..",
                                           title="Select a File",
@@ -158,39 +157,19 @@ def get_file(button):
 
 def get_lexicon():
     wrapper.lexicon = get_file(lexicon_button)
-
     if not wrapper.lexicon or not Path(wrapper.lexicon).exists():
         return
     cols = list(pd.read_csv(wrapper.lexicon).columns)
-    ignored.delete(0, tk.END)  # remove old elements
-    for col in cols:
-        ignored.insert(tk.END, col)
-    cls_column["values"] = cols
-    cls_column.current(len(cols) - 1)
-    weights_box["values"] = [""] + cols
-    cls_frame.pack(side=tk.TOP, fill=tk.X, expand=True)
-    ignored_frame.pack(side=tk.TOP, fill=tk.X, expand=True)
-    weights_frame.pack(side=tk.TOP, expand=True, fill=tk.X)
 
+    cls.fill(cols)
+    cls.vis()
 
-def val_and_vis(_arg=None):
-    value = weights_box.get()
-    if not weights_box.get():  # = no weights
-        threshold_frame.pack_forget()
-        wrapper.weights = value
-        return
+    ignored.clear()   # remove old elements
+    ignored.fill(cols)  # refill
+    ignored.vis()
 
-    # validate and set
-    temp = pd.read_csv(wrapper.lexicon)
-    if pd.api.types.is_numeric_dtype(temp[value]):
-        wrapper.weights = value
-        threshold_frame.pack(side=tk.BOTTOM, fill=tk.X, expand=True)
-    else:
-        threshold_frame.pack_forget()
-        messagebox.showerror(f"Invalid weights column '{value}'",
-                             "The selected column does not contain "
-                             "numeric values.")
-        weights_box.current(0)
+    weights.fill(cols)
+    weights.vis()
 
 
 def get_testset():
@@ -226,15 +205,6 @@ def get_out_dir():
         out_button.configure(text=f"Selected: */{Path(wrapper.out_dir).name}/")
 
 
-def validate_numeric(val):
-    if val == "":  # Allow empty string (deletion)
-        return True
-    try:
-        return float(val) >= 0.0
-    except ValueError:
-        return False
-
-
 # Lexicon
 lex_spec_frame = tk.Frame(main_tab)
 lex_spec_frame.pack(fill=tk.BOTH, expand=True)
@@ -246,43 +216,11 @@ lexicon_button = tk.Button(lex_frame, text="Select file", command=get_lexicon)
 lexicon_button.pack(side=tk.RIGHT, expand=True, fill=tk.X)
 
 # configurations once lexicon has been selected
-frame = tk.Frame(lex_spec_frame)
-frame.pack(side=tk.BOTTOM, expand=True, fill=tk.X)
-cls_frame = tk.Frame(frame)
-tk.Label(cls_frame, text="Class column:").pack(side=tk.LEFT, expand=True, fill=tk.X)
-cls_column = ttk.Combobox(cls_frame,
-                          textvariable=wrapper.class_idx,
-                          state="readonly")
-cls_column.pack(side=tk.LEFT, expand=True, fill=tk.X)
-
-ignored_frame = tk.Frame(frame)
-tk.Label(ignored_frame, text="Select columns to ignore:").pack(side=tk.LEFT,
-                                                               expand=True,
-                                                               fill=tk.X)
-ignored = tk.Listbox(ignored_frame, selectmode=tk.MULTIPLE, height=4)
-ignored.pack(side=tk.RIGHT, expand=True, fill=tk.X)
-scrollbar = tk.Scrollbar(ignored_frame, orient=tk.VERTICAL)
-scrollbar.pack(expand=False, fill=tk.Y, before=ignored, side=tk.RIGHT)
-# link scrollbar and listbox
-scrollbar.config(command=ignored.yview)
-ignored.config(yscrollcommand=scrollbar.set)
-
-weights_frame = tk.Frame(frame)
-tk.Label(weights_frame, text="Select weights column (if any):").pack(
-    side=tk.LEFT, expand=True, fill=tk.X)
-weights_box = ttk.Combobox(weights_frame, values=[""], state="readonly")
-weights_box.bind("<<ComboboxSelected>>", val_and_vis)
-weights_box.current(0)
-weights_box.pack(side=tk.RIGHT, expand=True, fill=tk.X)
-
-threshold_frame = tk.Frame(frame)
-tk.Label(threshold_frame, text="Ignore instances with weights below:").pack(
-    side=tk.LEFT, expand=True, fill=tk.X)
-tk.Spinbox(threshold_frame, increment=0.01, from_=0.0, to=1.0,
-           textvariable=wrapper.threshold,
-           validate='key',
-           validatecommand=(frame.register(validate_numeric), '%P')).pack(
-    side=tk.RIGHT, expand=True, fill=tk.X)
+conf_frame = tk.Frame(lex_spec_frame)
+conf_frame.pack(side=tk.BOTTOM, expand=True, fill=tk.X)
+cls = utils.ClsFrame(conf_frame, wrapper)
+ignored = utils.IgnoreFrame(conf_frame)
+weights = utils.WeightsFrame(conf_frame, wrapper)
 
 # Test set
 test_frame = tk.Frame(main_tab)
@@ -319,11 +257,12 @@ ttk.Separator(main_tab, orient="horizontal").pack(expand=True, fill=tk.BOTH)
 
 df_frame = tk.Frame(main_tab)
 df_frame.pack(expand=True)
-tk.Label(df_frame, text="Create:").pack(side=tk.LEFT,)
+tk.Label(df_frame, text="Create:").pack(side=tk.LEFT)
 gangs = tk.Checkbutton(df_frame, text="Gang effects", variable=create_gangs)
 gangs.select()
 gangs.pack(side=tk.LEFT)
-analogs = tk.Checkbutton(df_frame, text="Analogical sets", variable=create_analog)
+analogs = tk.Checkbutton(df_frame, text="Analogical sets",
+                         variable=create_analog)
 analogs.select()
 analogs.pack(side=tk.LEFT)
 distr = tk.Checkbutton(df_frame, text="Distributions", variable=create_distr)
@@ -332,11 +271,12 @@ distr.pack(side=tk.LEFT)
 
 ttk.Separator(main_tab, orient="horizontal").pack(expand=True, fill=tk.BOTH)
 
-tk.Label(main_tab, text="Additional Options", pady=10, font=("", 12)).pack(expand=True,
-                                                            fill=tk.X)
+tk.Label(main_tab, text="Additional Options", pady=10, font=("", 12)).pack(
+    expand=True,
+    fill=tk.X)
 
 # count strategy
-count = CountFrame(main_tab, wrapper)
+count = utils.CountFrame(main_tab, wrapper)
 
 # mdc
 mdc_frame = tk.Frame(main_tab)
@@ -353,9 +293,9 @@ mdc_selection.pack(side=tk.LEFT, expand=True)
 # rest
 rest_frame = tk.Frame(main_tab)
 rest_frame.pack(expand=True, anchor=tk.CENTER)  # don't fill
-CheckboxFrames(rest_frame, wrapper)
+utils.CheckboxFrames(rest_frame, wrapper)
 
-run_stop = StartFrame(gui, main_tab, wrapper)
+run_stop = utils.StartFrame(gui, main_tab, wrapper)
 
 # FIXME: pops up at base position first
 # center_window(root)
