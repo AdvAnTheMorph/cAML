@@ -477,7 +477,7 @@ class AnalogicalModeling:
         return [
             [res.get_judgement().value,  # judgement
              gold,  # expected
-             '|'.join(pred)  # predicted
+             '|'.join(map(str, pred))  # predicted
              ] + classified.real_data.tolist() + cls_info + [
                 train_size,  # train size
                 num_feats,  # num feats
