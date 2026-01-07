@@ -1,12 +1,37 @@
 """Utility classes for AML GUI"""
 
 import tkinter as tk
-from tkinter import ttk, messagebox
+from pathlib import Path
+from tkinter import ttk, messagebox, filedialog
 from typing import Iterable, Optional
 
 import pandas as pd
 
-pack_config = {"side": tk.LEFT, "expand": True}#, "fill": tk.X}
+pack_config = {"side": tk.LEFT, "expand": True}  # , "fill": tk.X}
+
+
+class OutputSelection:
+    def __init__(self, parent: tk.Frame):
+        df_frame = tk.Frame(parent)
+        df_frame.pack(expand=True)
+
+        self.analog = tk.BooleanVar()
+        self.gangs = tk.BooleanVar()
+        self.distr = tk.BooleanVar()
+
+        tk.Label(df_frame, text="Create:").pack(side=tk.LEFT)
+        gangs = tk.Checkbutton(df_frame, text="Gang effects",
+                               variable=self.gangs)
+        gangs.select()
+        gangs.pack(side=tk.LEFT)
+        analogs = tk.Checkbutton(df_frame, text="Analogical sets",
+                                 variable=self.analog)
+        analogs.select()
+        analogs.pack(side=tk.LEFT)
+        distr = tk.Checkbutton(df_frame, text="Distributions",
+                               variable=self.distr)
+        distr.select()
+        distr.pack(side=tk.LEFT)
 
 
 class VisOnCommandFrame:
@@ -25,11 +50,11 @@ class ClsFrame(VisOnCommandFrame):
     def __init__(self, parent: tk.Frame, wrapper):
         super().__init__(parent, {"side": tk.TOP, "fill": tk.X, "expand": True})
         tk.Label(self.frame, text="Class column:").pack(side=tk.LEFT,
-                                                       expand=True,
-                                                       fill=tk.X)
+                                                        expand=True,
+                                                        fill=tk.X)
         self.box = ttk.Combobox(self.frame,
-                                  textvariable=wrapper.class_idx,
-                                  state="readonly")
+                                textvariable=wrapper.class_idx,
+                                state="readonly", values=[""])
         self.box.pack(side=tk.LEFT, expand=True, fill=tk.X)
 
     def fill(self, vals):
@@ -37,11 +62,12 @@ class ClsFrame(VisOnCommandFrame):
         self.box["values"] = vals
         self.box.current(len(vals) - 1)
 
-    def get(self, idx: Optional[int]=None):
+    def get(self, idx: Optional[int] = None):
         """Get index of selected element or element with given index"""
         if idx:
             return self.box["values"][idx]
         return self.box.current()
+
 
 class IgnoreFrame(VisOnCommandFrame):
     def __init__(self, parent: tk.Frame):
@@ -112,11 +138,13 @@ class WeightsFrame(VisOnCommandFrame):
     def fill(self, vals: list) -> None:
         """Fill Combobox with new values"""
         self.box["values"] = [""] + vals
+        self.box.current(0)  # TODO: remove threshold if new file selected
 
 
 class ThresholdFrame(VisOnCommandFrame):
     def __init__(self, parent: tk.Frame, wrapper):
-        super().__init__(parent, {"side": tk.BOTTOM, "fill": tk.X, "expand": True})
+        super().__init__(parent,
+                         {"side": tk.BOTTOM, "fill": tk.X, "expand": True})
 
         tk.Label(self.frame,
                  text="Ignore instances with weights below:").pack(
@@ -125,7 +153,7 @@ class ThresholdFrame(VisOnCommandFrame):
                    textvariable=wrapper.threshold,
                    validate='key',
                    validatecommand=(
-                   self.frame.register(self.validate_numeric), '%P')).pack(
+                       self.frame.register(self.validate_numeric), '%P')).pack(
             side=tk.RIGHT, expand=True, fill=tk.X)
 
     @staticmethod
@@ -137,6 +165,62 @@ class ThresholdFrame(VisOnCommandFrame):
             return float(val) >= 0.0
         except ValueError:
             return False
+
+
+class OutFrame:
+    def __init__(self, parent: tk.Frame, wrapper):
+        self.frame = tk.Frame(parent)
+        self.frame.pack(expand=True, fill=tk.X)
+        tk.Label(self.frame, text="Output specification", font=("", 11),
+                 pady=8).pack(side=tk.TOP, expand=True, fill=tk.X)
+        self.wrapper = wrapper
+
+        dir_frame = tk.Frame(self.frame)
+        dir_frame.pack(expand=True, fill=tk.X)
+        tk.Label(dir_frame, text="Output directory:").pack(side=tk.LEFT,
+                                                           expand=True,
+                                                           fill=tk.X)
+        self.button = tk.Button(dir_frame, text="Select directory",
+                                command=self.get_out_dir)
+        self.button.pack(side=tk.RIGHT, expand=True, fill=tk.X)
+
+        prefix_frame = tk.Frame(self.frame)
+        prefix_frame.pack(expand=True, fill=tk.X)
+        tk.Label(prefix_frame, text="Prefix for output:").pack(side=tk.LEFT,
+                                                               expand=True,
+                                                               fill=tk.X)
+        self.name = tk.Entry(prefix_frame, textvariable=wrapper.out_name)
+        # TODO: maybe default value
+        # out_name.insert(0, "am_output")
+        self.name.pack(side=tk.RIGHT, expand=True, fill=tk.X)
+        self.name.bind("<KeyRelease>", self.update_label_text)
+
+        self.label = tk.Label(self.frame,
+                              text="Results won't be saved automatically.",
+                              fg="red")
+        self.label.pack(side=tk.RIGHT, expand=True, fill=tk.X)
+
+    def update_label_text(self, _arg=None):
+        """Update text of label according to specified directory and name"""
+        name = self.wrapper.out_name.get()
+        if name:
+            self.wrapper.out = Path(self.wrapper.out_dir).resolve() / name
+            self.label.config(
+                text=f"Results will be saved to "
+                     f"{Path(self.wrapper.out_dir).name}/{name}_*",
+                fg="black")
+        else:
+            self.label.config(text="Results won't be saved automatically.",
+                              fg="red")
+
+    def get_out_dir(self):
+        tmp = filedialog.askdirectory(initialdir="./..")
+        if not tmp:
+            return
+
+        self.wrapper.out_dir = tmp
+        self.update_label_text()
+        self.button.configure(text=f"Selected: */{Path(tmp).name}/")
 
 
 class CountFrame:
@@ -169,13 +253,13 @@ class CheckboxFrames:
                        text="Drop duplicated instances",
                        variable=wrapper.drop_duplicates,
                        anchor="e").grid(padx=20)
-                       # pack(anchor="e", padx=30, **pack_config)
+        # pack(anchor="e", padx=30, **pack_config)
         tk.Checkbutton(first,
                        text="Keep test exemplar in training set",
                        onvalue=0,
                        offvalue=1,
                        anchor="w").grid(row=0, column=1, padx=80)
-                       # pack(anchor="w", padx=40, **pack_config)
+        # pack(anchor="w", padx=40, **pack_config)
 
         second = tk.Frame(parent)
         second.pack(expand=True, fill=tk.BOTH)
@@ -183,12 +267,12 @@ class CheckboxFrames:
                        text="Ignore attributes with unknown values",
                        variable=wrapper.ignore_unknowns,
                        anchor="e").grid(padx=20)
-                       # pack(padx=5, **pack_config)
+        # pack(padx=5, **pack_config)
         tk.Checkbutton(second,
                        text="Debug mode",
                        variable=wrapper.debug,
                        anchor="w").grid(row=0, column=1)
-                       # pack(**pack_config)
+        # pack(**pack_config)
 
 
 class StartFrame:
@@ -200,14 +284,15 @@ class StartFrame:
         frame = tk.Frame(parent)
         frame.pack(expand=True, fill=tk.X)
         self.start_button = tk.Button(frame, text="Run algorithm",
-                                 command=self.run)
+                                      command=self.run)
         self.start_button.pack(side=tk.TOP, expand=True, fill=tk.X)
         self.cancel_button = tk.Button(frame, text="Cancel", command=self.stop)
 
         self.pbar = ttk.Progressbar(frame, orient=tk.HORIZONTAL,
-                              mode="determinate")
+                                    mode="determinate")
         self.bar_label = tk.Label(frame,
-                             text="Creating output files...")  # TODO: no background
+                                  text="Creating output files...")  # TODO:
+        # no background
 
     def run(self):
         # runs in separate thread
@@ -245,6 +330,7 @@ class StartFrame:
             if isinstance(child, tk.Frame):
                 self.disable_all_but_cancel(child)
             child.bind("<Button>", "break")
+            child.bind("<Key>", "break")
 
     def enable_all(self, frame):
         """Re-enable all buttons"""
@@ -252,6 +338,7 @@ class StartFrame:
             if isinstance(child, tk.Frame):
                 self.enable_all(child)
             child.unbind("<Button>")
+            child.unbind("<Key>")
 
     def update_probressbar(self):
         """Update progressbar"""

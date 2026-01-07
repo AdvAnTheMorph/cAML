@@ -25,8 +25,8 @@ root = tk.Tk()
 #     window.geometry(f"{width}x{height}+{x}+{y}")
 
 root.title('Analogical Modeling')
-root.minsize(600, 600)
-root.geometry("300x300+50+50")
+root.minsize(600, 700)
+root.geometry("800x700+50+50")
 
 notebook = ttk.Notebook(root)
 notebook.pack(fill=tk.BOTH, expand=True)
@@ -38,10 +38,6 @@ tk.Label(main_tab, text="Configuration", font=("", 15)).pack(expand=True,
                                                              fill=tk.BOTH)
 
 wrapper = AMWrapper()
-
-create_analog = tk.BooleanVar()
-create_gangs = tk.BooleanVar()
-create_distr = tk.BooleanVar()
 
 
 class GUI:
@@ -110,7 +106,7 @@ class GUI:
 
     def vis_files(self, files):
         """Visualize tables"""
-        if create_gangs.get():
+        if outs.gangs.get():
             if not hasattr(root, "gangs"):
                 root.gangs = ttk.Frame(notebook)
                 notebook.add(root.gangs, text="Gang Effects")
@@ -119,7 +115,7 @@ class GUI:
                 self.clear_frame(root.gangs)
             self.make_table(root.gangs, files[0])
 
-        if create_analog.get():
+        if outs.analog.get():
             if not hasattr(root, "analog"):
                 root.analog = ttk.Frame(notebook)
                 notebook.add(root.analog, text="Analogical Sets")
@@ -128,7 +124,7 @@ class GUI:
                 self.clear_frame(root.analog)
             self.make_table(root.analog, files[1])
 
-        if create_distr.get():
+        if outs.distr.get():
             if not hasattr(root, "distr"):
                 root.distr = ttk.Frame(notebook)
                 notebook.add(root.distr, text="Distribution")
@@ -170,6 +166,7 @@ def get_lexicon():
 
     weights.fill(cols)
     weights.vis()
+    weights.threshold_frame.invis()  # as no weight column selected
 
 
 def get_testset():
@@ -184,29 +181,9 @@ def clear_test():
     test_button.configure(text="Select file")
 
 
-def update_name(_arg=None):
-    if wrapper.out_name.get():
-        wrapper.out = Path(wrapper.out_dir).resolve() / wrapper.out_name.get()
-        out_label.config(
-            text=f"Results will be saved to "
-                 f"{Path(wrapper.out_dir).name}/{out_name.get()}_*")
-    else:
-        out_label.config(text="Results won't be saved automatically.")
-
-
-def get_out_dir():
-    tmp = filedialog.askdirectory(initialdir="./..")
-    if not tmp:
-        return
-
-    wrapper.out_dir = tmp
-    update_name()
-    if wrapper.out_dir:
-        out_button.configure(text=f"Selected: */{Path(wrapper.out_dir).name}/")
-
-
 # Lexicon
 lex_spec_frame = tk.Frame(main_tab)
+tk.Label(lex_spec_frame, text="Data", font=("", 12), pady=10).pack()
 lex_spec_frame.pack(fill=tk.BOTH, expand=True)
 lex_frame = tk.Frame(lex_spec_frame)
 lex_frame.pack(expand=True, fill=tk.X)
@@ -232,42 +209,11 @@ test_button.pack(side=tk.RIGHT, expand=True, fill=tk.X)
 del_test_button = tk.Button(test_frame, text="Clear file", command=clear_test)
 
 # Output
-out_frame = tk.Frame(main_tab)
-out_frame.pack(expand=True, fill=tk.X)
-dir_frame = tk.Frame(out_frame)
-dir_frame.pack(expand=True, fill=tk.X)
-tk.Label(dir_frame, text="Output directory:").pack(side=tk.LEFT, expand=True,
-                                                   fill=tk.X)
-out_button = tk.Button(dir_frame, text="Select directory", command=get_out_dir)
-out_button.pack(side=tk.RIGHT, expand=True, fill=tk.X)
-prefix_frame = tk.Frame(out_frame)
-prefix_frame.pack(expand=True, fill=tk.X)
-tk.Label(prefix_frame, text="Prefix for output:").pack(side=tk.LEFT,
-                                                       expand=True,
-                                                       fill=tk.X)
-out_name = tk.Entry(prefix_frame, textvariable=wrapper.out_name)
-# TODO: maybe default value
-# out_name.insert(0, "am_output")
-out_name.pack(side=tk.RIGHT, expand=True, fill=tk.X)
-out_name.bind("<KeyRelease>", update_name)
-out_label = tk.Label(out_frame, text="Results won't be saved automatically.")
-out_label.pack(side=tk.RIGHT, expand=True, fill=tk.X)
+utils.OutFrame(main_tab, wrapper)
 
 ttk.Separator(main_tab, orient="horizontal").pack(expand=True, fill=tk.BOTH)
 
-df_frame = tk.Frame(main_tab)
-df_frame.pack(expand=True)
-tk.Label(df_frame, text="Create:").pack(side=tk.LEFT)
-gangs = tk.Checkbutton(df_frame, text="Gang effects", variable=create_gangs)
-gangs.select()
-gangs.pack(side=tk.LEFT)
-analogs = tk.Checkbutton(df_frame, text="Analogical sets",
-                         variable=create_analog)
-analogs.select()
-analogs.pack(side=tk.LEFT)
-distr = tk.Checkbutton(df_frame, text="Distributions", variable=create_distr)
-distr.select()
-distr.pack(side=tk.LEFT)
+outs = utils.OutputSelection(main_tab)
 
 ttk.Separator(main_tab, orient="horizontal").pack(expand=True, fill=tk.BOTH)
 
