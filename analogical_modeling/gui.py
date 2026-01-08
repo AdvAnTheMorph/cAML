@@ -1,5 +1,7 @@
 """Graphical user interface for analogical modeling."""
 
+import os
+import sys
 import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox
@@ -7,6 +9,8 @@ from tkinter import ttk, filedialog
 
 import pandas as pd
 
+am_path = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(am_path, '..'))
 from analogical_modeling.am.gui.aml_wrapper import AMWrapper
 import analogical_modeling.am.gui.gui_utils as utils
 from analogical_modeling.am.gui.vis import TableVisualization, \
