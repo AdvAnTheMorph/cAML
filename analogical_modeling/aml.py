@@ -3,6 +3,9 @@
 Implements the Analogical Modeling algorithm, invented by Royal Skousen.
 Analogical modeling is an instance-based algorithm designed to model human
 behavior.
+
+AnalogicalModeling.run_classifier() starts the algorithm. It calls
+AnalogicalModelling.classify() which does the actual classification.
 """
 
 import argparse
@@ -19,6 +22,7 @@ import pandas as pd
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from tqdm import tqdm
 
+# necessary for accessing analogical_modeling
 am_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(am_path, '..'))
 from analogical_modeling.am.data.gang_effect import GangEffect
@@ -147,6 +151,24 @@ class AnalogicalModeling:
                f"Drop duplicates: {self.drop_duplicates}, " \
                f"Ignore columns: {self.ignore_columns or '--'}"
 
+    def check_header(self, instances):
+        """Headers of lexicon and test data must be equal"""
+        class_column = self.training_instances.class_column_name()
+        l_header = self.training_instances.data.columns.tolist()
+        t_header = instances.data.columns.tolist()
+
+        # ignore the class column (might not be specified in test data)
+        if class_column in l_header:
+            l_header.remove(class_column)
+        if class_column in t_header:
+            t_header.remove(class_column)
+
+        if t_header != l_header:
+            raise HeaderMissmatchError(
+                f"Expected header is {l_header}, but test data header is "
+                f"{t_header}")
+
+    # actual classification part
     def classify(self, test_item: Instance) -> AMResults:
         """
         This method is where all of the action happens! Given a test item,
@@ -192,78 +214,6 @@ class AnalogicalModeling:
         # we save the results for use with AnalogicalModelingOutput
         return AMResults(lattice, sub_list, test_item, self.linear_count,
                          labeler)
-
-    def build_classifier(self, instances: Dataset):
-        """This is used to build the classifier; it specifies the
-        capabilities of the classifier and loads in exemplars to be used for
-        prediction. No actual analysis happens here because AM is a lazy
-        classifier."""
-
-        # remove instances with missing class value
-        instances.delete_with_missing_class()
-
-        self.cardinality = instances.num_counted_attributes()
-        logger.debug(f"Cardinality is {self.cardinality}")
-        # save instances for checking headers
-        self.training_instances = instances  # , 0, instances.num_attributes())
-
-        # create exemplars for actually running the classifier
-        self.training_exemplars = list(instances)
-
-    def update_classifier(self, instance: Instance):
-        """This is used to add more information to the classifier."""
-        self.check_header(instance)
-
-        if instance.is_missing(instance.get_class_index()):
-            return
-        self.training_instances.add(instance)
-        self.training_exemplars.append(instance)
-        logger.debug(f"Added instance: {instance}")
-
-    def distribution_for_instance(self, instance: Instance) -> dict[str, float]:
-        """Calculate class distribution for instance
-
-        :param instance: instance to predict
-        :return: mapping between classes and their selection probability for
-        the instance
-        """
-        # self.check_header(instance)
-
-        if len(self.training_instances) == 0:
-            raise RuntimeError("No training instances!")
-
-        if self.training_instances.num_classes() == 1:
-            logger.debug("Only one class in training data.")
-            # 100 percent likelihood of belonging to the one class
-            return {self.training_instances[0].class_value(): 1.0}
-
-        self.results = self.classify(instance)
-        return self.results.get_class_likelihood()
-
-    def get_results(self) -> AMResults:
-        """
-
-        :return: The classification results from the last call to
-        distribution_for_instance
-        :raises RuntimeError if you've never called distribution_for_instance
-        from this object
-        """
-        if self.results is None:
-            raise RuntimeError(
-                "Call distributionForInstance before calling this")
-        return self.results
-
-    def __str__(self) -> str:
-        """
-
-        :return: String containing name of the classifier and number of
-        training instances.
-        """
-        string = "Analogical Modeling Classifier (2025 Jasmin Wiese)\n"
-        if self.training_exemplars:
-            return string + (f"Training instances: "
-                             f"{len(self.training_exemplars)}\n")
-        return string
 
     def run_classifier(self, csv: PathLike | pd.DataFrame,
                        out_path: Optional[Path], test: str,
@@ -346,6 +296,93 @@ class AnalogicalModeling:
         # for GUI
         return acc, conf_matrix, files
 
+    def build_classifier(self, instances: Dataset):
+        """This is used to build the classifier; it specifies the
+        capabilities of the classifier and loads in exemplars to be used for
+        prediction. No actual analysis happens here because AM is a lazy
+        classifier."""
+
+        # remove instances with missing class value
+        instances.delete_with_missing_class()
+
+        self.cardinality = instances.num_counted_attributes()
+        logger.debug(f"Cardinality is {self.cardinality}")
+        # save instances for checking headers
+        self.training_instances = instances  # , 0, instances.num_attributes())
+
+        # create exemplars for actually running the classifier
+        self.training_exemplars = list(instances)
+
+    def distribution_for_instance(self, instance: Instance) -> dict[str, float]:
+        """Calculate class distribution for instance
+
+        :param instance: instance to predict
+        :return: mapping between classes and their selection probability for
+        the instance
+        """
+        # self.check_header(instance)
+
+        if len(self.training_instances) == 0:
+            raise RuntimeError("No training instances!")
+
+        if self.training_instances.num_classes() == 1:
+            logger.debug("Only one class in training data.")
+            # 100 percent likelihood of belonging to the one class
+            return {self.training_instances[0].class_value(): 1.0}
+
+        self.results = self.classify(instance)
+        return self.results.get_class_likelihood()
+
+    def get_results(self) -> AMResults:
+        """
+
+        :return: The classification results from the last call to
+        distribution_for_instance
+        :raises RuntimeError if you've never called distribution_for_instance
+        from this object
+        """
+        if self.results is None:
+            raise RuntimeError(
+                "Call distributionForInstance before calling this")
+        return self.results
+
+    @staticmethod
+    def evaluate(instances: Dataset, results: list[AMResults]) -> tuple[
+        float, ConfusionMatrixDisplay]:
+        """Calculate accuracy and plot confusion matrix
+
+        :param instances: dataset used for prediction
+        :param results: list of AMResults
+        :return: accuracy
+        """
+        # inaccurate in the case of ties
+        preds = [list(res.predicted_classes)[0] for res in results]
+        golds = [inst.class_value() for inst in instances]
+
+        correct = sum(
+            [inst.class_value() in res.predicted_classes
+             for inst, res in zip(instances, results)])
+        acc = correct / len(results)
+        cnf = confusion_matrix(golds, preds,
+                               labels=list(instances.get_classes()))
+        disp = ConfusionMatrixDisplay(cnf, display_labels=list(
+            instances.get_classes()))
+
+        return acc, disp
+
+    def __str__(self) -> str:
+        """
+
+        :return: String containing name of the classifier and number of
+        training instances.
+        """
+        string = "Analogical Modeling Classifier (2025 Jasmin Wiese)\n"
+        if self.training_exemplars:
+            return string + (f"Training instances: "
+                             f"{len(self.training_exemplars)}\n")
+        return string
+
+    # following methods for output files
     @staticmethod
     def create_headers(feats: pd.Index, classes: list) -> tuple[
         list, list, list]:
@@ -545,46 +582,15 @@ class AnalogicalModeling:
                   f"{out_distribution}.")
         return gang, analog, distr
 
-    @staticmethod
-    def evaluate(instances: Dataset, results: list[AMResults]) -> tuple[
-        float, ConfusionMatrixDisplay]:
-        """Calculate accuracy and plot confusion matrix
+    def update_classifier(self, instance: Instance):
+        """This is used to add more information to the classifier."""
+        self.check_header(instance)
 
-        :param instances: dataset used for prediction
-        :param results: list of AMResults
-        :return: accuracy
-        """
-        # inaccurate in the case of ties
-        preds = [list(res.predicted_classes)[0] for res in results]
-        golds = [inst.class_value() for inst in instances]
-
-        correct = sum(
-            [inst.class_value() in res.predicted_classes
-             for inst, res in zip(instances, results)])
-        acc = correct / len(results)
-        cnf = confusion_matrix(golds, preds,
-                               labels=list(instances.get_classes()))
-        disp = ConfusionMatrixDisplay(cnf, display_labels=list(
-            instances.get_classes()))
-
-        return acc, disp
-
-    def check_header(self, instances):
-        """Headers of lexicon and test data must be equal"""
-        class_column = self.training_instances.class_column_name()
-        l_header = self.training_instances.data.columns.tolist()
-        t_header = instances.data.columns.tolist()
-
-        # ignore the class column (might not be specified in test data)
-        if class_column in l_header:
-            l_header.remove(class_column)
-        if class_column in t_header:
-            t_header.remove(class_column)
-
-        if t_header != l_header:
-            raise HeaderMissmatchError(
-                f"Expected header is {l_header}, but test data header is "
-                f"{t_header}")
+        if instance.is_missing(instance.get_class_index()):
+            return
+        self.training_instances.add(instance)
+        self.training_exemplars.append(instance)
+        logger.debug(f"Added instance: {instance}")
 
 
 if __name__ == "__main__":
@@ -619,9 +625,10 @@ if __name__ == "__main__":
                         default="variable",
                         help="Method of dealing with missing data. The options "
                              "are 'variable', 'match' or 'mismatch'; "
-                             "'variable' means to treat missing data as a all "
-                             "one variable, 'match' means that missing data "
-                             "will be considered the same as whatever it is "
+                             "'variable' means to treat missing data as all "
+                             "one variable (matching only missing values), "
+                             "'match' means that missing data will be "
+                             "considered the same as whatever it is "
                              "compared with, and 'mismatch' means that "
                              "missing data will always be unequal to "
                              "whatever it is compared with. Default is "
@@ -638,6 +645,7 @@ if __name__ == "__main__":
     if args.debug:
         logger.setLevel(logging.DEBUG)
 
+    # setting all values
     am = AnalogicalModeling()
     am.set_linear_count(args.linear)
     am.set_remove_test_exemplar(args.keep_test)
@@ -646,6 +654,8 @@ if __name__ == "__main__":
     am.set_drop_duplicates(args.drop_duplicates)
     am.set_ignore_columns(args.ignore_columns)
     am.threshold = args.threshold
+
+    # running actual algorithm
     try:
         _, matrix, _ = am.run_classifier(args.lexicon,
                                          args.output,
