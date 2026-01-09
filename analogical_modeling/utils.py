@@ -122,20 +122,25 @@ class Dataset:
 
         return self
 
-    def set_weights_by_column(self, weights_column: str) -> list:
+    def set_weights_by_column(self, name: str) -> list:
         """Set instance weights
 
         The weights column is then dropped from the dataset.
 
-        :param weights_column: name of column with weights, if given
+        :param name: name of column with weights, if given
         """
         # remove weights from dataset, as they are no features
-        if weights_column:
+        # TODO: make sure that column numerical
+        if name:
             try:
-                weights = self.data[weights_column].tolist()
-                self.data.drop(columns=[weights_column], inplace=True)
+                col = self.data[name]
+                if pd.api.types.is_numeric_dtype(col):
+                    weights = col.tolist()
+                    self.data.drop(columns=[name], inplace=True)
+                else:
+                    sys.exit(f"Column {name} does not contain numeric data.")
             except KeyError:
-                sys.exit(f"Column '{weights_column}' not found in dataset.")
+                sys.exit(f"Column '{name}' not found in dataset.")
         else:
             weights = [1] * self.data.shape[0]
         return weights
