@@ -351,12 +351,15 @@ class AnalogicalModeling:
         float, ConfusionMatrixDisplay]:
         """Calculate accuracy and plot confusion matrix
 
+        The confusion matrix can be inaccurate, as it does not
+        consider ties.
+
         :param instances: dataset used for prediction
         :param results: list of AMResults
         :return: accuracy
         """
         # inaccurate in the case of ties
-        preds = [list(res.predicted_classes)[0] for res in results]
+        preds = ["".join(res.predicted_classes) for res in results]
         golds = [inst.class_value() for inst in instances]
 
         correct = sum(
@@ -662,6 +665,8 @@ if __name__ == "__main__":
                                          args.test, args.weight_colum)
         if matrix:
             matrix.plot()
+            plt.xlabel("Predicted label\nTies are excluded from the plot")
+            plt.tight_layout()
             plt.show()
     except Exception as e:
         logger.exception(e)

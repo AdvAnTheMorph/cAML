@@ -42,6 +42,8 @@ class MatrixVisualization:
 
         fig, ax = plt.subplots()
         matrix.plot(ax=ax)
+        ax.set(xlabel="Predicted label\nTies are excluded from the plot")
+        fig.tight_layout()
         canvas = FigureCanvasTkAgg(fig, master=self.frame)
         canvas.draw()
         canvas.get_tk_widget().pack(side='left', fill='both', expand=True)
