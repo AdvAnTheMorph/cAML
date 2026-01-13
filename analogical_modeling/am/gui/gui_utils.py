@@ -254,11 +254,14 @@ class CheckboxFrames:
                        variable=wrapper.drop_duplicates,
                        anchor="e").grid(padx=20)
         # pack(anchor="e", padx=30, **pack_config)
-        tk.Checkbutton(first,
+        b = tk.Checkbutton(first,
                        text="Keep test exemplar in training set",
                        onvalue=0,
                        offvalue=1,
-                       anchor="w").grid(row=0, column=1, padx=80)
+                       anchor="w",
+                       variable=wrapper.keep_test)
+        b.grid(row=0, column=1)
+        b.deselect()
         # pack(anchor="w", padx=40, **pack_config)
 
         second = tk.Frame(parent)
