@@ -37,6 +37,8 @@ class AMWrapper:
         self.res = None
         self.queue = Queue()
 
+        self.exit_reason = None
+
     def adjust_data_to_class_idx(self):
         """Permute lexicon such that class column comes last"""
         data = pd.read_csv(self.lexicon)
@@ -83,14 +85,19 @@ class AMWrapper:
 
     def run(self) -> None:
         """Run AML"""
-        lex = self.adjust_data_to_class_idx()
-        self.res = self.am.run_classifier(lex,
-                                          self.out or None,
-                                          self.testset,
-                                          self.weights)
+        try:
+            lex = self.adjust_data_to_class_idx()
+            self.res = self.am.run_classifier(lex,
+                                              self.out or None,
+                                              self.testset,
+                                              self.weights)
+        except Exception as e:
+            self.exit_reason = e
 
     def run_in_thread(self) -> str:
         """Run AML in separate thread"""
+        self.exit_reason = None
+
         self.am.set_linear_count(self.linear.get())
         self.am.set_remove_test_exemplar(self.keep_test.get())
         self.am.set_ignore_unknowns(self.ignore_unknowns.get())

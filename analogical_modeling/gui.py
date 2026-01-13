@@ -3,6 +3,7 @@
 import os
 import sys
 import tkinter as tk
+import traceback
 from pathlib import Path
 from tkinter import messagebox
 from tkinter import ttk, filedialog
@@ -16,7 +17,14 @@ import analogical_modeling.am.gui.gui_utils as utils
 from analogical_modeling.am.gui.vis import TableVisualization, \
     MatrixVisualization
 
-root = tk.Tk()
+class CustomTk(tk.Tk):
+    # FIXME: not all exceptions are worth catching, just those of aml
+    def report_callback_exception(self, exc, val, tb):
+        tk.messagebox.showerror("Exception occured",
+                                f"{traceback.format_exception_only(exc, val)}\nProcess will continue if possible")
+
+
+root = CustomTk()
 
 # def center_window(window):
 #     window.update_idletasks()
@@ -99,7 +107,7 @@ class GUI:
             # Update existing tab
             self.clear_frame(root.conf_mat_tab)
         result_label = tk.Label(root.conf_mat_tab,
-                                text=f"Accuracy: {acc * 100}%")
+                                text=f"Accuracy: {round(acc * 100, 2)}%")
         result_label.pack()
         MatrixVisualization(root.conf_mat_tab, matrix, wrapper.out)
 
@@ -187,7 +195,6 @@ def clear_test():
 
 # Lexicon
 lex_spec_frame = tk.Frame(main_tab)
-tk.Label(lex_spec_frame, text="Data", font=("", 12), pady=10).pack()
 lex_spec_frame.pack(fill=tk.BOTH, expand=True)
 lex_frame = tk.Frame(lex_spec_frame)
 lex_frame.pack(expand=True, fill=tk.X)
@@ -221,7 +228,7 @@ outs = utils.OutputSelection(main_tab)
 
 ttk.Separator(main_tab, orient="horizontal").pack(expand=True, fill=tk.BOTH)
 
-tk.Label(main_tab, text="Additional Options", pady=10, font=("", 12)).pack(
+tk.Label(main_tab, text="Additional Options", pady=10, font=("", 13)).pack(
     expand=True,
     fill=tk.X)
 
