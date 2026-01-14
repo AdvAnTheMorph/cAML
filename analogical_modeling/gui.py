@@ -3,7 +3,6 @@
 import os
 import sys
 import tkinter as tk
-import traceback
 from pathlib import Path
 from tkinter import messagebox
 from tkinter import ttk, filedialog
@@ -17,14 +16,7 @@ import analogical_modeling.am.gui.gui_utils as utils
 from analogical_modeling.am.gui.vis import TableVisualization, \
     MatrixVisualization
 
-class CustomTk(tk.Tk):
-    # FIXME: not all exceptions are worth catching, just those of aml
-    def report_callback_exception(self, exc, val, tb):
-        tk.messagebox.showerror("Exception occured",
-                                f"{traceback.format_exception_only(exc, val)}\nProcess will continue if possible")
-
-
-root = CustomTk()
+root = tk.Tk()
 
 # def center_window(window):
 #     window.update_idletasks()
@@ -90,8 +82,18 @@ class GUI:
         """Plot matrix and output files"""
         acc, matrix, files = wrapper.res
         if matrix is not None:
-            self.vis_matrix(matrix, acc)
-        self.vis_files(files)
+            try:
+                self.vis_matrix(matrix, acc)
+            except Exception as e:
+                messagebox.showerror("An error occurred",
+                                     f"The Matrix could not be displayed due "
+                                     f"to \n{e}")
+        try:
+            self.vis_files(files)
+        except Exception as e:
+            messagebox.showerror("An error occurred",
+                                 f"The output files could not be displayed "
+                                 f"due to \n{e}")
 
     @staticmethod
     def clear_frame(frame):
@@ -172,7 +174,7 @@ def get_lexicon():
     cls.fill(cols)
     cls.vis()
 
-    ignored.clear()   # remove old elements
+    ignored.clear()  # remove old elements
     ignored.fill(cols)  # refill
     ignored.vis()
 
@@ -246,6 +248,9 @@ mdc_selection = ttk.Combobox(mdc_frame,
                              textvariable=wrapper.mdc, state="readonly")
 mdc_selection.current(2)
 mdc_selection.pack(side=tk.LEFT, expand=True)
+utils.ToolTip(mdc_selection,
+              "The strategy to use when comparing missing attribute values "
+              "\nwith other values while filling subcontexts and supracontexts")
 
 # rest
 rest_frame = tk.Frame(main_tab)

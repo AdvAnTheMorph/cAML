@@ -107,7 +107,7 @@ class AMWrapper:
         self.am.threshold = self.threshold.get()
         self.am.gui_queue = self.queue = Queue()
 
-        if self.debug:
+        if self.debug.get():
             logger.setLevel(logging.DEBUG)
         else:
             logger.setLevel(logging.INFO)

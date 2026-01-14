@@ -3,3 +3,4 @@ pandastable
 scikit-learn
 matplotlib
 tqdm
+TkToolTip
