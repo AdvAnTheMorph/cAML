@@ -20,17 +20,17 @@ class HeterogeneousLattice(Lattice):
     main differences:
 
     - Only a part of an exemplar's features are used to assign lattice
-    locations.
+      locations.
     - No supracontext is ever determined to be heterogeneous. This is, of
-    course, less efficient in some ways.
+      course, less efficient in some ways.
 
     Inefficiencies brought about by not eliminating heterogeneous supracontexts
     and by having to combine sublattices are a compromise to the alternative,
     using a single lattice for any size exemplars. Remember that the underlying
-    structure of a lattice is an array of size 2^n, n being the size of the
+    structure of a lattice is an array of size :math:`2^n`, n being the size of the
     exemplars contained. So if the exemplars are 20 features long, a single
-    lattice would be 2^20 or 1M elements long. On the other hand, if the
-    exemplars are split in 4, then 4 sublattices of size 2^5, or 32, can be used
+    lattice would be :math:`2^{20}` or 1M elements long. On the other hand, if the
+    exemplars are split in 4, then 4 sublattices of size :math:`2^5`, or 32, can be used
     instead, making for close to 100,000 times less memory used.
 
     In terms of processing power, more is required to use sublattices. However,
@@ -43,7 +43,7 @@ class HeterogeneousLattice(Lattice):
         Supracontexts, as well as the empty and the heterogeneous supracontexts.
 
         :param partition_index: which label partition to use in assigning
-        subcontexts to supracontexts
+            subcontexts to supracontexts
         """
         self.partition_index: int = partition_index
         # Lattice is a 2^n array of Supracontexts
@@ -132,7 +132,7 @@ class HeterogeneousLattice(Lattice):
         """
 
         :return: the list of supracontexts that were created by filling the
-        supracontextual lattice. From this, you can compute the analogical set.
+            supracontextual lattice. From this, you can compute the analogical set
         """
         sup_list = set()
         supra = self.empty_supracontext.next
@@ -146,7 +146,7 @@ class HeterogeneousLattice(Lattice):
         """
 
         :return: string representation of the list of Supracontexts created
-        when the Lattice was filled
+            when the Lattice was filled
         """
         supra = self.empty_supracontext.next
         if supra == self.empty_supracontext:

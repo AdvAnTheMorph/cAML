@@ -39,11 +39,10 @@ class DistributedLattice(Lattice):
 
     def fill(self, sub_list: SubcontextList):
         """
-        The number of sub-lattices is determined via Labeler.num_partitions()
-        sub_list.get_labeler().num_partitions().
+        The number of sub-lattices is determined via `sub_list.labeler.num_partitions()`.
 
         :param sub_list: list of Subcontexts to add to the lattice
-        :raises: ValueError if the lattice was already filled
+        :raises ValueError: if the lattice was already filled
         """
         if self.filled:
             raise ValueError(
@@ -97,7 +96,7 @@ class DistributedLattice(Lattice):
         and run in several threads.
 
         :param supra_product_constructor: the constructor of the task which will
-        produce the product of one supracontext with a set of supracontexts
+            produce the product of one supracontext with a set of supracontexts
         """
         results = []
 
@@ -158,7 +157,7 @@ class IntermediateProduct:
         :param supra1: first partial supracontext to combine
         :param supra2: second partial supracontext to combine
         :return: A new partial supracontext, or None if it would have been
-        empty.
+            empty.
         """
         if len(supra1.get_data()) > len(supra2.get_data()):
             larger = supra1.get_data()
@@ -203,7 +202,7 @@ class FinalizingProduct:
         :param supra1: first partial supracontext to combine
         :param supra2: second partial supracontext to combine
         :return: a combined supracontext, or None if supra1 and supra2 had no
-        data in common or if the new supracontext is heterogeneous
+            data in common or if the new supracontext is heterogeneous
         """
         if len(supra1.get_data()) > len(supra2.get_data()):
             larger = supra1.get_data()

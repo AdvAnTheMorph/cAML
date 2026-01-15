@@ -82,7 +82,7 @@ class BasicSupra(Supracontext):
         """
 
         :return: String representation of this supracontext in this form:
-                 "[" count "x" sub1.toString() "," sub2.toString() ... "]"
+                 `"[" count "x" sub1.toString() "," sub2.toString() ... "]"`
         """
         if self.is_empty():
             return "[EMPTY]"

@@ -11,7 +11,7 @@ class Label:
         bitset.
 
         :param l: Label instance or set whose set bits represent mismatches and
-        clear bits represent matches
+            clear bits represent matches
         :param c: cardinality of the label
         """
         if isinstance(l, Label):
@@ -98,6 +98,7 @@ class Label:
         "mismatch" entries, but with one or more of the "match" entries changed
         into a "mismatch" entry. For example, the children of
         {match, mismatch, mismatch, match} are:
+
         - {mismatch, mismatch, mismatch, match}
         - {match, mismatch, mismatch, mismatch}
         - {mismatch, mismatch, mismatch, mismatch}

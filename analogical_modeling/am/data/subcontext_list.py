@@ -31,7 +31,7 @@ class SubcontextList:
         :param labeler: Labeler for assigning labels to items in data
         :param data: Training data (exemplars)
         :param ignore_full_matches: if true, will not add entirely matching
-        contexts
+            contexts
         """
         self.label_to_subcontext: dict[Label, Subcontext] = {}
         self.labeler: Labeler = labeler

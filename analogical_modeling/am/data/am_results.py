@@ -42,13 +42,13 @@ class AMResults:
         """
 
         :param lattice: filled lattice, which contains the data for calculating
-        the analogical set
+            the analogical set
         :param sub_list: list of subcontexts
         :param test_item: exemplar being classified
         :param linear: True if counting of pointers should be done linearly;
-        False if quadratically
+            False if quadratically
         :param labeler: labeler that was used to assign contextual labels;
-        this is made available for printing purposes
+            this is made available for printing purposes
         """
         # The exemplar whose class is being predicted by this set
         self.classified_exemplar: Instance = test_item
@@ -104,11 +104,11 @@ class AMResults:
         """See page 392 of the red book.
 
         :param supracontexts: List of Supracontexts created by filling the
-        supracontextual lattice
+            supracontextual lattice
         :param linear: True if pointer counting should be done linearly; False
-        if it should be done quadratically
+            if it should be done quadratically
         :return: mapping of each exemplar to the number of pointers pointing
-        to it.
+            to it.
         """
         pointers: dict[Instance, float] = defaultdict(float)
 
@@ -158,7 +158,7 @@ class AMResults:
         """
 
         :return: mapping between a class value index the number of pointers
-        pointing to it
+            pointing to it
         """
         return self.class_pointers
 
@@ -180,7 +180,7 @@ class AMResults:
         """
 
         :return: all subcontexts contained in all the supracontexts of the
-        analogical set.
+            analogical set.
         """
         return {data for supra in self.get_supra_list()
                 for data in supra.get_data()}
@@ -189,7 +189,7 @@ class AMResults:
         """
 
         :return: gang effects, sorted by size of the effect and then
-        alphabetically by the subcontext display label
+            alphabetically by the subcontext display label
         """
         effects = [GangEffect(sub, self.exemplar_pointers)
                    for sub in self.get_subcontexts()]

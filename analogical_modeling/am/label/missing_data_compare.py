@@ -21,9 +21,9 @@ class MissingDataCompare(Enum):
         """
 
         :param option_string: The string required to choose this comparison
-        strategy from the command line
+            strategy from the command line
         :param description: A description of the comparison strategy for the
-        given value
+            given value
         """
         # string used on command line to indicate the use of this strategy
         self.option_string = option_string
@@ -40,7 +40,7 @@ class MissingDataCompare(Enum):
         :param i2: second instance
         :param idx: index of attribute to be compared between the two instances
         :return: True if the attributes match, False if they do not; the
-        matching mechanism depends on the chosen algorithm.
+            matching mechanism depends on the chosen algorithm.
         """
         if self is self.MATCH:
             return True  # matches anything

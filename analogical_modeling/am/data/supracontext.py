@@ -38,7 +38,7 @@ class Supracontext(ABC):
         """
 
         :return: an unmodifiable view of the set of subcontexts contained in
-        this supracontext.
+            this supracontext.
         """
 
     @abstractmethod
@@ -53,7 +53,7 @@ class Supracontext(ABC):
         """
 
         :return: True if this supracontext contains no subcontexts; False
-        otherwise.
+            otherwise.
         """
 
     @property
@@ -62,7 +62,7 @@ class Supracontext(ABC):
         """
 
         :return: the number of copies of this supracontext contained in the
-        lattice
+            lattice
         """
 
     @count.setter
@@ -85,8 +85,9 @@ class Supracontext(ABC):
 
 	    The running time for this default implementation is linear in the
 	    number of contained subcontexts.
+
         :return: The context for this supracontext, or None if the subcontexts
-        are empty
+            are empty
         """
         return reduce(lambda x, y: x.intersect(y),
                       [subcontext.label for subcontext in self.get_data()])

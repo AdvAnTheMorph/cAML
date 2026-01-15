@@ -28,7 +28,7 @@ class Labeler:
 
         :param test: instance being classified; used to label other instances
         :param ignore_unknowns: True if attributes with undefined values in the
-        test item should be ignored during labeling; False otherwise
+            test item should be ignored during labeling; False otherwise
         :param mdc: specifies how to compare missing attributes
         """
         self.mdc = mdc
@@ -51,7 +51,7 @@ class Labeler:
         """
 
         :return: cardinality of the generated labels, or how many instance
-        attributes are considered during labeling.
+            attributes are considered during labeling.
         """
         return self.test_instance.num_attributes() - len(self.ignore_set) - 1
 
@@ -63,7 +63,7 @@ class Labeler:
 
         :param index: index of the attribute being queried
         :return: True if the given attribute is ignored during labeling;
-        False otherwise.
+            False otherwise.
         """
         return index in self.ignore_set
 
@@ -190,22 +190,24 @@ class Labeler:
 
         In distributed processing, it is necessary to split labels into
         partitions. A full label is partitioned into pieces 0 through
-        num_partitions(), so code to process labels in pieces should look
+        `num_partitions()`, so code to process labels in pieces should look
         like this::
 
-        my_label = MyLabeler.label(my_instance);
-        for i in MyLabeler.num_partitions():
-            process(MyLabeler.partition(my_label, i))
+        .. code-block:: python
+
+            my_label = MyLabeler.label(my_instance);
+            for i in MyLabeler.num_partitions():
+                process(MyLabeler.partition(my_label, i))
 
 
         :param label: Label to create partitions for
         :param partition_index:  index of the partition to return
         :return: a new label representing a portion of the attributes
-        represented by the input label
-        :raises: ValueError if the partitionIndex is greater than
-        num_partitions() or less than zero.
-        :raises: ValueError if the input label is not compatible with this
-        labeler.
+            represented by the input label
+        :raises ValueError: if the partitionIndex is greater than
+            `num_partitions` or less than zero.
+        :raises ValueError: if the input label is not compatible with this
+            labeler.
         """
         if partition_index > self.num_partitions() or partition_index < 0:
             raise ValueError(f"Illegal partition index: {partition_index}")
@@ -235,7 +237,7 @@ class Labeler:
         overridable by child classes.
 
         :return: array of partitions indicating how labels can be split
-        into partitions
+            into partitions
         """
         spans = [Partition(0, 0) for _ in range(self.num_partitions())]
         span_size = floor(self.get_cardinality() / self.num_partitions())

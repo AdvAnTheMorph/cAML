@@ -4,9 +4,11 @@ Supracontext which includes outcome ("classification") and determines
 heterogeneity
 
 - homogeneous if
-a) deterministic
-b) non-deterministic, but all occurrences occur within only one of its
-subcontexts
+
+  a) deterministic
+  b) non-deterministic, but all occurrences occur within only one of its
+     subcontexts
+
 - heterogeneous otherwise
 """
 
@@ -70,10 +72,10 @@ class ClassifiedSupra(Supracontext):
     def is_heterogeneous(self) -> bool:
         """
         Determine if the supracontext is heterogeneous, meaning that
-        get_outcome() returns am_utils.HETEROGENEOUS.
+        `self.outcome` equals `am_utils.HETEROGENEOUS`.
 
         :return: True if the supracontext is heterogeneous, False if it is
-        homogeneous.
+            homogeneous.
         """
         return self.outcome == am_utils.HETEROGENEOUS
 
@@ -83,7 +85,7 @@ class ClassifiedSupra(Supracontext):
 
         :param other: subcontext to hypothetically add
         :return: True if adding the given subcontext would cause this
-        supracontext to become heterogeneous.
+            supracontext to become heterogeneous.
         """
         # Heterogeneous if:
         # - there are subcontexts with different outcomes

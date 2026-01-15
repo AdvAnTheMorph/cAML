@@ -69,7 +69,7 @@ class LinkedLatticeNode(Supracontext):
         If this reaches 0, then this Supracontext should be discarded
         (by the caller).
 
-        :raises: ValueError if the count is already zero
+        :raises ValueError: if the count is already zero
         """
         if self.supra.count <= 0:
             raise ValueError('Count cannot be less than zero.')

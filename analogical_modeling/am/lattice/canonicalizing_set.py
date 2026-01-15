@@ -23,7 +23,7 @@ class CanonicalizingSet:
         """
 
         :return: None if t is not contained in the set; otherwise the object
-        contained in the set for which t == the_object is true.
+            contained in the set for which t == the_object is true.
         """
         return self.__backing_map.get(t)
 

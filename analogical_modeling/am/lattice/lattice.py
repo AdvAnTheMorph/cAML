@@ -14,7 +14,7 @@ class Lattice(ABC):
         """Fill the lattice with given subcontexts. This is meant to be done
         only once for a given Lattice instance.
 
-        :raises: ValueError if the lattice was already filled
+        :raises ValueError: if the lattice was already filled
         """
 
     @abstractmethod
@@ -22,5 +22,5 @@ class Lattice(ABC):
         """
 
         :return: the list of supracontexts that were created by filling the
-        supracontextual lattice. From this, you can compute the analogical set.
+            supracontextual lattice. From this, you can compute the analogical set.
         """

@@ -22,7 +22,7 @@ class BasicLattice(Lattice):
 
     def __init__(self):
         """
-        Initializes Supracontextual lattice to a 2^n length array of
+        Initializes Supracontextual lattice to a `2^n` length array of
         Supracontexts, as well as the empty and heterogeneous supracontexts.
         """
         # points to nothing, has no data or outcome
@@ -40,7 +40,7 @@ class BasicLattice(Lattice):
         """Fill the lattice with given subcontexts. This is meant to be done
         only once for a given Lattice instance.
 
-        :raises: ValueError if the lattice was already filled
+        :raises ValueError: if the lattice was already filled
         """
         if self.filled:
             raise ValueError(

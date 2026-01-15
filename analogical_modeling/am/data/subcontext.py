@@ -14,7 +14,7 @@ class Subcontext:
     Represents a subcontext, containing a list of Instances which belong to
     it, along with their shared Label and common outcome.
     If the contained instances do not have the same outcome, then the outcome is
-    set to am_utils.NONDETERMINISTIC.
+    set to `am_utils.NONDETERMINISTIC`.
     """
     SEED = 37
 
@@ -23,7 +23,7 @@ class Subcontext:
 
         :param label: Binary label of the subcontext
         :param display_label: user-friendly label string
-        Labeler.get_context_string(Label)
+            `Labeler.get_context_string(Label)`
         """
         self.label: Label = label
         self.display_label: str = display_label
@@ -35,7 +35,7 @@ class Subcontext:
         """Add an exemplar to the subcontext and set the outcome accordingly.
 
         If different outcomes are present in the contained exemplars, the
-        outcome is am_utils.NONDETERMINISTIC
+        outcome is `am_utils.NONDETERMINISTIC`
         """
         if len(self.data) > 0:
             if other.class_value() != next(iter(self.data)).class_value():
