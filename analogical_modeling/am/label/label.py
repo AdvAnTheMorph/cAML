@@ -64,7 +64,7 @@ class Label:
         return Label(bits, self.card)
 
     def all_matching(self) -> bool:
-        """Check whether all attributes match"""
+        """Check whether all attributes match."""
         return len(self.label_bits) == 0
 
     def __repr__(self):
@@ -106,7 +106,7 @@ class Label:
         return SubsetIterator(self)
 
     def is_descendant_of(self, possible_ancestor: 'Label') -> bool:
-        """Determine if this label is the "descendant" of possible_ancestor.
+        """Determine if this label is the "descendant" of `possible_ancestor`.
 
         This label is a descendant of the other label if every mismatching
         entry in the other label is also a mismatching entry in this label.
@@ -126,7 +126,7 @@ class Label:
 
 
 class SubsetIterator:
-    """Construct an iterator over all subsets of this label"""
+    """Construct an iterator over all subsets of this label."""
 
     def __init__(self, bitset_label: Label):
         self.card = bitset_label.card

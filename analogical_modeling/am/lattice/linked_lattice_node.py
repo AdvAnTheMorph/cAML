@@ -20,7 +20,7 @@ class LinkedLatticeNode(Supracontext):
         """Create a new node containing the given supracontext. The index is
         set to -1.
 
-        :param supra: Supracontext to store in this node.
+        :param supra: Supracontext to store in this node
         """
         #  the wrapped supracontext
         self.supra = supra
@@ -64,7 +64,7 @@ class LinkedLatticeNode(Supracontext):
         self.supra.count += 1
 
     def decrement_count(self) -> None:
-        """Decreases the count by one
+        """Decreases the count by one.
 
         If this reaches 0, then this Supracontext should be discarded
         (by the caller).
@@ -76,13 +76,13 @@ class LinkedLatticeNode(Supracontext):
         self.supra.count -= 1
 
     def get_supracontext(self) -> T:
-        """Return supracontext"""
+        """Return supracontext."""
         return self.supra
 
     def copy(self) -> Supracontext:
         """Return an exact, deep copy of the supracontext.
 
-        :return: a deep copy of this supracontext.
+        :return: deep copy of this supracontext
         """
         new_supra = self.get_supracontext().copy()
         new_node = LinkedLatticeNode(new_supra, self.index)
@@ -91,15 +91,15 @@ class LinkedLatticeNode(Supracontext):
 
     # Below methods are delegated to the contained supracontext
     def add(self, other: Subcontext) -> None:
-        """Add subcontext to contained supracontext"""
+        """Add subcontext to contained supracontext."""
         self.supra.add(other)
 
     def get_data(self) -> set[Subcontext]:
-        """Get data of contained supracontext"""
+        """Get data of contained supracontext."""
         return self.supra.get_data()
 
     def is_empty(self) -> bool:
-        """Check if contained supracontext is empty"""
+        """Check if contained supracontext is empty."""
         return self.supra.is_empty()
 
     @property

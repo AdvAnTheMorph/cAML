@@ -27,11 +27,11 @@ class HeterogeneousLattice(Lattice):
     Inefficiencies brought about by not eliminating heterogeneous supracontexts
     and by having to combine sublattices are a compromise to the alternative,
     using a single lattice for any size exemplars. Remember that the underlying
-    structure of a lattice is an array of size :math:`2^n`, n being the size of the
-    exemplars contained. So if the exemplars are 20 features long, a single
-    lattice would be :math:`2^{20}` or 1M elements long. On the other hand, if the
-    exemplars are split in 4, then 4 sublattices of size :math:`2^5`, or 32, can be used
-    instead, making for close to 100,000 times less memory used.
+    structure of a lattice is an array of size :math:`2^n`, n being the size of
+    the exemplars contained. So if the exemplars are 20 features long, a single
+    lattice would be :math:`2^{20}` or 1M elements long. On the other hand, if
+    the exemplars are split in 4, then 4 sublattices of size :math:`2^5`, or 32,
+    can be used instead, making for close to 100,000 times less memory used.
 
     In terms of processing power, more is required to use sublattices. However,
     using threads the processing of each can be done in parallel.
@@ -39,7 +39,7 @@ class HeterogeneousLattice(Lattice):
 
     def __init__(self, partition_index: int):
         """
-        Initializes Supracontextual lattice to a 2^n length array of
+        Initializes Supracontextual lattice to a :math:`2^n` length array of
         Supracontexts, as well as the empty and the heterogeneous supracontexts.
 
         :param partition_index: which label partition to use in assigning
@@ -60,7 +60,7 @@ class HeterogeneousLattice(Lattice):
         """Fill the lattice with given subcontexts. This is meant to be done
         only once for a given Lattice instance.
 
-        :raises: ValueError if the lattice was already filled
+        :raises ValueError: if the lattice was already filled
         """
         if self.filled:
             raise ValueError(
@@ -74,7 +74,7 @@ class HeterogeneousLattice(Lattice):
             self.insert(sub, labeler.partition(sub.label, self.partition_index))
 
     def insert(self, sub: Subcontext, label: Label) -> None:
-        """Inserts sub into the lattice, into location given by label
+        """Insert sub into the lattice, into location given by label.
 
         :param sub: Subcontext to be inserted
         :param label: label to be assigned to the subcontext
@@ -87,7 +87,7 @@ class HeterogeneousLattice(Lattice):
         self.clean_supra()
 
     def add_to_context(self, sub: Subcontext, label: Label) -> None:
-        """Add the given subcontext to the supracontext with the given label"""
+        """Add the given subcontext to the supracontext with the given label."""
         # the default value is the empty supracontext (leave None until now to
         # save time/space)
         if label not in self.lattice:
@@ -111,7 +111,7 @@ class HeterogeneousLattice(Lattice):
                                                                        self.index)
 
     def clean_supra(self) -> None:
-        """Cycles through the supracontexts and deletes ones with count 0"""
+        """Cycle through the supracontexts and delete all with count 0."""
         supra = self.empty_supracontext
         while supra.next != self.empty_supracontext:
             if supra.next.count == 0:
@@ -122,7 +122,7 @@ class HeterogeneousLattice(Lattice):
         assert self.no_zero_supras()
 
     def no_zero_supras(self) -> bool:
-        """Check for presence of supracontexts with count 0"""
+        """Check for presence of supracontexts with count 0."""
         for supra in self.get_supracontexts():
             if supra.count == 0:
                 return False
@@ -131,8 +131,9 @@ class HeterogeneousLattice(Lattice):
     def get_supracontexts(self) -> set[Supracontext]:
         """
 
-        :return: the list of supracontexts that were created by filling the
-            supracontextual lattice. From this, you can compute the analogical set
+        :return: List of supracontexts that were created by filling the
+            supracontextual lattice. From this, you can compute the analogical
+            set
         """
         sup_list = set()
         supra = self.empty_supracontext.next

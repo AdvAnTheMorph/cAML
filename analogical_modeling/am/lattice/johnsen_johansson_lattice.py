@@ -5,39 +5,42 @@ Johansson, DOI 10.1007/978-3-540-30586-6_77.
 
 Terminology from the paper is as follows:
 
-- $p$: the subcontext whose count is being approximated
-- $size(p)$: the size of the subcontext $p$; or, the number of 0's in its label
-- $\mathcal{H}(p)$: the sets found by intersecting $p$ with any subcontext that
-  has a different outcome; the labels of such intersections
-- $max(p)$: the cardinality of the union of all $x\in\mathcal{H}(p)$;
+- :math:`p`: the subcontext whose count is being approximated
+- :math:`size(p)`: the size of the subcontext :math:`p`; or, the number of 0's
+  in its label
+- :math:`\mathcal{H}(p)`: the sets found by intersecting :math:`p` with any
+  subcontext that has a different outcome; the labels of such intersections
+- :math:`max(p)`: the cardinality of the union of all :math:`x\in\mathcal{H}(p)`;
   the number of 0's in the union of the labels of all subcontexts in
-  $\mathcal{H}(p)$</li>
-- $\mathcal{H}_{limit(p)}$: the heterogeneous elements under $p$ in the lattice
-- $min(p)$: the size of the largest child of $p$; or, the number of 0's in the
-  label of the subcontext whose label has the most 0's and matches all the 1's
-  in $p$'s label.
+  :math:`\mathcal{H}(p)`
+- :math:`\mathcal{H}_{limit(p)}`: the heterogeneous elements under :math:`p`
+  in the lattice
+- :math:`min(p)`: the size of the largest child of :math:`p`; or, the number of
+  0's in the label of the subcontext whose label has the most 0's and matches
+  all the 1's in :math:`p`'s label.
 
 We estimate the count of each subcontext by randomly unioning sets of
-subcontexts from $\{x_s\}$ and checking for heterogeneity (union means OR'ing
-labels). The count of a subcontext $p$ is the size of its power set minus the
-heterogeneous elements in this set (or $|\wp(p)| - |\mathcal{H}_{limit(p)}|$).
-We use these bounds in approximating $|\mathcal{H}_{limit(p)}|$:
+subcontexts from :math:`\{x_s\}` and checking for heterogeneity (union means
+OR'ing labels). The count of a subcontext :math:`p` is the size of its power
+set minus the heterogeneous elements in this set
+(or :math:`|\wp(p)| - |\mathcal{H}_{limit(p)}|`).
+We use these bounds in approximating :math:`|\mathcal{H}_{limit(p)}|`:
 
-- lower bound ($lb(p)$): the cardinality of the powerset of $min(p)$.
-- upper bound ($ub(p)$): $\sum_{k=1}^{min(p)}{max(p)\choose k}$
+- lower bound (:math:`lb(p)`): the cardinality of the powerset of :math:`min(p)`.
+- upper bound (:math:`ub(p)`): :math:`\sum_{k=1}^{min(p)}{max(p)\choose k}`
 
-The estimate $\hat{h}_p$ of $|\mathcal{H}_{limit(p)}|$ is computed by
-sampling random sets of subcontexts ${x_s}$ and combining them with :
+The estimate :math:`\hat{h}_p` of :math:`|\mathcal{H}_{limit(p)}|` is computed
+by sampling random sets of subcontexts :math:`{x_s}` and combining them with:
 
-$\frac{|\{x_s \in \mathcal{H}(p)|}{|\{x_s\}|}=\frac{\hat{h}_p}{ub(p)}$
+:math:`\frac{|\{x_s \in \mathcal{H}(p)|}{|\{x_s\}|}=\frac{\hat{h}_p}{ub(p)}`
 
 or
 
-$\hat{h}_p = \frac{ub(p)|x_s\in \mathcal{H}(p)|}{|\{x_s\}|}$
+:math:`\hat{h}_p = \frac{ub(p)|x_s\in \mathcal{H}(p)|}{|\{x_s\}|}`
 
 
 TODO: maybe if H(p) is small enough we could do exact counting with
-include-exclude
+      include-exclude
 """
 
 import concurrent.futures
@@ -100,7 +103,7 @@ class SupraApproximator():
     def approximate_supra(self, p: Subcontext,
                           outcome_sub_map: dict[
                               float, list[Label]]) -> Supracontext:
-        """Approximate supracontext"""
+        """Approximate supracontext."""
         p_label = p.label
         # H(p) is p intersected with labels of any subcontexts with a
         # different class, or all other sub labels if p is non-deterministic
@@ -142,7 +145,7 @@ class SupraApproximator():
 
     def estimate_hetero_ratio(self, hp: list[Label], hp_union: Label,
                               num_experiments: int) -> float:
-        """Estimate heterogeneous ratio"""
+        """Estimate heterogeneous ratio."""
         hetero_count = 0
         cache: dict[Label, bool] = {}
 
@@ -178,13 +181,55 @@ class SupraApproximator():
 
 
 class JohnsenJohanssonLattice(Lattice):
-    """Lattice for high cardinality data"""
+    r"""Lattice for high cardinality data.
+
+    The approximation algorithm from "Efficient Modeling of Analogy", Johnsen
+    and Johansson, DOI 10.1007/978-3-540-30586-6_77.
+
+    Terminology from the paper is as follows:
+
+    - :math:`p`: the subcontext whose count is being approximated
+    - :math:`size(p)`: the size of the subcontext :math:`p`; or, the number of
+      0's in its label
+    - :math:`\mathcal{H}(p)`: the sets found by intersecting :math:`p` with any
+      subcontext that has a different outcome; the labels of such intersections
+    - :math:`max(p)`: the cardinality of the union of all
+      :math:`x\in\mathcal{H}(p)`;
+      the number of 0's in the union of the labels of all subcontexts in
+      :math:`\mathcal{H}(p)`
+    - :math:`\mathcal{H}_{limit(p)}`: the heterogeneous elements under :math:`p`
+      in the lattice
+    - :math:`min(p)`: the size of the largest child of :math:`p`; or, the number
+      of 0's in the label of the subcontext whose label has the most 0's and
+      matches all the 1's in :math:`p`'s label.
+
+    We estimate the count of each subcontext by randomly unioning sets of
+    subcontexts from :math:`\{x_s\}` and checking for heterogeneity (union means
+    OR'ing labels). The count of a subcontext :math:`p` is the size of its power
+    set minus the heterogeneous elements in this set
+    (or :math:`|\wp(p)| - |\mathcal{H}_{limit(p)}|`).
+    We use these bounds in approximating :math:`|\mathcal{H}_{limit(p)}|`:
+
+    - lower bound (:math:`lb(p)`): the cardinality of the powerset of
+      :math:`min(p)`.
+    - upper bound (:math:`ub(p)`): :math:`\sum_{k=1}^{min(p)}{max(p)\choose k}`
+
+    The estimate :math:`\hat{h}_p` of :math:`|\mathcal{H}_{limit(p)}|` is
+    computed by sampling random sets of subcontexts :math:`{x_s}` and combining
+    them with:
+
+    :math:`\frac{|\{x_s \in \mathcal{H}(p)|}{|\{x_s\}|}=\frac{\hat{h}_p}{ub(p)}`
+
+    or
+
+    :math:`\hat{h}_p = \frac{ub(p)|x_s\in \mathcal{H}(p)|}{|\{x_s\}|}`
+    """
 
     def __init__(self, random_provider: Callable[[], random.Random]):
         """
 
-        :param random_provider: Provides randomness used for performing Monte
-        Carlo simulation in child threads
+        :param random_provider: provides randomness used for performing Monte
+            Carlo simulation in child threads
         """
         # TODO: should run until convergence, not a constant number of times
         self.supras = set()
@@ -196,7 +241,7 @@ class JohnsenJohanssonLattice(Lattice):
         """Fill the lattice with given subcontexts. This is meant to be done
         only once for a given Lattice instance.
 
-        :raises: ValueError if the lattice was already filled
+        :raises ValueError: if the lattice was already filled
         """
         if self.filled:
             raise ValueError(
@@ -221,7 +266,8 @@ class JohnsenJohanssonLattice(Lattice):
     def get_supracontexts(self):
         """
 
-        :return: the list of supracontexts that were created by filling the
-        supracontextual lattice. From this, you can compute the analogical set.
+        :return: List of supracontexts that were created by filling the
+            supracontextual lattice. From this, you can compute the analogical
+            set.
         """
         return self.supras

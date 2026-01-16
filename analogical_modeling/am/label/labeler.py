@@ -47,11 +47,11 @@ class Labeler:
         self.partitioners = [Partitioner(spans[i])
                              for i in range(self.num_partitions())]
 
-    def get_cardinality(self):
+    def get_cardinality(self) -> int:
         """
 
         :return: cardinality of the generated labels, or how many instance
-            attributes are considered during labeling.
+            attributes are considered during labeling
         """
         return self.test_instance.num_attributes() - len(self.ignore_set) - 1
 
@@ -59,7 +59,7 @@ class Labeler:
         """Check if the attribute at the given index is ignored during labeling.
 
         The default behavior is to ignore the attributes with unknown values in
-        the test instance if get_ignore_unknowns() is True.
+        the test instance if :any:`self.ignore_unknowns` is True.
 
         :param index: index of the attribute being queried
         :return: True if the given attribute is ignored during labeling;
@@ -72,8 +72,8 @@ class Labeler:
         the test instance.
 
         The cardinality of the label will be the same as the test and data
-        items. At any given index i, label.matches(i) will return True if that
-        feature is the same in the test and data instances.
+        items. At any given index i, `label.Label.matches(i)` will return True
+        if that feature is the same in the test and data instances.
 
         :param data: instance to be labeled
         :return: the label for the context that the instance belongs to
@@ -104,17 +104,16 @@ class Labeler:
             index += 1
         return Label(label, self.get_cardinality())
 
-    def get_context_string(self, label: Label):
-        """
-        Returns a string representing the context. If the input test instance
-        attributes are "A C D Z R", and the label is 00101, then the return
-        string will be "A C * Z *".
+    def get_context_string(self, label: Label) -> str:
+        r"""Returns a string representing the context. If the input test
+        instance attributes are "A C D Z R", and the label is 00101, then the
+        return string will be "A C \* Z \*".
         """
         context_list = self.get_context_list(label, "*")
         return " ".join(map(str, context_list))
 
     def get_context_list(self, label: Label, mismatch_string: str) -> list[str]:
-        """Returns a list representing the context.
+        """Return a list representing the context.
 
         If the input test instance attributes are "A C D Z R", the label is
         00101, and the mismatch_string is "*", then the return list will be
@@ -136,13 +135,13 @@ class Labeler:
 
     def get_instance_atts_string(self, instance: Instance,
                                  att_delimiter: str) -> str:
-        """Returns a string containing the attributes of the input instance
+        """Return a string containing the attributes of the input instance
         (minus the class attribute and ignored attributes)."""
         atts = self.get_instance_atts_values_list(instance)
         return att_delimiter.join(atts)
 
     def get_instance_atts_values_list(self, instance: Instance) -> list[str]:
-        """Returns a list containing the attributes of the input instance
+        """Return a list containing the attributes of the input instance
         (minus the class attribute and ignored attributes)."""
         atts = []
         for i in range(instance.num_attributes()):
@@ -151,7 +150,7 @@ class Labeler:
             atts.append(str(instance[i]))
         return atts
 
-    def get_lattice_top(self):
+    def get_lattice_top(self) -> Label:
         """
         Creates and returns the label which belongs at the top of the boolean
         lattice formed by the subcontexts labeled by this labeler, i.e. the one
@@ -161,7 +160,7 @@ class Labeler:
 	    """
         return Label(set(), self.get_cardinality())
 
-    def get_lattice_bottom(self):
+    def get_lattice_bottom(self) -> Label:
         """
         Creates and returns the label which belongs at the bottom of the boolean
 	    lattice formed by the subcontexts labeled by this labeler, i.e. the one
@@ -173,9 +172,9 @@ class Labeler:
 
         return Label(bottom, self.get_cardinality())
 
-    def from_bits(self, label_bits: int):
+    def from_bits(self, label_bits: int) -> Label:
         """For testing purposes, this method allows the client to directly
-        specify the label using the bits of an integer"""
+        specify the label using the bits of an integer."""
         bits = set()
         index = 0
         while label_bits != 0:
@@ -186,28 +185,25 @@ class Labeler:
         return Label(bits, self.get_cardinality())
 
     def partition(self, label: Label, partition_index: int) -> Label:
-        """Create partition for given label
+        """Create partition for given label.
 
         In distributed processing, it is necessary to split labels into
         partitions. A full label is partitioned into pieces 0 through
-        `num_partitions()`, so code to process labels in pieces should look
+        :func:`num_partitions`, so code to process labels in pieces should look
         like this::
-
-        .. code-block:: python
 
             my_label = MyLabeler.label(my_instance);
             for i in MyLabeler.num_partitions():
                 process(MyLabeler.partition(my_label, i))
 
-
         :param label: Label to create partitions for
-        :param partition_index:  index of the partition to return
+        :param partition_index: index of the partition to return
         :return: a new label representing a portion of the attributes
             represented by the input label
         :raises ValueError: if the partitionIndex is greater than
-            `num_partitions` or less than zero.
+            :func:`num_partitions` or less than zero
         :raises ValueError: if the input label is not compatible with this
-            labeler.
+            labeler
         """
         if partition_index > self.num_partitions() or partition_index < 0:
             raise ValueError(f"Illegal partition index: {partition_index}")
@@ -273,7 +269,7 @@ class Partition:
 
 
 class Partitioner:
-    """class for storing label partitions"""
+    """Class for storing label partitions."""
 
     def __init__(self, s: Partition):
         self.start_index = s.start_index

@@ -17,7 +17,7 @@ class SubcontextList:
     a set of previously classified exemplars and an exemplar to be classified.
 
     After creating a list of subcontexts, iterate through the subcontexts using
-    the Iterator returned by iterator().
+    the Iterator returned by :func:`__iter__`.
     """
 
     # TODO: why use an iterator, instead of just returning a list?
@@ -29,7 +29,7 @@ class SubcontextList:
         subcontexts given classified exemplars and an exemplar to be classified.
 
         :param labeler: Labeler for assigning labels to items in data
-        :param data: Training data (exemplars)
+        :param data: training data (exemplars)
         :param ignore_full_matches: if true, will not add entirely matching
             contexts
         """
@@ -44,11 +44,11 @@ class SubcontextList:
             self.add(se)
 
     def get_cardinality(self) -> int:
-        """Get the number of attributes used to predict an outcome"""
+        """Get the number of attributes used to predict an outcome."""
         return self.labeler.get_cardinality()
 
     def add(self, exemplar: Instance):
-        """Add an exemplar"""
+        """Add an exemplar."""
         label = self.labeler.label(exemplar)
 
         if self.ignore_full_matches and label.all_matching():
@@ -61,10 +61,10 @@ class SubcontextList:
         self.label_to_subcontext[label].add(exemplar)
         self.considered_exemplar_count += 1
 
-    def add_all(self, data: Iterable[Instance]):
-        """Adds the exemplars to the correct subcontexts.
+    def add_all(self, data: Iterable[Instance]) -> None:
+        """Add the exemplars to the correct subcontexts.
 
-        :param data: Exemplars to add
+        :param data: exemplars to add
         """
         for d in data:
             self.add(d)
@@ -97,7 +97,7 @@ class SubcontextList:
     def __iter__(self):
         """
 
-        :return: An iterator which returns each of the contained subcontexts.
+        :return: iterator which returns each of the contained subcontexts
         """
         yield from self.label_to_subcontext.values()
 

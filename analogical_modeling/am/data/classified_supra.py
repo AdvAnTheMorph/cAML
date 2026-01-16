@@ -32,13 +32,14 @@ class ClassifiedSupra(Supracontext):
 
     def __init__(self, data: Optional[set] = None, count: Optional[int] = None):
         """Creates a supracontext with no data. The outcome will be
-        am_utils.UNKNOWN until data is added.
+        `am_utils.UNKNOWN` until data is added.
 
         If parameters are given:
         Creates a new supracontext with the given parameters as the contents.
-        :param data: The subcontexts contained in the supracontext
-        :param count: The count of this supracontext
-        :raises: ValueError if data XOR count is None, or count is less than 0
+
+        :param data: subcontexts contained in the supracontext
+        :param count: count of this supracontext
+        :raises ValueError: if data XOR count is None, or count is less than 0
         """
         if data is None and count is not None:
             raise ValueError("data must not be None")
@@ -72,10 +73,10 @@ class ClassifiedSupra(Supracontext):
     def is_heterogeneous(self) -> bool:
         """
         Determine if the supracontext is heterogeneous, meaning that
-        `self.outcome` equals `am_utils.HETEROGENEOUS`.
+        :any:`self.outcome` equals `am_utils.HETEROGENEOUS`.
 
         :return: True if the supracontext is heterogeneous, False if it is
-            homogeneous.
+            homogeneous
         """
         return self.outcome == am_utils.HETEROGENEOUS
 
@@ -85,7 +86,7 @@ class ClassifiedSupra(Supracontext):
 
         :param other: subcontext to hypothetically add
         :return: True if adding the given subcontext would cause this
-            supracontext to become heterogeneous.
+            supracontext to become heterogeneous
         """
         # Heterogeneous if:
         # - there are subcontexts with different outcomes

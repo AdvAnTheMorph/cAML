@@ -1,7 +1,7 @@
 """Supracontext
 
 For each subset of variables in a given context, determine occurrences in
-dataset
+dataset.
 """
 
 from abc import ABC, abstractmethod
@@ -30,7 +30,7 @@ class Supracontext(ABC):
         The new object should be an instance of the same class as the calling
         object.
 
-        :return: a deep copy of this supracontext.
+        :return: a deep copy of this supracontext
         """
 
     @abstractmethod
@@ -38,14 +38,14 @@ class Supracontext(ABC):
         """
 
         :return: an unmodifiable view of the set of subcontexts contained in
-            this supracontext.
+            this supracontext
         """
 
     @abstractmethod
     def add(self, other: Subcontext) -> None:
         """Add a subcontext to this supracontext.
 
-        :param other: subcontext to add to the supracontext.
+        :param other: subcontext to add to the supracontext
         """
 
     @abstractmethod
@@ -53,7 +53,7 @@ class Supracontext(ABC):
         """
 
         :return: True if this supracontext contains no subcontexts; False
-            otherwise.
+            otherwise
         """
 
     @property
@@ -71,7 +71,7 @@ class Supracontext(ABC):
         """Set the count of the supracontext.
 
         :param count: the count
-        :raises: ValueError if the count is None or less than zero.
+        :raises ValueError: if the count is None or less than zero
         """
 
     @abstractmethod
@@ -86,7 +86,7 @@ class Supracontext(ABC):
 	    The running time for this default implementation is linear in the
 	    number of contained subcontexts.
 
-        :return: The context for this supracontext, or None if the subcontexts
+        :return: context for this supracontext, or None if the subcontexts
             are empty
         """
         return reduce(lambda x, y: x.intersect(y),

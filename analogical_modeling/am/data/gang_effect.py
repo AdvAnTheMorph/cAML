@@ -1,6 +1,6 @@
 """GangEffect
 
-Effect of exemplars in a subcontext on the predicted outcome
+Effect of exemplars in a subcontext on the predicted outcome.
 """
 
 from collections import defaultdict

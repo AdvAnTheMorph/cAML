@@ -1,6 +1,6 @@
 """Lattice Factory
 
-Creates suitable lattice based on cardinality
+Creates suitable lattice based on cardinality.
 """
 
 import random
@@ -27,7 +27,7 @@ class LatticeFactory(ABC):
 
 
 class CardinalityBasedLatticeFactory(LatticeFactory):
-    """Chooses the lattice implementation based on the cardinality of
+    """Choose the lattice implementation based on the cardinality of
 	   the instances in the subcontext list."""
 
     def __init__(self, cardinality: int, num_partitions: int,

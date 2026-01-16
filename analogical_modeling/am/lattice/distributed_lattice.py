@@ -15,7 +15,7 @@ from analogical_modeling.am.lattice.lattice import Lattice
 T = TypeVar('T')
 
 def merge_counts(s1: T, s2: T) -> T:
-    """Merge supracontext counts"""
+    """Merge supracontext counts."""
     s1.count += s2.count
     return s1
 
@@ -39,7 +39,8 @@ class DistributedLattice(Lattice):
 
     def fill(self, sub_list: SubcontextList):
         """
-        The number of sub-lattices is determined via `sub_list.labeler.num_partitions()`.
+        The number of sub-lattices is determined via
+        :func:`sub_list.labeler.num_partitions`.
 
         :param sub_list: list of Subcontexts to add to the lattice
         :raises ValueError: if the lattice was already filled
@@ -116,7 +117,7 @@ class DistributedLattice(Lattice):
 
     @staticmethod
     def remove_duplicate_results(supras1: CanonicalizingSet,
-                                 supras2: CanonicalizingSet):
+                                 supras2: CanonicalizingSet) -> CanonicalizingSet:
         """
         Find duplicate supracontexts in supras1 and supras2 and return a single
         set of supracontexts with the combined counts from both sets.
@@ -156,8 +157,7 @@ class IntermediateProduct:
 
         :param supra1: first partial supracontext to combine
         :param supra2: second partial supracontext to combine
-        :return: A new partial supracontext, or None if it would have been
-            empty.
+        :return: new partial supracontext, or None if it would have been empty
         """
         if len(supra1.get_data()) > len(supra2.get_data()):
             larger = supra1.get_data()

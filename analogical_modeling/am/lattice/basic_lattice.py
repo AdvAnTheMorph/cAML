@@ -22,7 +22,7 @@ class BasicLattice(Lattice):
 
     def __init__(self):
         """
-        Initializes Supracontextual lattice to a `2^n` length array of
+        Initializes Supracontextual lattice to a :math:`2^n` length array of
         Supracontexts, as well as the empty and heterogeneous supracontexts.
         """
         # points to nothing, has no data or outcome
@@ -51,7 +51,7 @@ class BasicLattice(Lattice):
             self.index += 1
             self.insert(sub)
 
-    def insert(self, sub: Subcontext):
+    def insert(self, sub: Subcontext) -> None:
         """Insert sub into the lattice.
 
         :param sub: Subcontext to be inserted
@@ -69,7 +69,7 @@ class BasicLattice(Lattice):
         # remove supracontexts with count = 0 after every pass
         self.clean_supra()
 
-    def add_to_context(self, sub: Subcontext, label: Label):
+    def add_to_context(self, sub: Subcontext, label: Label) -> None:
         """
 
         :param sub: subcontext to be added
@@ -108,7 +108,7 @@ class BasicLattice(Lattice):
                                                                        self.index)
 
     def clean_supra(self):
-        """Cycles through the supracontexts and deletes ones with count 0"""
+        """Cycle through the supracontexts and delete all with count 0."""
         supra = self.empty_supracontext
         while supra.next != self.empty_supracontext:
             if supra.next.count == 0:
@@ -120,8 +120,9 @@ class BasicLattice(Lattice):
     def get_supracontexts(self) -> set:
         """
 
-        :return: the list of supracontexts that were created by filling the
-        supracontextual lattice. From this, you can compute the analogical set.
+        :return: List of supracontexts that were created by filling the
+            supracontextual lattice. From this, you can compute the analogical
+            set.
         """
         sup_list = set()
         supra = self.empty_supracontext.next
@@ -139,7 +140,7 @@ class BasicLattice(Lattice):
         ])
 
     def no_zero_supras(self):
-        """Check for presence of supracontexts with count 0"""
+        """Check for presence of supracontexts with count 0."""
         for supra in self.get_supracontexts():
             if supra.count == 0:
                 return False

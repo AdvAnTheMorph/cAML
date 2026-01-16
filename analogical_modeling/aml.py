@@ -4,8 +4,8 @@ Implements the Analogical Modeling algorithm, invented by Royal Skousen.
 Analogical modeling is an instance-based algorithm designed to model human
 behavior.
 
-AnalogicalModeling.run_classifier() starts the algorithm. It calls
-AnalogicalModelling.classify() which does the actual classification.
+:func:`AnalogicalModeling.run_classifier` starts the algorithm. It calls
+:func:`AnalogicalModelling.classify` which does the actual classification.
 """
 
 import argparse
@@ -50,7 +50,15 @@ class HeaderMissmatchError(Exception):
 
 
 class AnalogicalModeling:
-    """Analogical modeling algorithm."""
+    """Implementation of the Analogical Modeling algorithm, invented by Royal
+    Skousen.
+
+    Analogical modeling is an instance-based algorithm designed to model human
+    behavior.
+
+    :func:`~AnalogicalModeling.run_classifier` starts the algorithm. It calls
+    :func:`~AnalogicalModelling.classify` which does the actual classification.
+    """
 
     def __init__(self):
         # The training instances used for classification.
@@ -86,36 +94,34 @@ class AnalogicalModeling:
         self.cancel_event = False
         self.gui_queue = None
 
-    def set_linear_count(self, linear: bool):
+    def set_linear_count(self, linear: bool) -> None:
         """
 
         :param linear: True if counting of pointers should be linear; false
-        if quadratic.
-        :return:
+            if quadratic
         """
         self.linear_count = linear
 
-    def set_ignore_unknowns(self, ignore_unknowns: bool):
+    def set_ignore_unknowns(self, ignore_unknowns: bool) -> None:
         self.ignore_unknowns = ignore_unknowns
 
-    def set_remove_test_exemplar(self, remove_test_exemplar: bool):
+    def set_remove_test_exemplar(self, remove_test_exemplar: bool) -> None:
         """
 
         :param remove_test_exemplar: True if we should remove a test instance
-        from training before predicting its outcome
-        :return:
+            from training before predicting its outcome
         """
         self.remove_test_exemplar = remove_test_exemplar
 
-    def set_drop_duplicates(self, drop_duplicates: bool):
+    def set_drop_duplicates(self, drop_duplicates: bool) -> None:
         self.drop_duplicates = drop_duplicates
 
-    def set_ignore_columns(self, ignore_list: list[str]):
+    def set_ignore_columns(self, ignore_list: list[str]) -> None:
         self.ignore_columns = ignore_list
 
     @property
     def threshold(self) -> float:
-        """Get minimum weight threshold for instances to be considered"""
+        """Get minimum weight threshold for instances to be considered."""
         return self._threshold
 
     @threshold.setter
@@ -125,8 +131,8 @@ class AnalogicalModeling:
             return
         self._threshold = max(threshold, 0.0)  # no negative thresholds
 
-    def set_missing_data_compare(self, new_mode: str):
-        """Set method to deal with missing data"""
+    def set_missing_data_compare(self, new_mode: str) -> None:
+        """Set method to deal with missing data."""
         match new_mode:
             case "match":
                 self.mdc = MissingDataCompare.MATCH
@@ -135,15 +141,15 @@ class AnalogicalModeling:
             case _:
                 self.mdc = MissingDataCompare.VARIABLE
 
-    def set_random_provider(self, random_provider: Random):
+    def set_random_provider(self, random_provider: Random) -> None:
         """Provide the source of randomness for algorithms that require it
-        (e.g. JohnsenJohanssonLattice).
+        (e.g. `JohnsenJohanssonLattice`).
 
         The provider must be thread-safe."""
         self.random_provider = random_provider
 
-    def get_options(self):
-        """Return options of the algorithm"""
+    def get_options(self) -> str:
+        """Return options of the algorithm."""
         return f"Linear: {self.linear_count}, " \
                f"Remove test exemplars: {self.remove_test_exemplar}, " \
                f"Ignore unknown values: {self.ignore_unknowns}, " \
@@ -151,8 +157,11 @@ class AnalogicalModeling:
                f"Drop duplicates: {self.drop_duplicates}, " \
                f"Ignore columns: {self.ignore_columns or '--'}"
 
-    def check_header(self, instances):
-        """Headers of lexicon and test data must be equal"""
+    def check_header(self, instances) -> None:
+        """Headers of lexicon and test data must be equal.
+
+        :raises HeaderMismatchError: if headers don't match
+        """
         class_column = self.training_instances.class_column_name()
         l_header = self.training_instances.data.columns.tolist()
         t_header = instances.data.columns.tolist()
@@ -171,25 +180,21 @@ class AnalogicalModeling:
     # actual classification part
     def classify(self, test_item: Instance) -> AMResults:
         """
-        This method is where all of the action happens! Given a test item,
+        This method is where all the action happens! Given a test item,
         it uses existing exemplars to assign outcome probabilities to it.
 
         Note that this method sets the results variable without any
         synchronization.
         This means that if you want to print results from multiple calls
         to this method, you should not call it in parallel. If you want
-        to make multiple classify() calls in parallel, you should
+        to make multiple :func:`classify` calls in parallel, you should
         create multiple classifier instances. This sort of parallelism
         for large-cardinality datasets is inadvisable, anyway, since a
-        single classifier instance will attempt to saturate all of the
-        available CPUs.
+        single classifier instance will attempt to saturate all available CPUs.
 
-        :param test_item: Item to make context base on
+        :param test_item: item to make context base on
         :return: Analogical set which holds results of the classification
-        for the given item
-        :raises: RuntimeError if execution is rejected for some reason
-        # @throws InterruptedException If any thread is interrupted for
-        any reason (user presses ctrl-C, etc.)
+            for the given item
         """
         logger.debug(f"Classifying {test_item}")
         labeler = Labeler(test_item, self.ignore_unknowns, self.mdc)
@@ -219,7 +224,7 @@ class AnalogicalModeling:
                        out_path: Optional[Path], test: str,
                        weights: str) -> tuple[
         Optional[float], Optional[ConfusionMatrixDisplay], tuple]:
-        """runs the classifier instance with the given options.
+        """Run the classifier instance with the given options.
 
         :param csv: lexicon
         :param out_path: where to save output files
@@ -318,7 +323,7 @@ class AnalogicalModeling:
 
         :param instance: instance to predict
         :return: mapping between classes and their selection probability for
-        the instance
+            the instance
         """
         # self.check_header(instance)
 
@@ -336,10 +341,10 @@ class AnalogicalModeling:
     def get_results(self) -> AMResults:
         """
 
-        :return: The classification results from the last call to
-        distribution_for_instance
-        :raises RuntimeError if you've never called distribution_for_instance
-        from this object
+        :return: classification results from the last call to
+            :func:`distribution_for_instance`
+        :raises RuntimeError: if you've never called
+            :func:`distribution_for_instance` from this object
         """
         if self.results is None:
             raise RuntimeError(
@@ -349,14 +354,14 @@ class AnalogicalModeling:
     @staticmethod
     def evaluate(instances: Dataset, results: list[AMResults]) -> tuple[
         float, ConfusionMatrixDisplay]:
-        """Calculate accuracy and plot confusion matrix
+        """Calculate accuracy and plot confusion matrix.
 
         The confusion matrix can be inaccurate, as it does not
         consider ties.
 
         :param instances: dataset used for prediction
         :param results: list of AMResults
-        :return: accuracy
+        :return: accuracy and confusion matrix
         """
         # inaccurate in the case of ties
         preds = ["".join(res.predicted_classes) for res in results]
@@ -377,7 +382,7 @@ class AnalogicalModeling:
         """
 
         :return: String containing name of the classifier and number of
-        training instances.
+            training instances
         """
         string = "Analogical Modeling Classifier (2025 Jasmin Wiese)\n"
         if self.training_exemplars:
@@ -389,11 +394,11 @@ class AnalogicalModeling:
     @staticmethod
     def create_headers(feats: pd.Index, classes: list) -> tuple[
         list, list, list]:
-        """Create headers for output files
+        """Create headers for output files.
 
         :param feats: attributes
         :param classes: possible class values
-        :return:
+        :return: headers for gang effects, analogical sets and distributions
         """
 
         feats_list = feats.tolist()
@@ -425,7 +430,7 @@ class AnalogicalModeling:
     @staticmethod
     def create_gangs(effects: Iterable[GangEffect], classified: Instance,
                      classes: Iterable[str], idx: int) -> list:
-        """Create list of gang effects for output
+        """Create list of gang effects for output.
 
         :param effects: Gang effects for classified instance
         :param classified: instance for which to store gang effects
@@ -470,7 +475,7 @@ class AnalogicalModeling:
     @staticmethod
     def create_analogical_set(res: AMResults, classified: Instance,
                               idx: int) -> list:
-        """Create list of analogical sets for output
+        """Create list of analogical sets for output.
 
         :param res: result of AnalogicalModeling
         :param classified: instance for which to create analogical sets
@@ -492,7 +497,7 @@ class AnalogicalModeling:
     def create_distribution(self, res: AMResults, classified: Instance,
                             classes: list[str], idx: int,
                             instances: Dataset) -> list:
-        """Create list of distribution information for output
+        """Create list of distribution information for output.
 
         :param res: result of AnalogicalModeling
         :param classified: instance for which to create distribution
@@ -530,7 +535,7 @@ class AnalogicalModeling:
 
     def create_output_files(self, dest: Path, results: list[AMResults],
                             instances: Dataset) -> tuple:
-        """Store information on analogical sets, gang effects and distributions
+        """Store information on analogical sets, gang effects and distributions.
 
         :param dest: start name for output files
         :param results: list of AMResults

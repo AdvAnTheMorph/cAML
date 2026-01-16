@@ -15,13 +15,13 @@ from analogical_modeling.utils import Instance
 
 
 class PointerCountingStrategy(Enum):
-    """Enum specifying possible counting strategies"""
+    """Enum specifying possible counting strategies."""
     LINEAR = 1
     QUADRATIC = 2
 
 
 class Judgement(Enum):
-    """Enum specifying the classification outcome"""
+    """Enum specifying the classification outcome."""
     # Only the correct class was predicted
     CORRECT = "correct"
     # The correct class and others were tied in the prediction
@@ -108,7 +108,7 @@ class AMResults:
         :param linear: True if pointer counting should be done linearly; False
             if it should be done quadratically
         :return: mapping of each exemplar to the number of pointers pointing
-            to it.
+            to it
         """
         pointers: dict[Instance, float] = defaultdict(float)
 
@@ -157,7 +157,7 @@ class AMResults:
     def get_class_pointers(self) -> dict[str, int]:
         """
 
-        :return: mapping between a class value index the number of pointers
+        :return: mapping between a class value index and the number of pointers
             pointing to it
         """
         return self.class_pointers
@@ -172,7 +172,7 @@ class AMResults:
     def get_supra_list(self) -> frozenset[Supracontext]:
         """
 
-        :return: supracontexts that comprise the analogical set.
+        :return: supracontexts that comprise the analogical set
         """
         return frozenset(self.supra_list)
 
@@ -180,7 +180,7 @@ class AMResults:
         """
 
         :return: all subcontexts contained in all the supracontexts of the
-            analogical set.
+            analogical set
         """
         return {data for supra in self.get_supra_list()
                 for data in supra.get_data()}
@@ -197,10 +197,10 @@ class AMResults:
             -e.total_pointers, e.subcontext.display_label))
 
     def get_expected_class_name(self) -> str:
-        """Return actual class"""
+        """Return actual class."""
         return self.classified_exemplar.class_value()
 
-    def get_judgement(self):
+    def get_judgement(self) -> Judgement:
         """
 
         :return: judgement of the prediction

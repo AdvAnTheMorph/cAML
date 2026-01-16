@@ -1,4 +1,4 @@
-"""Specification of how to handle missing data"""
+"""Specification of how to handle missing data."""
 
 from enum import Enum
 
@@ -40,7 +40,7 @@ class MissingDataCompare(Enum):
         :param i2: second instance
         :param idx: index of attribute to be compared between the two instances
         :return: True if the attributes match, False if they do not; the
-            matching mechanism depends on the chosen algorithm.
+            matching mechanism depends on the chosen algorithm
         """
         if self is self.MATCH:
             return True  # matches anything

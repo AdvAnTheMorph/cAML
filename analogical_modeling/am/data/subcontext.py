@@ -1,12 +1,15 @@
 """Subcontext
 
 A subcontext specifies all variables of its supracontext and more.
-Example: (a-cd) is a subcontext of (a-c-)
+
+Example: (a-cd) is a subcontext of (a-c-).
 """
 
 from analogical_modeling.am import am_utils
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.utils import Instance
+
+SEED = 37
 
 
 class Subcontext:
@@ -16,14 +19,12 @@ class Subcontext:
     If the contained instances do not have the same outcome, then the outcome is
     set to `am_utils.NONDETERMINISTIC`.
     """
-    SEED = 37
-
     def __init__(self, label: Label, display_label: str):
         """Initializes the subcontext by creating a list to hold the data
 
         :param label: Binary label of the subcontext
         :param display_label: user-friendly label string
-            `Labeler.get_context_string(Label)`
+            :func:`Labeler.get_context_string(Label)`
         """
         self.label: Label = label
         self.display_label: str = display_label
@@ -31,11 +32,11 @@ class Subcontext:
         self.outcome: str | int = ""
         self.hash: int = -1
 
-    def add(self, other):
+    def add(self, other) -> None:
         """Add an exemplar to the subcontext and set the outcome accordingly.
 
         If different outcomes are present in the contained exemplars, the
-        outcome is `am_utils.NONDETERMINISTIC`
+        outcome is `am_utils.NONDETERMINISTIC`.
         """
         if len(self.data) > 0:
             if other.class_value() != next(iter(self.data)).class_value():
@@ -67,7 +68,7 @@ class Subcontext:
     def __hash__(self):
         if self.hash != -1:
             return self.hash
-        self.hash = self.SEED * hash(self.label) + hash(frozenset(self.data))
+        self.hash = SEED * hash(self.label) + hash(frozenset(self.data))
         return self.hash
 
     def __str__(self):
@@ -82,5 +83,7 @@ class Subcontext:
         return f"({self.label}|{middle_part}|{'/'.join(map(str, self.data))})"
 
     def is_nondeterministic(self) -> bool:
-        """Check whether the outcome is nondeterministic."""
+        """Check whether the outcome is nondeterministic.
+
+        :returns: True if the outcome is nondeterministic, False otherwise"""
         return self.outcome == am_utils.NONDETERMINISTIC

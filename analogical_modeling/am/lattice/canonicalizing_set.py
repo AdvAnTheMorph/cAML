@@ -8,7 +8,8 @@ T = TypeVar('T')
 class CanonicalizingSet:
     """
     A set implementation that can be used to retrieve canonical versions of
-    objects; this is not possible with Set because of the lack of a get method.
+    objects; this is not possible with `Set` because of the lack of a `get`
+    method.
     """
 
     def __init__(self):
@@ -23,12 +24,12 @@ class CanonicalizingSet:
         """
 
         :return: None if t is not contained in the set; otherwise the object
-            contained in the set for which t == the_object is true.
+            contained in the set for which t == the_object is True
         """
         return self.__backing_map.get(t)
 
     def merge(self, t: T, remapping_function: Callable[[T, T], T]):
-        """Key and value are the same, otherwise the same as Java's Map.merge"""
+        """Key and value are the same, otherwise the same as Java's `Map.merge`"""
         if t in self.__backing_map:
             self.__backing_map[t] = remapping_function(self.__backing_map[t], t)
         else:
@@ -45,7 +46,7 @@ class CanonicalizingSet:
         return len(self.__backing_map)
 
     def is_empty(self) -> bool:
-        """Check if the canonicalizing set is empty"""
+        """Check if the canonicalizing set is empty."""
         return len(self.__backing_map) == 0
 
     def __contains__(self, item: T) -> bool:
@@ -55,6 +56,6 @@ class CanonicalizingSet:
         return iter(self.__backing_map.keys())
 
     def add(self, obj: T) -> bool:
-        """Add element to Set"""
+        """Add element to Set."""
         self.__backing_map[obj] = obj
         return True

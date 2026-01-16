@@ -21,6 +21,7 @@ class Lattice(ABC):
     def get_supracontexts(self) -> set[Supracontext]:
         """
 
-        :return: the list of supracontexts that were created by filling the
-            supracontextual lattice. From this, you can compute the analogical set.
+        :return: List of supracontexts that were created by filling the
+            supracontextual lattice. From this, you can compute the analogical
+            set.
         """

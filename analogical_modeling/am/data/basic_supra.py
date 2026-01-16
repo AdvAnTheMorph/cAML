@@ -12,11 +12,13 @@ class BasicSupra(Supracontext):
 
     def __init__(self, data: Optional[set] = None, count: Optional[int] = None):
         """Creates a new supracontext with the given parameters as the contents.
-        If no arguments given: create a new supracontext with an empty data set.
 
-        :param data: The subcontexts contained in the supracontext
-        :param count: The count of this supracontext
-        :raises: ValueError if data XOR count are None, or count is less than 0
+        If no arguments are given: create a new supracontext with an empty data
+        set.
+
+        :param data: subcontexts contained in the supracontext
+        :param count: count of this supracontext
+        :raises ValueError: if data XOR count are None, or count is less than 0
         """
         if data is None and count is not None:
             raise ValueError("Data must not be None")
