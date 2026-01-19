@@ -125,7 +125,7 @@ class AnalogicalModeling:
         return self._threshold
 
     @threshold.setter
-    def threshold(self, threshold: float | None):
+    def threshold(self, threshold: float | None) -> None:
         if threshold is None:
             self._threshold = None
             return
@@ -301,7 +301,7 @@ class AnalogicalModeling:
         # for GUI
         return acc, conf_matrix, files
 
-    def build_classifier(self, instances: Dataset):
+    def build_classifier(self, instances: Dataset) -> None:
         """This is used to build the classifier; it specifies the
         capabilities of the classifier and loads in exemplars to be used for
         prediction. No actual analysis happens here because AM is a lazy
@@ -442,6 +442,8 @@ class AnalogicalModeling:
             list(set(effect.total_pointers for effect in effects)),
             reverse=True
         )
+        gangs = []
+
         for effect in effects:
             effect_pointers = effect.total_pointers
             rank = pointers_rank.index(effect_pointers) + 1
@@ -458,7 +460,7 @@ class AnalogicalModeling:
                 for cls in classes
             ], []) for inst in effect.subcontext.data}
 
-            return [
+            gangs += [
                 inst.real_data.tolist() + [inst.weight] + cls_info[inst] + [
                     effect_pointers,  # gang pointers
                     round(gang_pct, 3),  # gang pct
@@ -471,6 +473,7 @@ class AnalogicalModeling:
                 ] + classified.real_data.tolist()
                 for inst in
                 sum(map(list, effect.class_to_instances.values()), [])]
+        return gangs
 
     @staticmethod
     def create_analogical_set(res: AMResults, classified: Instance,
@@ -590,7 +593,7 @@ class AnalogicalModeling:
                   f"{out_distribution}.")
         return gang, analog, distr
 
-    def update_classifier(self, instance: Instance):
+    def update_classifier(self, instance: Instance) -> None:
         """This is used to add more information to the classifier."""
         self.check_header(instance)
 
