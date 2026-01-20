@@ -74,7 +74,7 @@ class Pair:
 
 
 @lru_cache(maxsize=None)
-def binomial_coefficient(p: Pair):
+def binomial_coefficient(p: Pair) -> int:
     """Calculate binomial coefficient."""
     n = p.first
     k = p.second
@@ -263,7 +263,7 @@ class JohnsenJohanssonLattice(Lattice):
             for future in concurrent.futures.as_completed(futures):
                 self.supras.add(future.result())
 
-    def get_supracontexts(self):
+    def get_supracontexts(self) -> set:
         """
 
         :return: List of supracontexts that were created by filling the

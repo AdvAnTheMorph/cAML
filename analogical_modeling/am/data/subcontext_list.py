@@ -47,7 +47,7 @@ class SubcontextList:
         """Get the number of attributes used to predict an outcome."""
         return self.labeler.get_cardinality()
 
-    def add(self, exemplar: Instance):
+    def add(self, exemplar: Instance) -> None:
         """Add an exemplar."""
         label = self.labeler.label(exemplar)
 

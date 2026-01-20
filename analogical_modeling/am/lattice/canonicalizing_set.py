@@ -20,7 +20,7 @@ class CanonicalizingSet:
         """Create empty CanonicalizingSet."""
         return CanonicalizingSet()  # backing_mapp defaults to an empty dict
 
-    def get(self, t: T) -> T:
+    def get(self, t: T) -> T|None:
         """
 
         :return: None if t is not contained in the set; otherwise the object
@@ -28,7 +28,7 @@ class CanonicalizingSet:
         """
         return self.__backing_map.get(t)
 
-    def merge(self, t: T, remapping_function: Callable[[T, T], T]):
+    def merge(self, t: T, remapping_function: Callable[[T, T], T]) -> None:
         """Key and value are the same, otherwise the same as Java's `Map.merge`"""
         if t in self.__backing_map:
             self.__backing_map[t] = remapping_function(self.__backing_map[t], t)

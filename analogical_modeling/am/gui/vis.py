@@ -13,7 +13,7 @@ class CSVSavingTable(Table):
         Table.__init__(self, parent, **kwargs)
 
     def saveAs(self, filename=None):
-        """Save dataframe to file"""
+        """Save dataframe to file."""
 
         if filename is None:
             filename = filedialog.asksaveasfilename(parent=self.master,
@@ -24,7 +24,7 @@ class CSVSavingTable(Table):
             super().saveAs(filename)
 
 class TableVisualization:
-    """Visualize tables in tkinter"""
+    """Visualize tables in tkinter."""
     def __init__(self, root, df):
         self.frame = tk.Frame(root)
         self.frame.pack(padx=10, pady=10, expand=True, fill=tk.BOTH)
@@ -35,7 +35,7 @@ class TableVisualization:
 
 
 class MatrixVisualization:
-    """Visualize confusion matrix in tkinter"""
+    """Visualize confusion matrix in tkinter."""
     def __init__(self, root, matrix, save=None):
         self.frame = tk.Frame(root)
         self.frame.pack(padx=10, pady=10, expand=True, fill=tk.BOTH)

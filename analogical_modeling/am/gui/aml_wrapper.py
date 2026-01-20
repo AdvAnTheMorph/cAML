@@ -12,7 +12,7 @@ from analogical_modeling.aml import AnalogicalModeling, logger
 
 
 class AMWrapper:
-    """Wrapper for Analogical Modelling with GUI"""
+    """Wrapper for Analogical Modelling with GUI."""
 
     def __init__(self):
         self.am = AnalogicalModeling()
@@ -39,8 +39,8 @@ class AMWrapper:
 
         self.exit_reason = None
 
-    def adjust_data_to_class_idx(self):
-        """Permute lexicon such that class column comes last"""
+    def adjust_data_to_class_idx(self) -> pd.DataFrame:
+        """Permute lexicon such that class column comes last."""
         data = pd.read_csv(self.lexicon)
         cols = data.columns.tolist()
         if self.class_idx == -1:
@@ -50,8 +50,8 @@ class AMWrapper:
             data = data.loc[:, before + after + [cols[self.class_idx]]]
         return data
 
-    def validate_threshold(self, *_args):
-        """Make sure that threshold non-negative float"""
+    def validate_threshold(self, *_args) -> None:
+        """Make sure that threshold non-negative float."""
         try:
             value = float(self.threshold.get())
             if value < 0:
@@ -60,7 +60,9 @@ class AMWrapper:
             self.threshold.set(0.0)  # reset
 
     def validate(self) -> str:
-        """Check that all required parameters are valid"""
+        """Check that all required parameters are valid.
+
+        :return: string containing all problem descriptions (or empty string)"""
         problems = ""
         if not self.lexicon:
             print("No lexicon provided")
@@ -75,7 +77,7 @@ class AMWrapper:
         # TODO (not validation)
         # - error messages when running
 
-    def cancel(self):
+    def cancel(self) -> None:
         """Stop AML"""
         self.am.cancel_event = True
 

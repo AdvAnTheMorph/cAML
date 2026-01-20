@@ -107,7 +107,7 @@ class BasicLattice(Lattice):
             self.lattice[label] = self.lattice.get(label).insert_after(sub,
                                                                        self.index)
 
-    def clean_supra(self):
+    def clean_supra(self) -> None:
         """Cycle through the supracontexts and delete all with count 0."""
         supra = self.empty_supracontext
         while supra.next != self.empty_supracontext:
@@ -132,14 +132,15 @@ class BasicLattice(Lattice):
         return sup_list
 
     # Below methods are for private debugging and asserting
-    def dump_lattice(self):
+    def dump_lattice(self) -> str:
+        """Transform lattice into informative string for debugging."""
         # useful for private debugging on occasion
         return am_utils.LINE_SEPARATOR.join([
             f"{k}:[hetero]" if v is self.hetero_supra else f"{k}:{v}"
             for k, v in self.lattice.items()
         ])
 
-    def no_zero_supras(self):
+    def no_zero_supras(self) -> bool:
         """Check for presence of supracontexts with count 0."""
         for supra in self.get_supracontexts():
             if supra.count == 0:

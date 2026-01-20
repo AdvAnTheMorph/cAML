@@ -75,7 +75,7 @@ class AMResults:
         }
 
         # find the likelihood for a given outcome based on the pointers
-        self.class_pointers: dict[str, int] = defaultdict(int)
+        self.class_pointers: dict[str, float] = defaultdict(float)
         for e in self.exemplar_pointers:
             class_name = e.class_value()
             self.class_pointers[class_name] += self.exemplar_pointers[e]

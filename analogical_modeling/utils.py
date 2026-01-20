@@ -7,6 +7,7 @@ remains from weka:
 import math
 import sys
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 
@@ -34,7 +35,7 @@ class Instance(pd.Series):
         self.weight = weight
 
     def is_missing(self, idx: int) -> bool:
-        """Check if value is missing
+        """Check if value is missing.
 
         :param idx: index of value
         """
@@ -56,7 +57,7 @@ class Instance(pd.Series):
         """
         return self.index[idx]
 
-    def value(self, attr: str):
+    def value(self, attr: str) -> Any:
         """Return the value of the given attribute.
 
         :param attr: attribute name
@@ -70,7 +71,7 @@ class Instance(pd.Series):
         """
         return self.iloc[idx]
 
-    def class_value(self):
+    def class_value(self) -> Any:
         """Return the value of the class attribute."""
         return self.iloc[self.class_index]
 
@@ -88,7 +89,7 @@ class Instance(pd.Series):
 
 
 class Dataset:
-    """Dataset representation"""
+    """Dataset representation."""
 
     def __init__(self, atts: list | None = None, weights: str = ""):
         """
@@ -108,7 +109,7 @@ class Dataset:
         self.class_index = self.num_attributes() - 1
 
     def from_csv(self, source: str | Path, weights: str = "") -> 'Dataset':
-        """Read dataset from csv file
+        """Read dataset from csv file.
 
         :param source: path to csv file
         :param weights: name of column with weights, if given
@@ -123,15 +124,15 @@ class Dataset:
         return self
 
     def set_weights_by_column(self, name: str) -> list:
-        """Set instance weights
+        """Set instance weights.
 
         The weights column is then dropped from the dataset.
 
         :param name: name of column with weights, if given
         """
         # remove weights from dataset, as they are no features
-        # TODO: make sure that column numerical
         if name:
+            # make sure that column numerical
             try:
                 col = self.data[name]
                 if pd.api.types.is_numeric_dtype(col):
@@ -146,9 +147,10 @@ class Dataset:
         return weights
 
     def get_instance(self, idx) -> Instance:
-        """Get an instance of the given index
+        """Get an instance of the given index.
 
-        :param idx: index of the instance"""
+        :param idx: index of the instance
+        """
         return self.data.iloc[idx]
 
     def num_attributes(self) -> int:
@@ -161,7 +163,7 @@ class Dataset:
 
     @property
     def class_index(self) -> int:
-        """Get class index"""
+        """Get class index."""
         return self._class_index
 
     @class_index.setter
@@ -189,12 +191,12 @@ class Dataset:
         self.data.reset_index(drop=True, inplace=True)
 
     def delete_with_missing_class(self) -> None:
-        """Delete instances without a class"""
+        """Delete instances without a class."""
         self.data.dropna(subset=self.data.columns[self.class_index],
                          inplace=True)
 
     def get_classes(self) -> set:
-        """Return all class values"""
+        """Return all class values."""
         return set(self.data.iloc[:, self.class_index])
 
     def num_classes(self) -> int:
@@ -206,7 +208,7 @@ class Dataset:
         return self.data.columns[self.class_index]
 
     def add_class_column(self, name: str) -> None:
-        """Add class column to data"""
+        """Add class column to data."""
         self.data[name] = [None] * self.data.shape[0]
 
     def set_ignored(self, ignore: list[str]) -> None:

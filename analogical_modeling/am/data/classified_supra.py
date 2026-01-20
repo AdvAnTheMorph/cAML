@@ -105,7 +105,7 @@ class ClassifiedSupra(Supracontext):
         return new_supra
 
     # methods below are simply forwarded to the wrapped supracontext
-    def get_data(self):
+    def get_data(self) -> frozenset:
         return self.supra.get_data()
 
     def is_empty(self) -> bool:
@@ -116,7 +116,7 @@ class ClassifiedSupra(Supracontext):
         return self.supra.count
 
     @count.setter
-    def count(self, count: int):
+    def count(self, count: int) -> None:
         self.supra.count = count
 
     def get_context(self) -> Label:

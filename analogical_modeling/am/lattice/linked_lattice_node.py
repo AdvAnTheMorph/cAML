@@ -59,7 +59,7 @@ class LinkedLatticeNode(Supracontext):
         """
         return self.index
 
-    def increment_count(self):
+    def increment_count(self) -> None:
         """Increases count by one"""
         self.supra.count += 1
 
@@ -94,7 +94,7 @@ class LinkedLatticeNode(Supracontext):
         """Add subcontext to contained supracontext."""
         self.supra.add(other)
 
-    def get_data(self) -> set[Subcontext]:
+    def get_data(self) -> frozenset[Subcontext]:
         """Get data of contained supracontext."""
         return self.supra.get_data()
 

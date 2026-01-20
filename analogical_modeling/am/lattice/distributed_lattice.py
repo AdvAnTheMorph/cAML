@@ -37,7 +37,7 @@ class DistributedLattice(Lattice):
         """
         return self.supras
 
-    def fill(self, sub_list: SubcontextList):
+    def fill(self, sub_list: SubcontextList) -> None:
         """
         The number of sub-lattices is determined via
         :func:`sub_list.labeler.num_partitions`.
