@@ -181,50 +181,7 @@ class SupraApproximator():
 
 
 class JohnsenJohanssonLattice(Lattice):
-    r"""Lattice for high cardinality data.
-
-    The approximation algorithm from "Efficient Modeling of Analogy", Johnsen
-    and Johansson, DOI 10.1007/978-3-540-30586-6_77.
-
-    Terminology from the paper is as follows:
-
-    - :math:`p`: the subcontext whose count is being approximated
-    - :math:`size(p)`: the size of the subcontext :math:`p`; or, the number of
-      0's in its label
-    - :math:`\mathcal{H}(p)`: the sets found by intersecting :math:`p` with any
-      subcontext that has a different outcome; the labels of such intersections
-    - :math:`max(p)`: the cardinality of the union of all
-      :math:`x\in\mathcal{H}(p)`;
-      the number of 0's in the union of the labels of all subcontexts in
-      :math:`\mathcal{H}(p)`
-    - :math:`\mathcal{H}_{limit(p)}`: the heterogeneous elements under :math:`p`
-      in the lattice
-    - :math:`min(p)`: the size of the largest child of :math:`p`; or, the number
-      of 0's in the label of the subcontext whose label has the most 0's and
-      matches all the 1's in :math:`p`'s label.
-
-    We estimate the count of each subcontext by randomly unioning sets of
-    subcontexts from :math:`\{x_s\}` and checking for heterogeneity (union means
-    OR'ing labels). The count of a subcontext :math:`p` is the size of its power
-    set minus the heterogeneous elements in this set
-    (or :math:`|\wp(p)| - |\mathcal{H}_{limit(p)}|`).
-    We use these bounds in approximating :math:`|\mathcal{H}_{limit(p)}|`:
-
-    - lower bound (:math:`lb(p)`): the cardinality of the powerset of
-      :math:`min(p)`.
-    - upper bound (:math:`ub(p)`): :math:`\sum_{k=1}^{min(p)}{max(p)\choose k}`
-
-    The estimate :math:`\hat{h}_p` of :math:`|\mathcal{H}_{limit(p)}|` is
-    computed by sampling random sets of subcontexts :math:`{x_s}` and combining
-    them with:
-
-    :math:`\frac{|\{x_s \in \mathcal{H}(p)|}{|\{x_s\}|}=\frac{\hat{h}_p}{ub(p)}`
-
-    or
-
-    :math:`\hat{h}_p = \frac{ub(p)|x_s\in \mathcal{H}(p)|}{|\{x_s\}|}`
-    """
-
+    """Lattice for high cardinality data."""
     def __init__(self, random_provider: Callable[[], random.Random]):
         """
 
