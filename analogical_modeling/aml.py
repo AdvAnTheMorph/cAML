@@ -5,7 +5,7 @@ Analogical modeling is an instance-based algorithm designed to model human
 behavior.
 
 :func:`AnalogicalModeling.run_classifier` starts the algorithm. It calls
-:func:`AnalogicalModelling.classify` which does the actual classification.
+:func:`AnalogicalModeling.classify` which does the actual classification.
 """
 
 import argparse
@@ -41,8 +41,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-class HeaderMissmatchError(Exception):
-    """Exception if headers don't match.'"""
+class HeaderMismatchError(Exception):
+    """Exception if headers don't match."""
 
     def __init__(self, message):
         self.message = message
@@ -57,7 +57,7 @@ class AnalogicalModeling:
     behavior.
 
     :func:`~AnalogicalModeling.run_classifier` starts the algorithm. It calls
-    :func:`~AnalogicalModelling.classify` which does the actual classification.
+    :func:`~AnalogicalModeling.classify` which does the actual classification.
     """
 
     def __init__(self):
@@ -143,7 +143,7 @@ class AnalogicalModeling:
 
     def set_random_provider(self, random_provider: Random) -> None:
         """Provide the source of randomness for algorithms that require it
-        (e.g. `JohnsenJohanssonLattice`).
+        (e.g. :py:class:`JohnsenJohanssonLattice`).
 
         The provider must be thread-safe."""
         self.random_provider = random_provider
@@ -160,20 +160,23 @@ class AnalogicalModeling:
     def check_header(self, instances) -> None:
         """Headers of lexicon and test data must be equal.
 
+        Ignored columns are ignored both in lexicon and test data.
+
         :raises HeaderMismatchError: if headers don't match
         """
         class_column = self.training_instances.class_column_name()
         l_header = self.training_instances.data.columns.tolist()
         t_header = instances.data.columns.tolist()
 
-        # ignore the class column (might not be specified in test data)
-        if class_column in l_header:
-            l_header.remove(class_column)
-        if class_column in t_header:
-            t_header.remove(class_column)
+        # remove ignored columns,
+        # don't consider class column (might not be specified in test data)
+        ignored = self.ignore_columns + [class_column]
+        l_header = list(filter(lambda x: x not in ignored, l_header))
+        t_header = list(filter(lambda x: x not in ignored, t_header))
+
 
         if t_header != l_header:
-            raise HeaderMissmatchError(
+            raise HeaderMismatchError(
                 f"Expected header is {l_header}, but test data header is "
                 f"{t_header}")
 
@@ -262,7 +265,7 @@ class AnalogicalModeling:
                 instances.add_class_column(class_column_name)
                 instances.class_index = instances.num_attributes() - 1
 
-            instances.set_ignored(self.ignore_columns)
+            instances.set_ignored(self.ignore_columns, silent=True)
             self.check_header(instances)
 
         # do this first, just in case it fails
@@ -392,16 +395,18 @@ class AnalogicalModeling:
 
     # following methods for output files
     @staticmethod
-    def create_headers(feats: pd.Index, classes: list) -> tuple[
+    def create_headers(lex_feats: pd.Index, test_feats, classes: list) -> tuple[
         list, list, list]:
         """Create headers for output files.
 
-        :param feats: attributes
+        :param lex_feats: attributes of lexicon
+        :param test_feats: attributes of test data (or lexicon, if no test data)
         :param classes: possible class values
         :return: headers for gang effects, analogical sets and distributions
         """
 
-        feats_list = feats.tolist()
+        l_feats_list = lex_feats.tolist()
+        t_feats_list = test_feats.tolist()
         cls_header = ([f"Class {i + 1}" for i in range(len(classes))] +
                       sum([[f"{cls}: pointers", f"{cls}: pct"]
                            for cls in classes], []))
@@ -409,17 +414,17 @@ class AnalogicalModeling:
             [[f"{cls}: pointers", f"{cls}: pct", f"{cls}: size"]
              for cls in classes], [])
 
-        gang_header = (feats_list + ["Weight"] + cls_header_gang +
+        gang_header = (l_feats_list + ["Weight"] + cls_header_gang +
                        ["Gang pointers", "Gang pct", "Rank", "Size",
                         "Total pointers", "Classified item index",
                         "Classified item class"] +
-                       [f"Classified item {el}" for el in feats])
-        analog_header = (feats_list +
+                       [f"Classified item {el}" for el in test_feats])
+        analog_header = (l_feats_list +
                          ["Weight", "Class", "Percentage", "Pointers",
                           "Classified item index", "Classified item class"] +
-                         [f"Classified item {el}" for el in feats])
+                         [f"Classified item {el}" for el in test_feats])
         distr_header = (
-                ["Judgement", "Expected", "Predicted"] + feats_list +
+                ["Judgement", "Expected", "Predicted"] + t_feats_list +
                 cls_header +
                 ["Train size", "Num feats", "Ignore unknown values",
                  "Missing data compare", "Ignore given",
@@ -437,6 +442,15 @@ class AnalogicalModeling:
         :param classes: possible classes
         :param idx: index of the instance
         """
+        def get_cls_pct(effect, cls, pointers, gang_pct):
+            """Helper to handle potential divisions by zero"""
+            try:
+                return round(effect.class_to_pointers.get(cls, 0)
+                  / pointers * gang_pct,
+                  3)
+            except ZeroDivisionError:
+                return 0.0
+
         total_pointers = sum(effect.total_pointers for effect in effects)
         pointers_rank = sorted(
             list(set(effect.total_pointers for effect in effects)),
@@ -451,9 +465,7 @@ class AnalogicalModeling:
 
             cls_info = {inst: sum([
                 [effect.class_to_pointers.get(cls, 0),  # cls: pointers
-                 round(effect.class_to_pointers.get(cls, 0)
-                       / effect_pointers * gang_pct,
-                       3),  # cls: pct
+                 get_cls_pct(effect, cls, effect_pointers, gang_pct),  # cls: pct
                  len(effect.class_to_instances.get(cls, []))  # cls: size
                  ] if inst in effect.class_to_instances.get(cls, []) else [
                     0, 0, 0]
@@ -553,6 +565,7 @@ class AnalogicalModeling:
         # headers
         classes = list(self.training_instances.get_classes())
         gang_header, analog_header, distr_header = self.create_headers(
+            self.training_instances[0].real_data.keys(),
             results[0].classified_exemplar.real_data.keys(), classes)
 
         gangs = []

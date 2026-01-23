@@ -19,7 +19,7 @@ class Instance(pd.Series):
     _metadata = ["class_index", "ignored", "real_data", "data_idx", "weight"]
 
     def __init__(self, data: pd.Series, class_column: str,
-                 ignore_list: list[str], idx: int, weight: float):
+                 ignore_list: list[str], idx: int, weight: float, silent=False):
         """
 
         :param data: Series containing values of the Instance
@@ -28,7 +28,13 @@ class Instance(pd.Series):
         :param idx: index in the dataset
         """
         super().__init__(data)
-        self.drop(labels=ignore_list, inplace=True)
+        if silent:
+            self.drop(labels=ignore_list, inplace=True, errors="ignore")
+        else:
+            try:
+                self.drop(labels=ignore_list, inplace=True)
+            except KeyError as e:  # raise error to prevent silent typos
+                sys.exit(f"{e} - (valid columns are {list(self.keys())}).")
         self.class_index = self.keys().get_loc(class_column)
         self.real_data = data
         self.data_idx = idx
@@ -94,10 +100,12 @@ class Dataset:
     def __init__(self, atts: list | None = None, weights: str = ""):
         """
 
-        :param atts: if atts is None, call from_csv() to populate the dataset
+        :param atts: if atts is None, call :func:`from_csv` to populate the
+            dataset
         :param weights: name of column with weights, if given
         """
         self.ignored: list[str] = []
+        self.silent = False
         if atts is None:
             self.data = pd.DataFrame()
             self._class_index = None
@@ -211,22 +219,24 @@ class Dataset:
         """Add class column to data."""
         self.data[name] = [None] * self.data.shape[0]
 
-    def set_ignored(self, ignore: list[str]) -> None:
+    def set_ignored(self, ignore: list[str], silent=False) -> None:
         """Set ignored columns.
 
         :param ignore: columns to ignore
+        :param silent: if True, ignore if columns not in data
         """
         self.ignored = ignore
+        self.silent = silent
 
     def __getitem__(self, idx) -> Instance:
         return Instance(self.data.iloc[idx], self.class_column_name(),
                         self.ignored, self.data.index[idx],  # keep index
-                        self.weights[idx])
+                        self.weights[idx], self.silent)
 
     def __iter__(self):
         for idx, el in self.data.iterrows():
             yield Instance(el, self.class_column_name(), self.ignored, idx,
-                           self.weights[idx])
+                           self.weights[idx], self.silent)
 
     def __len__(self):
         return self.data.shape[0]
