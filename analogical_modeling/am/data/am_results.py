@@ -70,7 +70,7 @@ class AMResults:
         # find the analogical effect of an exemplar by dividing its pointer
         # count by the total pointer count
         self.exemplar_effects: dict[Instance, float] = {
-            e: self.exemplar_pointers[e] / self.total_pointers
+            e: self.save_divide(self.exemplar_pointers[e], self.total_pointers)
             for e in self.exemplar_pointers
         }
 
@@ -83,7 +83,7 @@ class AMResults:
         # set the likelihood of each possible class index to be its share of
         # the total pointers
         self.class_likelihood_map: dict[str, float] = {
-            name: self.class_pointers[name] / self.total_pointers
+            name: self.save_divide(self.class_pointers[name], self.total_pointers)
             for name in self.class_pointers
         }
 
@@ -97,6 +97,18 @@ class AMResults:
                 self.predicted_classes = {cls_name}
             elif temp == self.class_probability:
                 self.predicted_classes.add(cls_name)
+
+    @staticmethod
+    def save_divide(a, b):
+        """Calculate a/b without risking ZeroDivisionError.
+
+        :param a: dividend
+        :param b: divisor
+        :return: 0 if `b==0`, else `a/b`
+        """
+        if b == 0:  # a should normally be 0 in this case, too
+            return 0
+        return a / b
 
     @staticmethod
     def get_pointers(supracontexts: set[Supracontext], linear: bool) -> dict[
@@ -140,14 +152,14 @@ class AMResults:
     def __str__(self):
         effects = ""
         for k, v in self.exemplar_pointers.items():
-            effects += (f"{k} : {v} ({v / self.total_pointers})"
+            effects += (f"{k} : {v} ({self.save_divide(v, self.total_pointers)})"
                         f"{am_utils.LINE_SEPARATOR}")
         effects += f"Outcome likelihoods:{linesep}"
 
         sorted_entries = sorted(self.get_class_pointers().items(),
                                 key=lambda entry: entry[1])
         for k, v in sorted_entries:
-            effects += (f"{k} : {v} ({v / self.total_pointers})"
+            effects += (f"{k} : {v} ({self.save_divide(v,self.total_pointers)})"
                         f"{am_utils.LINE_SEPARATOR}")
 
         return f"classifying: {self.classified_exemplar}{linesep}outcome: " \

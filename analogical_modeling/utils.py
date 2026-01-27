@@ -43,6 +43,8 @@ class Instance(pd.Series):
     def is_missing(self, idx: int) -> bool:
         """Check if value is missing.
 
+        Missing values are represented by an equals sign (=).
+
         :param idx: index of value
         """
         # return self.isna().iloc[idx]
