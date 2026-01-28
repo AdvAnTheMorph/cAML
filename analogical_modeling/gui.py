@@ -2,11 +2,12 @@
 
 import os
 import sys
-import tkinter as tk
-from pathlib import Path
-from tkinter import messagebox
-from tkinter import ttk, filedialog
 
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import ttk
+
+from sklearn.metrics import ConfusionMatrixDisplay
 import pandas as pd
 
 am_path = os.path.dirname(os.path.abspath(__file__))
@@ -15,6 +16,7 @@ from analogical_modeling.am.gui.aml_wrapper import AMWrapper
 import analogical_modeling.am.gui.gui_utils as utils
 from analogical_modeling.am.gui.vis import TableVisualization, \
     MatrixVisualization
+
 
 root = tk.Tk()
 
@@ -36,7 +38,8 @@ wrapper = AMWrapper()
 
 
 class GUI:
-    def __init__(self, root):
+    """Graphical User Interface for AnalogicalModeling."""
+    def __init__(self, root: tk.Tk):
         self.root = root
 
         self.notebook = ttk.Notebook(root)
@@ -91,8 +94,11 @@ class GUI:
 
         self.run_stop = utils.StartFrame(self, main_tab, wrapper)
 
-    def run(self):
-        """Run AML through wrapper"""
+    def run(self) -> bool:
+        """Run AML through wrapper.
+
+        :return: True if start successful, False otherwise
+        """
         # runs in separate thread
         try:
             print(wrapper.weights)
@@ -121,8 +127,8 @@ class GUI:
         except Exception as e:
             raise e
 
-    def on_completion(self):
-        """Plot matrix and output files"""
+    def on_completion(self) -> None:
+        """Plot matrix and output files after completion."""
         acc, matrix, files = wrapper.res
         if matrix is not None:
             try:
@@ -139,12 +145,17 @@ class GUI:
                                  f"due to \n{e}")
 
     @staticmethod
-    def clear_frame(frame):
-        """Remove all widgets from a frame"""
+    def clear_frame(frame) -> None:
+        """Remove all widgets from a frame."""
         for widget in frame.winfo_children():
             widget.destroy()
 
-    def vis_matrix(self, matrix, acc):
+    def vis_matrix(self, matrix: ConfusionMatrixDisplay, acc: float) -> None:
+        """Visualize confusion matrix in separate tab.
+
+        :param matrix: confusion matrix
+        :param acc: accuracy
+        """
         if not hasattr(root, "conf_mat_tab"):
             root.conf_mat_tab = ttk.Frame(self.notebook)
             self.notebook.add(root.conf_mat_tab, text="Confusion Matrix")
@@ -156,13 +167,22 @@ class GUI:
         result_label.pack()
         MatrixVisualization(root.conf_mat_tab, matrix, wrapper.out)
 
-    def make_table(self, parent, file_):
+    def make_table(self, parent, dataframe: pd.DataFrame) -> None:
+        """Visualize dataframe as table.
+
+        :param parent: parent widget
+        :param dataframe: dataframe to visualize
+        """
         res_frame = tk.Frame(parent)
         res_frame.pack(expand=True, fill=tk.BOTH)
-        TableVisualization(res_frame, file_)
+        TableVisualization(res_frame, dataframe)
 
-    def vis_files(self, files):
-        """Visualize tables"""
+    def vis_files(self, dataframes: tuple[pd.DataFrame]) -> None:
+        """Visualize tables.
+
+        :param dataframes: Tuple containing dataframes for gang effects,
+            analogical sets and distributions
+        """
         if self.outs.gangs.get():
             if not hasattr(root, "gangs"):
                 root.gangs = ttk.Frame(self.notebook)
@@ -170,7 +190,7 @@ class GUI:
             else:
                 # Update existing tab
                 self.clear_frame(root.gangs)
-            self.make_table(root.gangs, files[0])
+            self.make_table(root.gangs, dataframes[0])
 
         if self.outs.analog.get():
             if not hasattr(root, "analog"):
@@ -179,7 +199,7 @@ class GUI:
             else:
                 # Update existing tab
                 self.clear_frame(root.analog)
-            self.make_table(root.analog, files[1])
+            self.make_table(root.analog, dataframes[1])
 
         if self.outs.distr.get():
             if not hasattr(root, "distr"):
@@ -188,7 +208,7 @@ class GUI:
             else:
                 # Update existing tab
                 self.clear_frame(root.distr)
-            self.make_table(root.distr, files[2])
+            self.make_table(root.distr, dataframes[2])
 
 
 if __name__ == "__main__":
