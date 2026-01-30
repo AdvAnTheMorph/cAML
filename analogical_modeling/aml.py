@@ -33,7 +33,7 @@ from analogical_modeling.am.label.missing_data_compare import \
     MissingDataCompare
 from analogical_modeling.am.lattice.lattice_factory import \
     CardinalityBasedLatticeFactory
-from analogical_modeling.utils import Instance, Dataset
+from analogical_modeling.utils import Instance, Dataset, InvalidColumnError
 
 logging.basicConfig(format="({asctime}) {name} {levelname}: {message}",
                     datefmt="%H:%M:%S", style="{", filename=".log")
@@ -233,7 +233,13 @@ class AnalogicalModeling:
         :param out_path: where to save output files
         :param test: test data (use lexicon if not given)
         :param weights: column name for weights in dataset, if given
+        :raises InvalidColumnError: if column configuration invalid
+        :raises HeaderMismatchError: if headers don't match
         """
+        if weights in self.ignore_columns:
+            raise InvalidColumnError(
+                f"Weights column '{weights}' must not be ignored.")
+
         if self.cancel_event:
             logger.info("Cancelled by user")
             sys.exit()

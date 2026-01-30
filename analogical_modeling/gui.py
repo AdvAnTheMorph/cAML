@@ -101,7 +101,6 @@ class GUI:
         """
         # runs in separate thread
         try:
-            print(wrapper.weights)
             wrapper.class_idx = self.conf.cls.get()
             wrapper.ignored = self.conf.ignored.list_selected()
 

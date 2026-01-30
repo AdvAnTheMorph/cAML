@@ -12,6 +12,14 @@ from typing import Any
 import pandas as pd
 
 
+class InvalidColumnError(Exception):
+    """Exception if a column configuration is invalid."""
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+
 class Instance(pd.Series):
     """Instance Representation"""
 
@@ -124,7 +132,8 @@ class Dataset:
         :param source: path to csv file
         :param weights: name of column with weights, if given
         """
-        self.data = pd.read_csv(Path(__file__).parent / source).replace(math.nan, None)
+        self.data = pd.read_csv(Path(__file__).parent / source).replace(
+            math.nan, None)
 
         self.weights = self.set_weights_by_column(weights)
 
@@ -149,9 +158,12 @@ class Dataset:
                     weights = col.tolist()
                     self.data.drop(columns=[name], inplace=True)
                 else:
-                    sys.exit(f"Column {name} does not contain numeric data.")
-            except KeyError:
-                sys.exit(f"Column '{name}' not found in dataset.")
+                    raise InvalidColumnError(
+                        f"Weights column '{name}' does not contain numeric "
+                        f"data.")
+            except KeyError as e:
+                raise InvalidColumnError(
+                    f"Weights column '{name}' not found in dataset.") from e
         else:
             weights = [1] * self.data.shape[0]
         return weights

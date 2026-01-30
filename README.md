@@ -9,6 +9,9 @@ language behavior. Its predictions are based on a dataset of occurrences
 This is a Python implementation of the algorithm extended by an optional
 numerical parameter to modify each exemplar's weight.
 
+This README contains brief instructions on how to run the algorithm.
+The [Step-by-Step Guide](doc.md) gives a more detailed description.
+
 ## Installation
 
 After downloading the repository, you can install the project like this:
