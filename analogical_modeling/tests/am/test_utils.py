@@ -47,7 +47,7 @@ def get_dataset(file_in_data_folder: str, weights: str = "") -> utils.Dataset:
     """
     source = Path("data") / file_in_data_folder
     data = utils.Dataset()
-    data.from_csv(source, weights=weights)
+    data.from_file(source, weights=weights)
     return data
 
 

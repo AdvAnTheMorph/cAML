@@ -247,7 +247,7 @@ class AnalogicalModeling:
         if isinstance(csv, pd.DataFrame):
             instances = Dataset(csv, weights)
         else:
-            instances = Dataset().from_csv(csv, weights)
+            instances = Dataset().from_file(csv, weights)
 
         if self._threshold is not None:
             logger.debug(
@@ -263,7 +263,7 @@ class AnalogicalModeling:
         # use test set, if available
         if test:
             logger.debug(f"Using testset {test}")
-            instances = Dataset().from_csv(test)
+            instances = Dataset().from_file(test)
 
             # add class column, if necessary
             class_column_name = self.training_instances.class_column_name()
@@ -641,16 +641,16 @@ if __name__ == "__main__":
     parser.add_argument("--ignore_columns", nargs="*",
                         help="Columns to ignore", type=str, default=[])
     parser.add_argument("-L", "--linear", action="store_true")
-    parser.add_argument("-K", "--keep_test", action="store_false",
+    parser.add_argument("-k", "--keep_test", action="store_false",
                         help="Keep test exemplar in training set (default: "
                              "False)")  # !keep_test = remove, which is default
-    parser.add_argument("-I", "--ignore_unknowns", action="store_true",
+    parser.add_argument("-i", "--ignore_unknowns", action="store_true",
                         help="Ignore attributes with unknown values in the "
                              "test exemplar")
     parser.add_argument("-D", "--debug", action="store_true",
                         help="Run classifier in debug mode; will write "
                              "additional information to .log")
-    parser.add_argument("-M", "--missing_data",
+    parser.add_argument("-m", "--missing_data",
                         choices=["match", "mismatch", "variable"],
                         default="variable",
                         help="Method of dealing with missing data. The options "

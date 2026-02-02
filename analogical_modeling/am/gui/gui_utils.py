@@ -167,7 +167,11 @@ class WeightsFrame(VisOnCommandFrame):
             return
 
         # validate and set
-        temp = pd.read_csv(self.wrapper.lexicon)
+        if Path(self.wrapper.lexicon).suffix == ".xlsx":
+            temp = pd.read_excel(self.wrapper.lexicon)
+        else:
+            temp = pd.read_csv(self.wrapper.lexicon)
+
         if pd.api.types.is_numeric_dtype(temp[value]):
             self.wrapper.weights = value
             self.threshold_frame.vis()
@@ -351,6 +355,8 @@ class MainConfigFrame:
                                               title="Select a File",
                                               filetypes=(("CSV files",
                                                           "*.csv"),
+                                                         ("Excel files",
+                                                          "*.xlsx"),
                                                          ("all files",
                                                           "*.*")))
         if not filename:
@@ -365,7 +371,11 @@ class MainConfigFrame:
         if not lex or not Path(lex).exists():
             return
         self.wrapper.lexicon = lex
-        cols = list(pd.read_csv(self.wrapper.lexicon).columns)
+
+        if Path(self.wrapper.lexicon).suffix == ".xlsx":
+            cols = list(pd.read_excel(self.wrapper.lexicon).columns)
+        else:
+            cols = list(pd.read_csv(self.wrapper.lexicon).columns)
 
         self.cls.fill(cols)
         self.cls.vis()

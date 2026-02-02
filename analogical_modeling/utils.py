@@ -6,6 +6,7 @@ remains from weka:
 """
 import math
 import sys
+from os import PathLike
 from pathlib import Path
 from typing import Any
 
@@ -115,7 +116,7 @@ class Dataset:
         :param weights: name of column with weights, if given
         """
         self.ignored: list[str] = []
-        self.silent = False
+        self.silent = False  # require ignored columns to be there
         if atts is None:
             self.data = pd.DataFrame()
             self._class_index = None
@@ -126,14 +127,19 @@ class Dataset:
         self.weights = self.set_weights_by_column(weights)
         self.class_index = self.num_attributes() - 1
 
-    def from_csv(self, source: str | Path, weights: str = "") -> 'Dataset':
+    def from_file(self, source: PathLike, weights: str = "") -> 'Dataset':
         """Read dataset from csv file.
 
-        :param source: path to csv file
+        :param source: path to csv or Excel file
         :param weights: name of column with weights, if given
         """
-        self.data = pd.read_csv(Path(__file__).parent / source).replace(
-            math.nan, None)
+        match Path(source).suffix:  # match/case for easier extension
+            case ".xlsx":
+                fun = pd.read_excel
+            case _:
+                fun = pd.read_csv
+
+        self.data = fun(Path(__file__).parent / source).replace(math.nan, None)
 
         self.weights = self.set_weights_by_column(weights)
 

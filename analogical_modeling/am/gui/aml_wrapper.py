@@ -41,7 +41,11 @@ class AMWrapper:
 
     def adjust_data_to_class_idx(self) -> pd.DataFrame:
         """Permute lexicon such that class column comes last."""
-        data = pd.read_csv(self.lexicon)
+        if Path(self.lexicon).suffix == ".xlsx":
+            data = pd.read_excel(self.lexicon)
+        else:
+            data = pd.read_csv(self.lexicon)
+
         cols = data.columns.tolist()
         if self.class_idx == -1:
             self.class_idx = len(cols) - 1
