@@ -9,8 +9,8 @@ language behavior. Its predictions are based on a dataset of occurrences
 This is a Python implementation of the algorithm extended by an optional
 numerical parameter to modify each exemplar's weight.
 
-This README contains brief instructions on how to run the algorithm.
-The [Step-by-Step Guide](doc.md) gives a more detailed description.
+This README contains a brief overview on how to run the algorithm.
+The [Step-by-Step Guide](doc.md) gives more detailed instructions.
 
 ## Installation
 
@@ -31,6 +31,9 @@ following packages:
 - matplotlib (for the evaluation output)
 - scikit-learn (for the evaluation output)
 - tqdm
+- pandastable (GUI only)
+- TkToolTip (GUI only)
+
 
 You can install the requirements from `requirements.txt`:
 ```bash
@@ -53,19 +56,19 @@ python3 aml.py -l <data.csv> -o <output>
 - `-w` or `--weight_column` `column_name` specifies a column for weights
 - `-th` or `--threshold` `value` will drop any instances with a weight below that threshold
 - `-d` or `--drop_duplicates`
-  - any instance with the same features and the same class within the lexicon will be dropped
+    - any instance with the same features and the same class within the lexicon will be dropped
 - `--ignore_columns` to specify a list of columns to ignore (using their names)
 - `-L` or `--linear` to use linear instead of quadratic calculation of pointer values
-- `-K` or `--keep_test` to keep test exemplars in the training set
-  - if True, the instance to be predicted will not be removed from the lexicon (if used as test set) before prediction
-  - if False (default), full matches (instances with the same features, but not necessarily the same class) are ignored
-- `-I` or `--ignore_unknowns`
-  - any attribute that includes unknown values will be ignored for all instances
+- `-k` or `--keep_test` to keep test exemplars in the training set
+    - if True, the instance to be predicted will not be removed from the lexicon (if used as test set) before prediction
+    - if False (default), full matches (instances with the same features, but not necessarily the same class) are ignored
+- `-i` or `--ignore_unknowns`
+    - any attribute that includes unknown values will be ignored for all instances
 - `-D` `--debug` to run the classifier in debug mode (generates more outputs)
-- `-M` or `--missing_data` `<option>` where `<option>` is one out of {`match`, `mismatch`, `variable`} to determine the treatment of missing data
-  - match: missing values match anything
-  - mismatch: missing values don't match anything
-  - variable: missing values are treated like a variable, thus only matching other missing values
+- `-m` or `--missing_data` `<option>` where `<option>` is one out of {`match`, `mismatch`, `variable`} to determine the treatment of missing data
+    - match: missing values match anything
+    - mismatch: missing values don't match anything
+    - variable: missing values are treated like a variable, thus only matching other missing values
 
 
 

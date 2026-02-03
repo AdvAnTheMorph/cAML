@@ -1,21 +1,21 @@
 # Analogical Modeling Python - Step-by-Step Guide
 
-[[_TOC_]]
-
 You can choose between using the [graphical user interface (GUI)](#alternative-1-gui) and the
 [terminal](#alternative-2-terminal) version.
 
 # Alternative 1: GUI
 You can either doubleclick on the `aml` application in your file explorer or
 navigate to its location and type `./aml` in your terminal. In the latter case
-you will receive some additional information on the running process. 
+you will receive some additional information on the running process.
 
 <p align="center">
   <img src="img/gui_img.png" alt="GUI application" style="width:50%">
 </p>
 
+Once you have selected a lexicon file you can specify class and weights
+column, set a threshold and select columns to ignore.
 If you want to save your results, either specify an output prefix or an output
-directory *and* the output prefix. Alternatively, you can save them by hand.
+directory *and* the output prefix. Alternatively, you can save them by hand.  
 The additional options are explained in
 [2b) Setting additional Parameters](#b-setting-additional-parameters).
 
@@ -43,23 +43,23 @@ This will install the project and all its dependencies.
 
 ## 2. Running
 ### a) Base Case
-The minimally required arguments are 
-1. Your **lexicon** file, which should be a `.csv` file with commas as
-  separators. Please make sure that the class column is the last one.
+The minimally required arguments are:
+1. Your **lexicon** file, which should be a CSV or Excel file with commas as
+   separators. Please make sure that the class column is the last one.
 <p align="center">
   <img src="img/ex_csv.png" alt="exemplary csv file" title=".csv File" width="30%"> →
   <img src="img/ex_csv_rendered.png" alt="exemplary csv file (rendered)" title="Rendered .csv File" width="55%">
 </p>
 
 2. The **path** where to store results, which can be either a prefix (`out`) or a path to a directory followed
-  by a prefix (`path/to/directory/out`)
+   by a prefix (`path/to/directory/out`)
 
-To run the algorithm, simply type:
+To run the algorithm type:
 ```bash
 python3 aml.py -l <lexicon.csv> -o <output/path/with_prefix>
 ```
 You will then see the default options and a progress bar printed to the terminal.  
-![Progress bar](img/progress.png)  
+![Progress bar](img/progress.png)
 
 When the algorithm finishes, it saves the **Gang effects** (`_gangs.csv`),
 **Analogical sets** (`_analogical_sets.csv`) and **Distributions**
@@ -73,7 +73,7 @@ The generated confusion matrix ignores ties and needs to be saved by hand.
 
 
 ### b) Setting additional Parameters
-The following parameters can be set:
+The following behaviour can be controlled through parameters:
 1. [test file](#1-test-file)
 2. [weights column](#2-weights-column)
 3. [weights threshold](#3-weights-threshold)
@@ -92,7 +92,7 @@ attributes in the same order. The class column and any ignored columns
 You will receive neither an accuracy score nor a confusion matrix if you
 use a test file.
 
-**Usage**: add `--test <path/to/test>` or shorter `-t <path/to/test>` to the
+**Usage**: Add `--test <path/to/test>` or shorter `-t <path/to/test>` to the
 command.
 
 If you don't provide a test file, the algorithm will perform leave-one-out
@@ -104,22 +104,26 @@ If you use weighted instances, you can specify a weights column which will
 then *not* be considered an attribute for classification. The weights need
 to be numerical.
 
-**Usage**: add `--weights_column <column_name>` or shorter `-w <column_name` to
+**Usage**: Add `--weights_column <column_name>` or shorter `-w <column_name` to
 the command.
+
+Instances with weight 0 will still affect the algorithm, as they impact the
+heterogeneity of a supracontext. Set a threshold if you want them to be
+ignored.
 
 #### 3. Weights Threshold
 If you want to ignore instances with small weights, you can include a
 threshold together with the weights column. This threshold can be any
 non-negative real number.
 
-**Usage**: add `--threshold <value>` or shorter `-th <value>` to the
+**Usage**: Add `--threshold <value>` or shorter `-th <value>` to the
 command.
 
 #### 4. Count Strategy
 The Analogical Modeling algorithm uses the **quadratic** count strategy for
 pointer values per default. You can change this to **linear**.
 
-**Usage**: add `--linear` or simply `-l` to the command.
+**Usage**: Add `--linear` or simply `-L` to the command.
 
 #### 5. Ignoring Columns
 If your data contains columns with additional information, e.g. for
@@ -127,7 +131,7 @@ documentation or comments, or you want to investigate the impact of specific
 attributes without changing the lexicon every time, you can specify columns
 to be ignored.
 
-**Usage**: add `--ignore_columns <column1 column2 ...>` to the command.
+**Usage**: Add `--ignore_columns <column1 column2 ...>` to the command.
 
 Weights and class columns must not be ignored.
 
@@ -135,42 +139,39 @@ Weights and class columns must not be ignored.
 If your data contains missing values (specified by `=`), you can define how
 to treat them.
 
-**Usage**: add `--missing_data <option>` or shorter `-M <option>` to the
+**Usage**: Add `--missing_data <option>` or shorter `-m <option>` to the
 command.
 
 The options are:
 - `variable` (default): treat missing values as variables, thus only matching
-other missing values
+  other missing values
 - `match`: treat missing values as wildcards that match anything
 - `mismatch`: missing values do not match anything
 
 #### 7. Keeping Test Exemplars
 Per default, the algorithm ignores instances with the same attribute
-values as the instance to be classified (the class does not need to be the 
+values as the instance to be classified (the class does not need to be the
 same).
 
 If you disable this and do not use a test file, your accuracy will always
 be at 100% as the instance to be classified will be compared to itself as
 well.
 
-**Usage**: add `--keep_test` or simply `-K` to the command.
+**Usage**: Add `--keep_test` or simply `-k` to the command.
 
 #### 8. Handling Duplicated Instances
 You can remove all duplicated instances (instances with the same attribute
 values and the same class) from the lexicon.
 
-**Usage**: add `--drop_duplicates` or simply `-d` to the command.
+**Usage**: Add `--drop_duplicates` or simply `-d` to the command.
 
 #### 9. Handling Attributes with Missing Values
 Attributes that include unknown values (`=`) can be ignored for all instances.
 
-**Usage**: add `--ignore_unknowns` or shorter `-I` to the command.
+**Usage**: Add `--ignore_unknowns` or shorter `-i` to the command.
 
 #### 10. Debug Mode
 The debug mode logs additional information (classified instances, weights
 threshold) and any Exceptions that might occur.
 
-**Usage**: add `--debug` or `-D` to the command.
-
-#### Additional options:
-- `--ignore_columns` to specify a list of columns to ignore (using their names)
+**Usage**: Add `--debug` or `-D` to the command.
