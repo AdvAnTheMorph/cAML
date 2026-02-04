@@ -8,6 +8,8 @@ from typing import Iterable, Optional
 import pandas as pd
 from TkToolTip import ToolTip as Tip
 
+from analogical_modeling.utils import Dataset, InvalidColumnError
+
 LEN = 40
 FLEN = LEN * 8
 pack_config = {"side": tk.LEFT, "expand": True}  # , "fill": tk.X}
@@ -167,20 +169,17 @@ class WeightsFrame(VisOnCommandFrame):
             return
 
         # validate and set
-        if Path(self.wrapper.lexicon).suffix == ".xlsx":
-            temp = pd.read_excel(self.wrapper.lexicon)
-        else:
-            temp = pd.read_csv(self.wrapper.lexicon)
-
-        if pd.api.types.is_numeric_dtype(temp[value]):
+        temp = Dataset().from_file(self.wrapper.lexicon)
+        try:
+            temp.set_weights_by_column(value)
             self.wrapper.weights = value
             self.threshold_frame.vis()
-        else:
-            self.threshold_frame.invis()
+        except InvalidColumnError as e:
             messagebox.showerror(f"Invalid weights column '{value}'",
-                                 "The selected column does not contain "
-                                 "numeric values")
+                                 e.message)
             self.box.current(0)
+            self.wrapper.weights = ""
+            self.threshold_frame.invis()
 
     def fill(self, vals: list) -> None:
         """Fill Combobox with new values.
@@ -202,6 +201,9 @@ class ThresholdFrame(VisOnCommandFrame):
                  text=f"{'Ignore instances with weights below:':{LEN}s}\t",
                  justify=tk.LEFT,
                  anchor=tk.W).pack(side=tk.LEFT, expand=True, fill=tk.X)
+        tk.Checkbutton(self.frame,
+                       text="inclusive",
+                       variable=wrapper.inc_th,).pack(side=tk.LEFT,)
         tk.Spinbox(self.frame, increment=0.01, from_=0.0, to=1.0,
                    textvariable=wrapper.threshold,
                    validatecommand=(

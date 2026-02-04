@@ -10,9 +10,8 @@ behavior.
 
 import argparse
 import logging
-import os
 import sys
-from os import PathLike
+from os import path, PathLike
 from pathlib import Path
 from random import Random
 from typing import Iterable, Optional
@@ -23,8 +22,8 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from tqdm import tqdm
 
 # necessary for accessing analogical_modeling
-am_path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(am_path, '..'))
+am_path = path.dirname(path.abspath(__file__))
+sys.path.append(path.join(am_path, '..'))
 from analogical_modeling.am.data.gang_effect import GangEffect
 from analogical_modeling.am.data.am_results import AMResults
 from analogical_modeling.am.data.subcontext_list import SubcontextList
@@ -120,16 +119,34 @@ class AnalogicalModeling:
         self.ignore_columns = ignore_list
 
     @property
-    def threshold(self) -> float:
+    def threshold(self) -> tuple[float, bool]:
         """Get minimum weight threshold for instances to be considered."""
         return self._threshold
 
     @threshold.setter
-    def threshold(self, threshold: float | None) -> None:
-        if threshold is None:
+    def threshold(self, threshold: tuple[float, bool]) -> None:
+        self.set_threshold(*tuple(threshold))
+
+    def set_threshold(self, th: float | None, inclusive: bool = False):#, max_th: Optional[float] = None, max_include: bool = False) -> None:
+        """Set upper and lower threshold.
+
+        :param th: lower threshold
+        :param inclusive: whether lower threshold should be inclusive
+        # :param max_th: upper threshold
+        # :param max_include: whether upper threshold should be inclusive
+        """
+        if th is None:# and max_th is None:
             self._threshold = None
             return
-        self._threshold = max(threshold, 0.0)  # no negative thresholds
+        self._threshold = (max(th, 0.0), inclusive)
+        # threshold = [th, include, max_th, max_include]
+        #
+        # # no negative thresholds
+        # if th is not None:
+        #     threshold[0] = max(th, 0.0)
+        # if max_th is not None:
+        #     threshold[2] = min(0.0, max_th)
+        # self._threshold = tuple(threshold)
 
     def set_missing_data_compare(self, new_mode: str) -> None:
         """Set method to deal with missing data."""
@@ -173,7 +190,6 @@ class AnalogicalModeling:
         ignored = self.ignore_columns + [class_column]
         l_header = list(filter(lambda x: x not in ignored, l_header))
         t_header = list(filter(lambda x: x not in ignored, t_header))
-
 
         if t_header != l_header:
             raise HeaderMismatchError(
@@ -225,7 +241,7 @@ class AnalogicalModeling:
 
     def run_classifier(self, csv: PathLike | pd.DataFrame,
                        out_path: Optional[Path], test: str,
-                       weights: str) -> tuple[
+                       weights: str, sheet: str = None, test_sheet: str = None) -> tuple[
         Optional[float], Optional[ConfusionMatrixDisplay], tuple]:
         """Run the classifier instance with the given options.
 
@@ -247,12 +263,12 @@ class AnalogicalModeling:
         if isinstance(csv, pd.DataFrame):
             instances = Dataset(csv, weights)
         else:
-            instances = Dataset().from_file(csv, weights)
+            instances = Dataset().from_file(csv, weights, sheet)
 
         if self._threshold is not None:
             logger.debug(
-                f"Threshold set to {self._threshold}, filtering instances")
-            instances.filter_threshold(self._threshold)
+                f"Threshold set to {self._threshold[0]}, filtering instances")
+            instances.filter_threshold(*self._threshold)
 
         instances.set_ignored(self.ignore_columns)
         if self.drop_duplicates:
@@ -263,7 +279,10 @@ class AnalogicalModeling:
         # use test set, if available
         if test:
             logger.debug(f"Using testset {test}")
-            instances = Dataset().from_file(test)
+            if isinstance(test, pd.DataFrame):
+                instances = Dataset(test)
+            else:
+                instances = Dataset().from_file(test, sheet=test_sheet)
 
             # add class column, if necessary
             class_column_name = self.training_instances.class_column_name()
@@ -448,12 +467,13 @@ class AnalogicalModeling:
         :param classes: possible classes
         :param idx: index of the instance
         """
+
         def get_cls_pct(effect, cls, pointers, gang_pct):
             """Helper to handle potential divisions by zero"""
             try:
                 return round(effect.class_to_pointers.get(cls, 0)
-                  / pointers * gang_pct,
-                  3)
+                             / pointers * gang_pct,
+                             3)
             except ZeroDivisionError:
                 return 0.0
 
@@ -471,7 +491,8 @@ class AnalogicalModeling:
 
             cls_info = {inst: sum([
                 [effect.class_to_pointers.get(cls, 0),  # cls: pointers
-                 get_cls_pct(effect, cls, effect_pointers, gang_pct),  # cls: pct
+                 get_cls_pct(effect, cls, effect_pointers, gang_pct),
+                 # cls: pct
                  len(effect.class_to_instances.get(cls, []))  # cls: size
                  ] if inst in effect.class_to_instances.get(cls, []) else [
                     0, 0, 0]
@@ -627,15 +648,26 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--lexicon", type=Path,
                         help="csv containing the data", required=True)
+    parser.add_argument("--sheet", type=str,
+                        help="sheet name for Excel sheet", required=False)
     parser.add_argument("-t", "--test",
                         help="csv containing test data")
+    parser.add_argument("--test_sheet", type=str,
+                        help="sheet name for Excel sheet", required=False)
     parser.add_argument("-o", "--output",
                         help="output path", type=Path, required=True)
     parser.add_argument("-w", "--weight_colum",
-                        help="name of column for weights")
+                        help="Name of column for weights")
     parser.add_argument("-th", "--threshold", type=float,
                         help="lower threshold for instance weights",
                         default=None)
+    parser.add_argument("--inclusive", action="store_true",
+                        help="make lower threshold inclusive")
+    parser.add_argument("-mt", "--max_threshold", type=float,
+                        help="upper threshold for instance weights",
+                        default=None)
+    parser.add_argument("--max_inclusive", action="store_true",
+                        help="make upper threshold inclusive")
     parser.add_argument("-d", "--drop_duplicates",
                         action="store_true", help="Drop duplicated instances")
     parser.add_argument("--ignore_columns", nargs="*",
@@ -683,13 +715,17 @@ if __name__ == "__main__":
     am.set_missing_data_compare(args.missing_data)
     am.set_drop_duplicates(args.drop_duplicates)
     am.set_ignore_columns(args.ignore_columns)
-    am.threshold = args.threshold
+
+    am.threshold = (args.threshold, args.inclusive)#, args.max_threshold, args.max_inclusive)
 
     # running actual algorithm
     try:
         _, matrix, _ = am.run_classifier(args.lexicon,
                                          args.output,
-                                         args.test, args.weight_colum)
+                                         args.test,
+                                         args.weight_colum,
+                                         args.sheet,
+                                         args.test_sheet)
         if matrix:
             matrix.plot()
             plt.xlabel("Predicted label\nTies are excluded from the plot")

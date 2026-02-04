@@ -55,6 +55,7 @@ python3 aml.py -l <data.csv> -o <output>
 - `-t` or `--test` `<test_file>` to use a separate document for testing (instead of predicting each instance in the lexicon)
 - `-w` or `--weight_column` `column_name` specifies a column for weights
 - `-th` or `--threshold` `value` will drop any instances with a weight below that threshold
+- `--inclusive` to drop instances with a weight equal to the threshold
 - `-d` or `--drop_duplicates`
     - any instance with the same features and the same class within the lexicon will be dropped
 - `--ignore_columns` to specify a list of columns to ignore (using their names)

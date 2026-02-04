@@ -102,7 +102,7 @@ classification on all instances of the lexicon.
 #### 2. Weights Column
 If you use weighted instances, you can specify a weights column which will
 then *not* be considered an attribute for classification. The weights need
-to be numerical.
+to be numerical and non-negative.
 
 **Usage**: Add `--weights_column <column_name>` or shorter `-w <column_name` to
 the command.
@@ -118,6 +118,9 @@ non-negative real number.
 
 **Usage**: Add `--threshold <value>` or shorter `-th <value>` to the
 command.
+
+If you want the threshold to be **inclusive**, i.e. to ignore instances with
+a weight equal to the threshold, append `--inclusive` to the command. 
 
 #### 4. Count Strategy
 The Analogical Modeling algorithm uses the **quadratic** count strategy for

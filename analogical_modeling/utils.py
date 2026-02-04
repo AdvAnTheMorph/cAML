@@ -8,7 +8,7 @@ import math
 import sys
 from os import PathLike
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import pandas as pd
 
@@ -108,7 +108,7 @@ class Instance(pd.Series):
 class Dataset:
     """Dataset representation."""
 
-    def __init__(self, atts: list | None = None, weights: str = ""):
+    def __init__(self, atts: list|pd.DataFrame|None = None, weights: str = ""):
         """
 
         :param atts: if atts is None, call :func:`from_csv` to populate the
@@ -127,15 +127,16 @@ class Dataset:
         self.weights = self.set_weights_by_column(weights)
         self.class_index = self.num_attributes() - 1
 
-    def from_file(self, source: PathLike, weights: str = "") -> 'Dataset':
+    def from_file(self, source: PathLike, weights: str = "", sheet: Optional[str] = None) -> 'Dataset':
         """Read dataset from csv file.
 
         :param source: path to csv or Excel file
         :param weights: name of column with weights, if given
+        :param sheet: sheet name for Excel files
         """
         match Path(source).suffix:  # match/case for easier extension
             case ".xlsx":
-                fun = pd.read_excel
+                fun = lambda x: pd.read_excel(x, sheet_name=sheet)
             case _:
                 fun = pd.read_csv
 
@@ -161,6 +162,8 @@ class Dataset:
             try:
                 col = self.data[name]
                 if pd.api.types.is_numeric_dtype(col):
+                    if min(col) < 0:
+                        raise InvalidColumnError("Weights must not be negative.")
                     weights = col.tolist()
                     self.data.drop(columns=[name], inplace=True)
                 else:
@@ -207,16 +210,22 @@ class Dataset:
             raise TypeError(f"Index must be an integer, not {type(idx)}.")
         self._class_index = idx
 
-    def filter_threshold(self, threshold: float) -> None:
-        """Drop all instances with a weight below the given threshold."""
+    def filter_threshold(self, threshold: float, inclusive: bool=False) -> None:
+        """Drop all instances with a weight below the given threshold.
+
+        :param threshold: drop everything below this threshold
+        :param inclusive: whether to include the threshold
+        """
         temp = pd.DataFrame(self.weights)
-        if threshold != 0:
-            self.data.drop(temp[temp[0] < threshold].index, inplace=True)
-            self.weights = list(filter(lambda w: w >= threshold, self.weights))
-        else:
+        print(self.weights)
+        if inclusive:
             self.data.drop(temp[temp[0] <= threshold].index, inplace=True)
             self.weights = list(filter(lambda w: w > threshold, self.weights))
+        else:
+            self.data.drop(temp[temp[0] < threshold].index, inplace=True)
+            self.weights = list(filter(lambda w: w >= threshold, self.weights))
         self.data.reset_index(drop=True, inplace=True)
+        print(self.weights)
 
     def delete_with_missing_class(self) -> None:
         """Delete instances without a class."""

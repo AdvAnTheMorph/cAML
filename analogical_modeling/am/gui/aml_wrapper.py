@@ -24,6 +24,7 @@ class AMWrapper:
         self.out_name = tk.StringVar()
         self.weights = ""
         self.threshold = tk.DoubleVar()
+        self.inc_th = tk.BooleanVar()
         self.threshold.trace_add('write', self.validate_threshold)
         self.drop_duplicates = tk.BooleanVar()
         self.linear = tk.BooleanVar()
@@ -110,7 +111,7 @@ class AMWrapper:
         self.am.set_missing_data_compare(self.mdc.get())
         self.am.set_drop_duplicates(self.drop_duplicates.get())
         self.am.set_ignore_columns(self.ignored)
-        self.am.threshold = self.threshold.get()
+        self.am.threshold = (self.threshold.get(), self.inc_th.get())
         self.am.gui_queue = self.queue = Queue()
 
         if self.debug.get():
