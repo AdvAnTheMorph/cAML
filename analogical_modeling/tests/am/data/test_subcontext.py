@@ -29,7 +29,8 @@ class SubcontextTest(unittest.TestCase):
     #         // TODO: can't test toString() like this because data is an
     #          unordered
     #         // set
-    #         // assertEquals("(0|&nondeterministic&|1,r,{2}/1,e,{2})", s.toString());
+    #         // assertEquals("(0|&nondeterministic&|1,r,{2}/1,e,{2})",
+    #         s.toString());
     #     }
 
     def test_to_string_with_empty_data(self):

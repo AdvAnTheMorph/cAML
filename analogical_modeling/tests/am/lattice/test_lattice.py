@@ -66,8 +66,10 @@ class LatticeTest(unittest.TestCase):
         of supracontexts.
 
         :param train: Dataset to train with
-        :param test_index: Index of item in dataset to remove and use as a test item
-        :param expected_supras: String representations of the supracontexts that should be created from the train/test combo
+        :param test_index: Index of item in dataset to remove and use as a
+            test item
+        :param expected_supras: String representations of the supracontexts that
+            should be created from the train/test combo
         """
         test = train[test_index]
         train.data.drop(index=test_index, inplace=True)
@@ -107,7 +109,7 @@ class LatticeTest(unittest.TestCase):
         for lattice_supplier in lattices:
             if isinstance(lattice_supplier(),
                           HeterogeneousLattice) or isinstance(
-                    lattice_supplier(), JohnsenJohanssonLattice):
+                lattice_supplier(), JohnsenJohanssonLattice):
                 # HeterogeneousLattice not designed for prediction
                 # JohnsenJohanssonLattice inaccurate for small datasets
                 continue
@@ -126,7 +128,7 @@ class LatticeTest(unittest.TestCase):
         for lattice_supplier in lattices:
             if isinstance(lattice_supplier(),
                           HeterogeneousLattice) or isinstance(
-                    lattice_supplier(), JohnsenJohanssonLattice):
+                lattice_supplier(), JohnsenJohanssonLattice):
                 # HeterogeneousLattice not designed for prediction
                 # JohnsenJohanssonLattice inaccurate for small datasets
                 continue

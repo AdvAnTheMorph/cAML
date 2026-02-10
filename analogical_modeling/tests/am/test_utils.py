@@ -58,9 +58,11 @@ def get_instance_from_file(file_in_data_folder: str,
     index. It is assumed that the file is in the project data folder, and
     that the class attribute is the last one.
 
-    :param file_in_data_folder: Name of csv file in located in the project data folder
+    :param file_in_data_folder: Name of csv file in located in the project
+        data folder
     :param index: Index of instance to return
-    :return: The instance at the specified index of the dataset contained in the file
+    :return: The instance at the specified index of the dataset contained in
+        the file
     :raises Exception: if there is a problem loading the instance
     """
     instances = get_dataset(file_in_data_folder)
@@ -85,10 +87,12 @@ def mock_instance(num_attributes: int):
 
 def get_reduced_dataset(file_in_data_folder: str,
                         ignore_atts: list[int]) -> utils.Dataset:
-    """Read a dataset from the given file and remove the specified attributes, then return it.
+    """Read a dataset from the given file and remove the specified attributes,
+    then return it.
 
     :param file_in_data_folder: name of file in the project data folder
-    :param ignore_atts:  A list of indices specifying which attributes should be removed.
+    :param ignore_atts:  A list of indices specifying which attributes should
+        be removed.
     :return: The altered dataset
     """
 
@@ -108,7 +112,8 @@ def random_provider():
 
 
 def get_deterministic_random_provider():
-    """ Supply deterministic PRNG output for testing algorithms that use randomness (JJLattice, etc.)
+    """ Supply deterministic PRNG output for testing algorithms that use
+    randomness (JJLattice, etc.)
 
     :return: A random provider with deterministic output
     """
@@ -183,7 +188,8 @@ def get_supra_from_string(supra_string: str, data):
     :param supra_string: A string representing the supracontext to be created.
                          This should be in the same form as that produced by
                          str(ClassifiedSupra).
-    :param data: The dataset containing the instances specified in the Supracontext string. For example:
+    :param data: The dataset containing the instances specified in the
+                 Supracontext string. For example:
                  <code>[1x(01010|&amp;nondeterministic&amp;|H,A,V,A,0,B/H,A,V,I,0,A)]</code> .
     :return: classified supra created according to string specification
     """
@@ -292,4 +298,3 @@ def test_supra_from_string():
                              actual_supra)
 
 #         // TODO: test error conditions
-

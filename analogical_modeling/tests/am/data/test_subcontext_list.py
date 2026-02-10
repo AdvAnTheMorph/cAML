@@ -72,6 +72,7 @@ class SubContextListTest(unittest.TestCase):
 
         subs = SubcontextList(labeler, train, False)
         self.assertEqual(labeler, subs.labeler,
-                         "getLabeler returns the labeler used in the constructor")
+                         "getLabeler returns the labeler used in the "
+                         "constructor")
         self.assertEqual(3, subs.get_cardinality(),
                          "getCardinality returns the cardinality of the test item")

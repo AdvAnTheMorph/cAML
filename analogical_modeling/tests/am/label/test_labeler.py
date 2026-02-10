@@ -131,7 +131,8 @@ class LabelerTest(unittest.TestCase):
         self.assertEqual(Label({0, 1, 2, 3, 4}, 5), labeler.label(dataset[5]))
 
     def test_get_context_label_missing_data_compares(self):
-        """Test that missing values are compared based on the input MissingDataCompare value."""
+        """Test that missing values are compared based on the input
+        MissingDataCompare value."""
         dataset = test_utils.six_cardinality_data()
         labeler = Labeler(dataset[6], False, MissingDataCompare.MATCH)
         self.assertEqual(Label({2}, 5), labeler.label(dataset[0]))
