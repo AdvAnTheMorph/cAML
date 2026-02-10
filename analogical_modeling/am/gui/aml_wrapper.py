@@ -18,7 +18,7 @@ class AMWrapper:
         self.am = AnalogicalModeling()
         self.lexicon = ""
         self.class_idx = -1
-        self.testset = ""
+        self.testset = None
         self.out = ""
         self.out_dir = Path("../..").resolve()
         self.out_name = tk.StringVar()

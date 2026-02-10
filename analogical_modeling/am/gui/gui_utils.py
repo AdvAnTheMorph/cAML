@@ -405,7 +405,7 @@ class MainConfigFrame:
 
     def clear_test(self):
         """Clear testset and update widgets accordingly."""
-        self.wrapper.testset = ""
+        self.wrapper.testset = None
         self.del_test_button.pack_forget()
         self.test_button.configure(text="Select file", width=LEN)
 
