@@ -1,9 +1,15 @@
 """Integration tests for analogical modeling."""
 
+import math
 import unittest
+import warnings
 
-from analogical_modeling.aml import AnalogicalModeling
+import pandas as pd
+
+from analogical_modeling.aml import AnalogicalModeling, HeaderMismatchError
 from analogical_modeling.tests.am import test_utils
+from analogical_modeling.utils import Dataset, InvalidColumnError, \
+    EmptyLexiconError, TooFewAttributesError
 
 
 class AnalogicalModelingTest(unittest.TestCase):
@@ -17,6 +23,15 @@ class AnalogicalModelingTest(unittest.TestCase):
         # Ensure Johnsen-Johansson lattice runs deterministically
         am.set_random_provider(test_utils.get_deterministic_random_provider())
         return am
+
+    @staticmethod
+    def get_data():
+        return pd.DataFrame({'attr1': [3, 3, 2, 3],
+                             'attr2': [1, 1, 1, 1],
+                             'ignore': ['s', 't', 'r', 'i'],
+                             'w_neg': [-0.4, 0.0, 0.19, 0.106],
+                             'w': [0.4, 0.0, 0.19, 0.106],
+                             'class': ['r', 'r', 'e', 'r']})
 
     def test_chapter_3_data(self):
         train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA)
@@ -162,3 +177,151 @@ class AnalogicalModelingTest(unittest.TestCase):
 
         for k, v in {"e": 0.8, "r": 1.002}.items():
             self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7)
+
+    def test_weights(self):
+        data = self.get_data()
+
+        self.assertEqual(Dataset(data).weights, [1] * 4)
+        # should work
+        self.assertEqual(Dataset(data, "w").weights, [0.4, 0.0, 0.19, 0.106])
+        self.assertEqual(Dataset(data, "w").data.shape, (4, 5))
+
+        # shouldn't work
+        with self.assertRaises(InvalidColumnError):  # negative
+            Dataset(data, weights="w_neg")
+        with self.assertRaises(InvalidColumnError):  # not numeric
+            Dataset(data, weights="ignore")
+
+    def test_empty_data(self):
+        warnings.filterwarnings("error")  # consider them Exceptions
+        am = self.get_classifier()
+        data = pd.DataFrame(columns=["attr1", "attr2"])
+
+        with self.assertRaises(UserWarning) as ex:  # no instances
+            am.run_classifier(data, None, None, "")
+        self.assertEqual(ex.exception.args[0],
+                         "The lexicon does not contain any Instances.")
+
+        data = pd.DataFrame({"col": ["attr1", "attr2"]})
+        with self.assertRaises(UserWarning) as ex:  # not enough attributes
+            am.run_classifier(data, None, None, "")
+        self.assertEqual(ex.exception.args[0],
+                         "There should be at least 1 attribute beside the class.")
+
+        data = pd.DataFrame({"attr1": ["a", math.nan], "attr2": [None, "="]})
+        self.assertIsNotNone(Dataset(data))  # don't raise Errors
+        data = Dataset(data)
+        self.assertFalse(data[0].is_missing(1), "None != missing")  # math.nan
+        self.assertFalse(data[1].is_missing(0), "None != missing")  # None
+        self.assertTrue(data[1].is_missing(1), "= == missing")  # =
+
+    def test_headers(self):
+        am = self.get_classifier()
+        lex = pd.DataFrame(
+            {"attr1": ["a", "b"], "attr2": ["c", "d"], "cls": ["e", "f"]})
+        test = pd.DataFrame({"attr1": ["a"], "attr3": ["d"], "cls": ["e"]})
+
+        # names relevant
+        with self.assertRaises(HeaderMismatchError):
+            am.run_classifier(lex, None, test, "")
+        # order relevant
+        test = pd.DataFrame({"attr2": ["a"], "attr1": ["d"], "cls": ["e"]})
+        with self.assertRaises(HeaderMismatchError):
+            am.run_classifier(lex, None, test, "")
+
+        # cls optional
+        test = pd.DataFrame({"attr1": ["a"], "attr2": ["d"]})
+        self.assertTrue(am.run_classifier(lex, None, test, ""))
+        # cls optional
+        test = pd.DataFrame({"attr1": ["a"], "cls": ["e"], "attr2": ["d"]})
+        self.assertTrue(am.run_classifier(lex, None, test, ""))
+
+    def test_threshold(self):
+        lex = Dataset(self.get_data(), weights="w")
+
+        instances = list(lex)
+        weights = lex.weights
+        self.assertEqual(len(instances), 4)
+
+        # inclusive: drop all instances -> Exception
+        with self.assertRaises(EmptyLexiconError):
+            lex.filter_threshold(0.4, inclusive=True)
+        # threshold above max weight -> Exception
+        with self.assertRaises(EmptyLexiconError):
+            lex.filter_threshold(100, inclusive=False)
+        # Exceptions raised -> no impact
+        self.assertEqual(list(lex), instances, "No change in case of Exception")
+        self.assertEqual(lex.weights, weights)
+
+        # negative threshold -> no impact
+        lex.filter_threshold(-0.4, inclusive=True)
+        self.assertEqual(len(list(lex)), 4)
+        self.assertEqual(list(lex), instances)
+        self.assertEqual(lex.weights, weights)
+
+        # exclusive threshold below any weight value
+        lex.filter_threshold(0, inclusive=False)
+        self.assertEqual(len(list(lex)), 4)
+        self.assertEqual(list(lex), instances)
+        self.assertEqual(lex.weights, weights)
+
+        # inclusive: drop instance 1
+        lex.filter_threshold(0, inclusive=True)
+        self.assertEqual(len(list(lex)), 3)
+        self.assertEqual(list(lex), instances[:1] + instances[2:])
+        self.assertEqual(lex.weights, weights[:1] + weights[2:])
+
+        # exclusive: drop all but instance 0
+        lex.filter_threshold(0.4, inclusive=False)
+        self.assertEqual(len(list(lex)), 1)
+        self.assertEqual(list(lex), instances[:1])
+        self.assertEqual(lex.weights, weights[:1])
+
+    def test_ignore(self):
+        data = Dataset(self.get_data())
+
+        total = data.num_attributes()
+        self.assertEqual(data.num_attributes(), data.num_counted_attributes())
+
+        # now one counted attribute less
+        data.set_ignored(["ignore"])
+        self.assertEqual(data.num_attributes(), total)
+        self.assertEqual(data.num_counted_attributes(), total - 1)
+        self.assertEqual(list(data[0].keys()),
+                         ["attr1", "attr2", "w_neg", "w", "class"])
+
+        # multiple ignored columns
+        data.set_ignored(["ignore", "w"])
+        self.assertEqual(data.num_attributes(), total)
+        self.assertEqual(data.num_counted_attributes(), total - 2)
+        self.assertEqual(list(data[0].keys()),
+                         ["attr1", "attr2", "w_neg", "class"])
+
+        # class can't be ignored
+        with self.assertRaises(InvalidColumnError):
+            data.set_ignored(["class"])
+
+        # possible to ignore same column multiple times
+        data.set_ignored(["ignore", "ignore"])
+        self.assertEqual(data.num_attributes(), total)
+        self.assertEqual(data.num_counted_attributes(), total - 1)
+        self.assertEqual(list(data[0].keys()),
+                         ["attr1", "attr2", "w_neg", "w", "class"])
+
+        # recover
+        data.set_ignored([])
+        self.assertEqual(data.num_attributes(), total)
+        self.assertEqual(data.num_counted_attributes(), total)
+
+        # required to be in data
+        with self.assertRaises(InvalidColumnError):
+            data.set_ignored(["not_in_data"])
+
+        # ignore if silent == True
+        data.set_ignored(["not_in_data"], silent=True)
+        self.assertEqual(data.num_attributes(), total)
+        self.assertEqual(data.num_counted_attributes(), total)
+
+        # impossible to ignore all columns
+        with self.assertRaises(TooFewAttributesError):
+            data.set_ignored(["attr1", "attr2", "w_neg", "w", "ignore"])

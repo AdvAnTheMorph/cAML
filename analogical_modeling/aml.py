@@ -11,6 +11,7 @@ behavior.
 import argparse
 import logging
 import sys
+import warnings
 from os import path, PathLike
 from pathlib import Path
 from random import Random
@@ -38,6 +39,10 @@ logging.basicConfig(format="({asctime}) {name} {levelname}: {message}",
                     datefmt="%H:%M:%S", style="{", filename=".log")
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+# consider them Exceptions
+warnings.filterwarnings("error", category=UserWarning)
+#message="(There should be at least 1 attribute beside the class.)|(The lexicon does not contain any Instances.)")
 
 
 class HeaderMismatchError(Exception):
@@ -146,6 +151,9 @@ class AnalogicalModeling:
         #     threshold[0] = max(th, 0.0)
         # if max_th is not None:
         #     threshold[2] = min(0.0, max_th)
+        # if th is not None and max_th is not None:
+        #   if max_th <= th:
+        #       raise ValueError("Upper threshold must be greater than lower threshold.")
         # self._threshold = tuple(threshold)
 
     def set_missing_data_compare(self, new_mode: str) -> None:
@@ -240,8 +248,8 @@ class AnalogicalModeling:
                          labeler)
 
     def run_classifier(self, csv: PathLike | pd.DataFrame,
-                       out_path: Optional[Path], test: str,
-                       weights: str, sheet: str = None, test_sheet: str = None) -> tuple[
+                       out_path: Optional[Path], test: str = None,
+                       weights: str = "", sheet: str = None, test_sheet: str = None) -> tuple[
         Optional[float], Optional[ConfusionMatrixDisplay], tuple]:
         """Run the classifier instance with the given options.
 
@@ -277,7 +285,7 @@ class AnalogicalModeling:
         self.build_classifier(instances)
 
         # use test set, if available
-        if test:
+        if test is not None:
             logger.debug(f"Using testset {test}")
             if isinstance(test, pd.DataFrame):
                 instances = Dataset(test)
@@ -330,10 +338,14 @@ class AnalogicalModeling:
         return acc, conf_matrix, files
 
     def build_classifier(self, instances: Dataset) -> None:
-        """This is used to build the classifier; it specifies the
+        """
+        This is used to build the classifier; it specifies the
         capabilities of the classifier and loads in exemplars to be used for
         prediction. No actual analysis happens here because AM is a lazy
-        classifier."""
+        classifier.
+
+        :param instances: lexicon
+        """
 
         # remove instances with missing class value
         instances.delete_with_missing_class()
@@ -399,8 +411,12 @@ class AnalogicalModeling:
             [inst.class_value() in res.predicted_classes
              for inst, res in zip(instances, results)])
         acc = correct / len(results)
+
+        # ignore this one warning (TODO: solve differently)
+        warnings.resetwarnings()
         cnf = confusion_matrix(golds, preds,
                                labels=list(instances.get_classes()))
+        warnings.filterwarnings("error", category=UserWarning)
         disp = ConfusionMatrixDisplay(cnf, display_labels=list(
             instances.get_classes()))
 
@@ -650,7 +666,7 @@ if __name__ == "__main__":
                         help="csv containing the data", required=True)
     parser.add_argument("--sheet", type=str,
                         help="sheet name for Excel sheet", required=False)
-    parser.add_argument("-t", "--test",
+    parser.add_argument("-t", "--test", default=None,
                         help="csv containing test data")
     parser.add_argument("--test_sheet", type=str,
                         help="sheet name for Excel sheet", required=False)

@@ -5,7 +5,7 @@ remains from weka:
 - Instances = rows
 """
 import math
-import sys
+import warnings
 from os import PathLike
 from pathlib import Path
 from typing import Any, Optional
@@ -16,6 +16,21 @@ import pandas as pd
 class InvalidColumnError(Exception):
     """Exception if a column configuration is invalid."""
 
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+
+class EmptyLexiconError(Exception):
+    """Exception if a lexicon is empty."""
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+
+class TooFewAttributesError(Exception):
+    """Exception if less than 2 attributes (class + 1 other)"""
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
@@ -35,6 +50,7 @@ class Instance(pd.Series):
         :param class_column: name of column containing class value
         :param ignore_list: columns to ignore
         :param idx: index in the dataset
+        :raise InvalidColumnError: if not silent and ignored columns not in data
         """
         super().__init__(data)
         if silent:
@@ -43,7 +59,9 @@ class Instance(pd.Series):
             try:
                 self.drop(labels=ignore_list, inplace=True)
             except KeyError as e:  # raise error to prevent silent typos
-                sys.exit(f"{e} - (valid columns are {list(self.keys())}).")
+                raise InvalidColumnError(
+                    f"Not all ignored columns ({ignore_list}) in data (valid "
+                    f"columns are {list(self.keys())}).") from e
         self.class_index = self.keys().get_loc(class_column)
         self.real_data = data
         self.data_idx = idx
@@ -108,12 +126,14 @@ class Instance(pd.Series):
 class Dataset:
     """Dataset representation."""
 
-    def __init__(self, atts: list|pd.DataFrame|None = None, weights: str = ""):
+    def __init__(self, atts: list | pd.DataFrame | None = None,
+                 weights: str = ""):
         """
 
         :param atts: if atts is None, call :func:`from_csv` to populate the
             dataset
         :param weights: name of column with weights, if given
+        :raise EmptyLexiconError: if lexicon empty
         """
         self.ignored: list[str] = []
         self.silent = False  # require ignored columns to be there
@@ -123,16 +143,20 @@ class Dataset:
             self.weights = []
             return
         self.data = pd.DataFrame(atts).replace(math.nan, None)
+        if len(self.data) == 0:
+            warnings.warn("The lexicon does not contain any Instances.")
 
         self.weights = self.set_weights_by_column(weights)
         self.class_index = self.num_attributes() - 1
 
-    def from_file(self, source: PathLike, weights: str = "", sheet: Optional[str] = None) -> 'Dataset':
+    def from_file(self, source: PathLike, weights: str = "",
+                  sheet: Optional[str] = None) -> 'Dataset':
         """Read dataset from csv file.
 
         :param source: path to csv or Excel file
         :param weights: name of column with weights, if given
         :param sheet: sheet name for Excel files
+        :raise EmptyLexiconError: if lexicon empty
         """
         match Path(source).suffix:  # match/case for easier extension
             case ".xlsx":
@@ -141,6 +165,8 @@ class Dataset:
                 fun = pd.read_csv
 
         self.data = fun(Path(__file__).parent / source).replace(math.nan, None)
+        if len(self.data) == 0:
+            warnings.warn("The lexicon does not contain any Instances.")
 
         self.weights = self.set_weights_by_column(weights)
 
@@ -155,6 +181,8 @@ class Dataset:
         The weights column is then dropped from the dataset.
 
         :param name: name of column with weights, if given
+        :raise InvalidColumnError: if weights column not in data or weights
+            not numeric or weights negative
         """
         # remove weights from dataset, as they are no features
         if name:
@@ -163,7 +191,8 @@ class Dataset:
                 col = self.data[name]
                 if pd.api.types.is_numeric_dtype(col):
                     if min(col) < 0:
-                        raise InvalidColumnError("Weights must not be negative.")
+                        raise InvalidColumnError(
+                            "Weights must not be negative.")
                     weights = col.tolist()
                     self.data.drop(columns=[name], inplace=True)
                 else:
@@ -202,30 +231,41 @@ class Dataset:
         """Set the class index.
 
         :param idx: index of the class
+        :raise TypeError: if index is not an integer
+        :raise TooFewAttributesError: if fewer than 2 attributes
+        :raise ValueError: if index higher than number of attributes
         """
-        if idx > self.num_attributes():
-            raise ValueError(f"Index out of range: There are only "
-                             f"{self.num_attributes()} attributes.")
         if not isinstance(idx, int):
             raise TypeError(f"Index must be an integer, not {type(idx)}.")
+        if self.num_attributes() < 2:
+            warnings.warn("There should be at least 1 attribute beside the class.")
+        if idx > self.num_attributes():
+            raise ValueError(f"Class index out of range: There are only "
+                             f"{self.num_attributes()} attributes.")
         self._class_index = idx
 
-    def filter_threshold(self, threshold: float, inclusive: bool=False) -> None:
+    def filter_threshold(self, threshold: float,
+                         inclusive: bool = False) -> None:
         """Drop all instances with a weight below the given threshold.
 
         :param threshold: drop everything below this threshold
         :param inclusive: whether to include the threshold
+        :raise EmptyLexiconError: if lexicon would be empty after filtering
         """
         temp = pd.DataFrame(self.weights)
-        print(self.weights)
         if inclusive:
-            self.data.drop(temp[temp[0] <= threshold].index, inplace=True)
-            self.weights = list(filter(lambda w: w > threshold, self.weights))
+            new_data = self.data.drop(temp[temp[0] <= threshold].index)
+            weights = list(filter(lambda w: w > threshold, self.weights))
         else:
-            self.data.drop(temp[temp[0] < threshold].index, inplace=True)
-            self.weights = list(filter(lambda w: w >= threshold, self.weights))
+            new_data = self.data.drop(temp[temp[0] < threshold].index)
+            weights = list(filter(lambda w: w >= threshold, self.weights))
+        if len(new_data) == 0:
+            raise EmptyLexiconError("No instances remaining.")
+
+        # update only if safe to do so
+        self.data = new_data
+        self.weights = weights
         self.data.reset_index(drop=True, inplace=True)
-        print(self.weights)
 
     def delete_with_missing_class(self) -> None:
         """Delete instances without a class."""
@@ -253,9 +293,28 @@ class Dataset:
 
         :param ignore: columns to ignore
         :param silent: if True, ignore if columns not in data
+        :raise InvalidColumnError: if not silent and columns not in data
+        :raise InvalidColumnError: if class column in ignored columns
+        :raise TooFewAttributesError: if less than two considered attributes
+            remaining
         """
-        self.ignored = ignore
         self.silent = silent
+
+        if not silent and list(
+                filter(lambda x: x not in self.data.columns, ignore)):
+            raise InvalidColumnError(
+                f"Not all ignored columns ({ignore}) in data (valid "
+                f"columns are {list(self.data.columns)}).")
+        # class column ignored
+        if self.class_column_name() in ignore:
+            raise InvalidColumnError(f"Class column {self.class_column_name()} "
+                                     f"can't be ignored.")
+
+        # else: filter out superfluous attributes
+        if len(set(ignore)) > len(self.data.columns) - 2:
+            raise TooFewAttributesError(
+                "There must be at least 1 considered attribute beside the class.")
+        self.ignored = list(filter(lambda x: x in self.data.columns, set(ignore)))
 
     def __getitem__(self, idx) -> Instance:
         return Instance(self.data.iloc[idx], self.class_column_name(),
