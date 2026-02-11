@@ -26,12 +26,13 @@ root = tk.Tk()
 #     height = window.winfo_height()
 #     screen_width = window.winfo_screenwidth()
 #     screen_height = window.winfo_screenheight()
-#     x = (screen_width - width) // 2
+#     x = (screen_width - widt  h) // 2
 #     y = (screen_height - height) // 2
 #     window.geometry(f"{width}x{height}+{x}+{y}")
 
 root.title('Analogical Modeling')
 root.minsize(600, 700)
+# root.maxsize(700, 800)
 root.geometry("800x700+50+50")
 
 wrapper = AMWrapper()

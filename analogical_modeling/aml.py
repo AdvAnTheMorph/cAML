@@ -41,8 +41,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 # consider them Exceptions
-warnings.filterwarnings("error", category=UserWarning)
-#message="(There should be at least 1 attribute beside the class.)|(The lexicon does not contain any Instances.)")
+warnings.filterwarnings("error", category=UserWarning,
+                        module="analogical_modeling*", append=True)
 
 
 class HeaderMismatchError(Exception):
@@ -412,11 +412,8 @@ class AnalogicalModeling:
              for inst, res in zip(instances, results)])
         acc = correct / len(results)
 
-        # ignore this one warning (TODO: solve differently)
-        warnings.resetwarnings()
         cnf = confusion_matrix(golds, preds,
                                labels=list(instances.get_classes()))
-        warnings.filterwarnings("error", category=UserWarning)
         disp = ConfusionMatrixDisplay(cnf, display_labels=list(
             instances.get_classes()))
 

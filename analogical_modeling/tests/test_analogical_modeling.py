@@ -193,7 +193,7 @@ class AnalogicalModelingTest(unittest.TestCase):
             Dataset(data, weights="ignore")
 
     def test_empty_data(self):
-        warnings.filterwarnings("error")  # consider them Exceptions
+        warnings.filterwarnings("error", module="analogical_modeling*")  # consider them Exceptions
         am = self.get_classifier()
         data = pd.DataFrame(columns=["attr1", "attr2"])
 
