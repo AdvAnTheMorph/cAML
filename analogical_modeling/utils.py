@@ -310,11 +310,13 @@ class Dataset:
             raise InvalidColumnError(f"Class column {self.class_column_name()} "
                                      f"can't be ignored.")
 
-        # else: filter out superfluous attributes
-        if len(set(ignore)) > len(self.data.columns) - 2:
+        # filtering would result in less than one attribute?
+        to_ignore = list(filter(lambda x: x in self.data.columns, set(ignore)))
+        if self.data.shape[1] - len(to_ignore) < 2:
             raise TooFewAttributesError(
                 "There must be at least 1 considered attribute beside the class.")
-        self.ignored = list(filter(lambda x: x in self.data.columns, set(ignore)))
+        # else: filter out superfluous attributes
+        self.ignored = to_ignore
 
     def __getitem__(self, idx) -> Instance:
         return Instance(self.data.iloc[idx], self.class_column_name(),

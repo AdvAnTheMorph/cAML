@@ -232,9 +232,15 @@ class AnalogicalModelingTest(unittest.TestCase):
         # cls optional
         test = pd.DataFrame({"attr1": ["a"], "attr2": ["d"]})
         self.assertTrue(am.run_classifier(lex, None, test, ""))
-        # cls optional
+        # cls location irrelevant
         test = pd.DataFrame({"attr1": ["a"], "cls": ["e"], "attr2": ["d"]})
         self.assertTrue(am.run_classifier(lex, None, test, ""))
+
+        # ignored columns irrelevant
+        am.ignore_columns = ["attr2"]
+        test = pd.DataFrame({"attr1": ["a"]})
+        self.assertTrue(am.run_classifier(lex, None, test, ""))
+
 
     def test_threshold(self):
         lex = Dataset(self.get_data(), weights="w")
@@ -300,6 +306,10 @@ class AnalogicalModelingTest(unittest.TestCase):
         # class can't be ignored
         with self.assertRaises(InvalidColumnError):
             data.set_ignored(["class"])
+
+        # weights can't be ignored (dropped from dataa)
+        with self.assertRaises(InvalidColumnError):
+            Dataset(self.get_data(), weights="w").set_ignored(["w"])
 
         # possible to ignore same column multiple times
         data.set_ignored(["ignore", "ignore"])
