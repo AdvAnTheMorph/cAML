@@ -1,6 +1,7 @@
 """Test handling of missing data"""
 
 import unittest
+import warnings
 
 from analogical_modeling.am.label.missing_data_compare import \
     MissingDataCompare
@@ -9,6 +10,7 @@ from analogical_modeling.utils import Dataset
 
 class TestMissingDataCompare(unittest.TestCase):
     def setUp(self):
+        warnings.filterwarnings("ignore", module="analogical_modeling")
         self.dataset = Dataset([["="], [0]])
 
     def test_match(self):

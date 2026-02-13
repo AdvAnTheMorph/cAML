@@ -14,10 +14,13 @@ from analogical_modeling.utils import Dataset, InvalidColumnError, \
 
 class AnalogicalModelingTest(unittest.TestCase):
 
+    def setUp(self) -> None:
+        """Reset handling of warnings to `error`."""
+        warnings.filterwarnings("error", module="analogical_modeling*")
 
     @staticmethod
-    def get_classifier():
-        """Creates a default AnalogicalModeling"""
+    def get_classifier() -> AnalogicalModeling:
+        """Creates a default AnalogicalModeling."""
         am = AnalogicalModeling()
         am.set_remove_test_exemplar(False)
         # Ensure Johnsen-Johansson lattice runs deterministically
@@ -25,7 +28,8 @@ class AnalogicalModelingTest(unittest.TestCase):
         return am
 
     @staticmethod
-    def get_data():
+    def get_data() -> pd.DataFrame:
+        """Get dummy dataset."""
         return pd.DataFrame({'attr1': [3, 3, 2, 3],
                              'attr2': [1, 1, 1, 1],
                              'ignore': ['s', 't', 'r', 'i'],
@@ -34,6 +38,7 @@ class AnalogicalModelingTest(unittest.TestCase):
                              'class': ['r', 'r', 'e', 'r']})
 
     def test_chapter_3_data(self):
+        """Test data from Chapter 3."""
         train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA)
         test = train[0]
         am = self.get_classifier()
@@ -51,8 +56,7 @@ class AnalogicalModelingTest(unittest.TestCase):
     def test_finnverb(self):
         """
         Test accuracy with the finnverb dataset, a real data set with 10
-        features
-        and lots of unknowns. First check the class pointers on one
+        features and lots of unknowns. First check the class pointers on one
         classification, then do a leave-one-out classification for the whole set
         and verify the accuracy.
         """
@@ -75,6 +79,7 @@ class AnalogicalModelingTest(unittest.TestCase):
         self.assertEqual(160, num_correct)
 
     def test_soybean(self):
+        """Test larger dataset."""
         train = test_utils.get_dataset(test_utils.SOYBEAN)
         test = train[15]
         train.data.drop(index=15, inplace=True)
@@ -121,12 +126,13 @@ class AnalogicalModelingTest(unittest.TestCase):
         self.assertEqual(expected, am.get_results().get_class_pointers())
 
     def test_audiology(self):
-        # forces use of JohnsenJohanssonLattice
+        """Test classification with JohnsenJohanssonLattice."""
         train = test_utils.get_dataset(test_utils.AUDIOLOGY)
         num_correct = test_utils.leave_one_out(self.get_classifier(), train)
         self.assertTrue(num_correct >= 155)
 
     def test_get_options(self):
+        """Test correct creation of options string."""
         am = AnalogicalModeling()
         self.assertEqual(
             "Linear: False, Remove test exemplars: True, Ignore unknown "
@@ -144,6 +150,7 @@ class AnalogicalModelingTest(unittest.TestCase):
             am.get_options())
 
     def test_weights_linear(self):
+        """Test linear weights calculation."""
         train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA_W, "w")
         test = train[0]
         train.data.drop(index=0, inplace=True)
@@ -162,6 +169,7 @@ class AnalogicalModelingTest(unittest.TestCase):
             self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7)
 
     def test_weights_quadratic(self):
+        """Test quadratic weights calculation."""
         train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA_W, "w")
         test = train[0]
         train.data.drop(index=0, inplace=True)
@@ -179,6 +187,12 @@ class AnalogicalModelingTest(unittest.TestCase):
             self.assertAlmostEqual(v, prediction.get(k, 0), delta=1e-7)
 
     def test_weights(self):
+        """Test assignment of weights column.
+
+        - correct extraction of weights
+        - weights are dropped from data
+        - weights must be numeric and non-negative
+        """
         data = self.get_data()
 
         self.assertEqual(Dataset(data).weights, [1] * 4)
@@ -193,7 +207,13 @@ class AnalogicalModelingTest(unittest.TestCase):
             Dataset(data, weights="ignore")
 
     def test_empty_data(self):
-        warnings.filterwarnings("error", module="analogical_modeling*")  # consider them Exceptions
+        """Test handling of empty datasets.
+
+        - at least 1 instance
+        - at least 1 attribute besides class
+        - correct handling of empty cells (NaN -> None)
+        - distinction between empty cells and missing values
+        """
         am = self.get_classifier()
         data = pd.DataFrame(columns=["attr1", "attr2"])
 
@@ -216,6 +236,12 @@ class AnalogicalModelingTest(unittest.TestCase):
         self.assertTrue(data[1].is_missing(1), "= == missing")  # =
 
     def test_headers(self):
+        """Test header comparison.
+
+        - same attributes in same order
+        - class column can be anywhere
+        - ignored columns can be anywhere
+        """
         am = self.get_classifier()
         lex = pd.DataFrame(
             {"attr1": ["a", "b"], "attr2": ["c", "d"], "cls": ["e", "f"]})
@@ -237,12 +263,20 @@ class AnalogicalModelingTest(unittest.TestCase):
         self.assertTrue(am.run_classifier(lex, None, test, ""))
 
         # ignored columns irrelevant
+        warnings.resetwarnings()  # ignore warning due to short test instance
         am.ignore_columns = ["attr2"]
         test = pd.DataFrame({"attr1": ["a"]})
         self.assertTrue(am.run_classifier(lex, None, test, ""))
 
 
     def test_threshold(self):
+        """Test threshold.
+
+        - no impact if lower than min weight
+        - error if higher than max weight (dropping all instances)
+        - no dropping of instances if this would result in an error
+        - inclusivity/exclusivity
+        """
         lex = Dataset(self.get_data(), weights="w")
 
         instances = list(lex)
@@ -284,6 +318,15 @@ class AnalogicalModelingTest(unittest.TestCase):
         self.assertEqual(lex.weights, weights[:1])
 
     def test_ignore(self):
+        """Test ignoring of columns.
+
+        - impact on counted attributes
+        - class can't be ignored
+        - weights can't be ignored
+        - at least 1 attribute besides class must remain
+        - same column can be ignored multiple times
+        - ignored columns required to be in data unless silent == True
+        """
         data = Dataset(self.get_data())
 
         total = data.num_attributes()

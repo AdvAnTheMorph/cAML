@@ -1,4 +1,4 @@
-"""Utils for testing"""
+"""Utils for testing."""
 
 import logging
 import random
@@ -34,16 +34,15 @@ SPANISH_STRESS = "spanish_stress.csv"
 
 
 def get_dataset(file_in_data_folder: str, weights: str = "") -> utils.Dataset:
-    """
-    Read a dataset from disk and return the Instances object. It is assumed
-    that the file is in the project data folder, and that the class attribute
-    is the last one.
+    """Get dataset from file.
 
-    :param file_in_data_folder: Name of csv file located in the project data
-    folder
-    :param weights: Optional column name for weights
-    :return: The dataset contained in the given file.
-    :raises Exception: if there is a problem loading the dataset
+    It is assumed that the file is in the project data folder, and that the
+    class attribute is the last one.
+
+    :param file_in_data_folder: name of csv file located in the project data
+        folder
+    :param weights: optional column name for weights
+    :return: dataset contained in the given file
     """
     source = Path("data") / file_in_data_folder
     data = utils.Dataset()
@@ -53,23 +52,24 @@ def get_dataset(file_in_data_folder: str, weights: str = "") -> utils.Dataset:
 
 def get_instance_from_file(file_in_data_folder: str,
                            index: int) -> utils.Instance:
-    """
-    Read a dataset from disk and return the Instance object at the specified
+    """Get specific instance from file.
+
+    Read a dataset from disk and return the instance at the specified
     index. It is assumed that the file is in the project data folder, and
     that the class attribute is the last one.
 
-    :param file_in_data_folder: Name of csv file in located in the project
+    :param file_in_data_folder: name of csv file in located in the project
         data folder
-    :param index: Index of instance to return
-    :return: The instance at the specified index of the dataset contained in
+    :param index: index of instance to return
+    :return: instance at the specified index of the dataset contained in
         the file
-    :raises Exception: if there is a problem loading the instance
     """
     instances = get_dataset(file_in_data_folder)
     return instances[index]
 
 
 def six_cardinality_data():
+    """Create dataset with cardinality 6."""
     data = [list("axvusr"), list("axvuse"), list("wxwtsr"), list("axvdre"),
             list("wxvdrr"), list("zbwdee"), ["a", "x", "w", "u", "=", "r"],
             ["a", "x", "c", "u", "=", "e"], ["a", "x", "v", "=", "s", "r"]]
@@ -79,23 +79,26 @@ def six_cardinality_data():
 
 
 def mock_instance(num_attributes: int):
+    """Create mock instance with specified number of attributes.
+
+    :param num_attributes: number of attributes without class
+    """
     inst = Mock()
-    # add one attribute for the class, so that num_attributes matches the resulting label size exactly
+    # add one attribute for the class, so that num_attributes matches the
+    # resulting label size exactly
     inst.num_attributes.return_value = num_attributes + 1
     return inst
 
 
 def get_reduced_dataset(file_in_data_folder: str,
                         ignore_atts: list[int]) -> utils.Dataset:
-    """Read a dataset from the given file and remove the specified attributes,
-    then return it.
+    """Get dataset without specific attributes.
 
     :param file_in_data_folder: name of file in the project data folder
-    :param ignore_atts:  A list of indices specifying which attributes should
-        be removed.
-    :return: The altered dataset
+    :param ignore_atts:  list of indices specifying which attributes should
+        be removed
+    :return: reduced dataset
     """
-
     data = get_dataset(file_in_data_folder)
 
     data.data.drop(data.data.columns[ignore_atts], axis=1, inplace=True)
@@ -104,6 +107,7 @@ def get_reduced_dataset(file_in_data_folder: str,
 
 
 def random_provider():
+    """Get random provider."""
     random_seeder = [0]
     with Lock():
         seed = random_seeder[0]
@@ -115,16 +119,27 @@ def get_deterministic_random_provider():
     """ Supply deterministic PRNG output for testing algorithms that use
     randomness (JJLattice, etc.)
 
-    :return: A random provider with deterministic output
+    :return: random provider with deterministic output
     """
     return random_provider
 
 
 def supra_deep_equals(supra1: Supracontext, supra2: Supracontext) -> bool:
+    """Compare supracontext count and data.
+
+    :param supra1: first supracontext
+    :param supra2: second supracontext
+    """
     return supra1.count == supra2.count and supra1.get_data() == supra2.get_data()
 
 
 def contains_supra(actual_supras: set, expected) -> bool:
+    """Verify if expected supracontext in set.
+
+    :param actual_supras: set of supracontexts
+    :param expected: supracontext that should be in set
+    :return: whether supracontext actually is in set
+    """
     for supra in actual_supras:
         if supra_deep_equals(supra, expected):
             return True
@@ -133,6 +148,13 @@ def contains_supra(actual_supras: set, expected) -> bool:
 
 def leave_out_index(am: AnalogicalModeling, data: Dataset,
                     index: int) -> AMResults:
+    """Leave-one-out classification of instance at specific index.
+
+    :param am: AML algorithm
+    :param data: Dataset containing instance
+    :param index: index of instance
+    :return: classification result
+    """
     # copy so that removing an instance doesn't affect the original
     train = Dataset(data)
     test = train[index]
@@ -152,6 +174,12 @@ def leave_out_index(am: AnalogicalModeling, data: Dataset,
 #             correct += 1
 #     return correct
 def leave_one_out(am: AnalogicalModeling, data: Dataset) -> int:
+    """Leave-one-out classification on entire dataset.
+
+    :param am: AML algorithm
+    :param data: dataset for prediction
+    :return: number of correct classifications
+    """
     correct = 0
     with ProcessPoolExecutor(max_workers=3) as executor:
         futures = []
@@ -169,6 +197,7 @@ def leave_one_out(am: AnalogicalModeling, data: Dataset) -> int:
 
 
 def bits_to_bitset(bits: int) -> set[int]:
+    """Create bitset from bits."""
     bitset = set()
     index = 0
     while bits != 0:
@@ -185,12 +214,15 @@ def get_supra_from_string(supra_string: str, data):
     This method is somewhat slow, so use it only in testing, and only with
     small datasets if possible.
 
-    :param supra_string: A string representing the supracontext to be created.
-                         This should be in the same form as that produced by
-                         str(ClassifiedSupra).
-    :param data: The dataset containing the instances specified in the
-                 Supracontext string. For example:
-                 <code>[1x(01010|&amp;nondeterministic&amp;|H,A,V,A,0,B/H,A,V,I,0,A)]</code> .
+    :param supra_string: string representing the supracontext to be created.
+        This should be in the same form as that produced by
+        `str(ClassifiedSupra)`.
+    :param data: dataset containing the instances specified in the Supracontext
+        string.
+        For example:
+
+        [1x(01010|&amp;nondeterministic&amp;|H,A,V,A,0,B/H,A,V,I,0,A)]
+
     :return: classified supra created according to string specification
     """
     # get the count, between '[' and the first 'x'
@@ -232,13 +264,7 @@ def get_supra_from_string(supra_string: str, data):
             # since there is no Instance.equals() method, the only way to
             # achieve Supra equality is by having the exact same Instance
             # instances, i.e. grep the set for the matching object :(
-            # # TODO: pd.Series.equals() exists
             added = False
-            # inst = Instance(instance_string.split(","), len(instance_string.split(","))-1)
-            # if inst in data:
-            #     sub.add(inst)
-            #     added = True
-            #     seen_instances.add(inst)
             for instance in data:
                 if str(instance).split(",{")[0] == instance_string:
                     if instance in seen_instances:
@@ -258,7 +284,7 @@ def get_supra_from_string(supra_string: str, data):
 
 
 def test_supra_from_string():
-    """Test that the get_supra_from_string utility function above works as desired."""
+    """Test the get_supra_from_string utility function above."""
     # data = get_reduced_dataset(FINNVERB_MIN, [5, 6, 7, 8, 9])
     # sub1 = Subcontext(Label({0, 1, 2, 4}, 5), "foo")
     # sub1.add(data[3])  # P,U,0,?,0,A
