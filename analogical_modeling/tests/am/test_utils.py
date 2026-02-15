@@ -266,7 +266,7 @@ def get_supra_from_string(supra_string: str, data):
             # instances, i.e. grep the set for the matching object :(
             added = False
             for instance in data:
-                if str(instance).split(",{")[0] == instance_string:
+                if str(instance).split(",{", maxsplit=1)[0] == instance_string:
                     if instance in seen_instances:
                         continue
                     sub.add(instance)

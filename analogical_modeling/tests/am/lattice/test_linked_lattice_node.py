@@ -28,6 +28,7 @@ class LinkedLatticeNodeTest(unittest.TestCase):
             self.assertEqual(test_node.next, test_node)
 
     def test_count(self):
+        """Test that count correctly changed through increment/decrement."""
         for supra in supras:
             test_node = LinkedLatticeNode(supra())
             self.assertEqual(1, test_node.count)

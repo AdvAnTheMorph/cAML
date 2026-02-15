@@ -25,7 +25,7 @@ class AMResultsTest(unittest.TestCase):
         self.as_linear = self.am.get_results()
 
     def test_exemplar_quadratic_effects(self):
-        effects = {str(k).split(",{")[0]: v for k, v in
+        effects = {str(k).split(",{", maxsplit=1)[0]: v for k, v in
                    self.as_quadratic.exemplar_effects.items()}
         self.assertEqual(4, len(effects))
 
@@ -39,7 +39,7 @@ class AMResultsTest(unittest.TestCase):
         self.assertAlmostEqual(0.3076923, effects["3,1,1,r"], delta=1e-7)
 
     def test_exemplar_linear_effects(self):
-        effects = {str(k).split(",{")[0]: v for k, v in
+        effects = {str(k).split(",{", maxsplit=1)[0]: v for k, v in
                    self.as_linear.exemplar_effects.items()}
         self.assertEqual(4, len(effects))
 
@@ -57,7 +57,7 @@ class AMResultsTest(unittest.TestCase):
         self.assertEqual({"r": 9, "e": 4},
                          self.as_quadratic.get_class_pointers())
 
-        pointers = {str(k).split(",{")[0]: v for k, v in
+        pointers = {str(k).split(",{", maxsplit=1)[0]: v for k, v in
                     self.as_quadratic.exemplar_pointers.items()}
         self.assertEqual(4, len(pointers))
 
@@ -74,7 +74,7 @@ class AMResultsTest(unittest.TestCase):
         self.assertEqual(7, self.as_linear.total_pointers)
         self.assertEqual({"r": 5, "e": 2}, self.as_linear.get_class_pointers())
 
-        pointers = {str(k).split(",{")[0]: v for k, v in
+        pointers = {str(k).split(",{", maxsplit=1)[0]: v for k, v in
                     self.as_linear.exemplar_pointers.items()}
         self.assertEqual(4, len(pointers))
 

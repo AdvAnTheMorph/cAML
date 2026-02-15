@@ -24,7 +24,7 @@ lattices = [BasicLattice, DistributedLattice,
 
 
 class FullSplitLabeler(Labeler):
-    """create a labeler which splits labels into labels of cardinality 1"""
+    """Create a labeler which splits labels into labels of cardinality 1."""
 
     def __init__(self, test: Instance, ignore_unknowns: bool,
                  mdc: MissingDataCompare):
@@ -47,7 +47,7 @@ class FullSplitLabeler(Labeler):
     def get_lattice_bottom(self) -> Label:
         return self.wrapped.get_lattice_bottom()
 
-    def from_bits(self, label_bits: int) -> None:
+    def from_bits(self, _label_bits: int) -> None:
         return None
 
 
@@ -108,8 +108,7 @@ class LatticeTest(unittest.TestCase):
 
         for lattice_supplier in lattices:
             if isinstance(lattice_supplier(),
-                          HeterogeneousLattice) or isinstance(
-                lattice_supplier(), JohnsenJohanssonLattice):
+                          (HeterogeneousLattice, JohnsenJohanssonLattice)):
                 # HeterogeneousLattice not designed for prediction
                 # JohnsenJohanssonLattice inaccurate for small datasets
                 continue
@@ -127,8 +126,7 @@ class LatticeTest(unittest.TestCase):
 
         for lattice_supplier in lattices:
             if isinstance(lattice_supplier(),
-                          HeterogeneousLattice) or isinstance(
-                lattice_supplier(), JohnsenJohanssonLattice):
+                          (HeterogeneousLattice, JohnsenJohanssonLattice)):
                 # HeterogeneousLattice not designed for prediction
                 # JohnsenJohanssonLattice inaccurate for small datasets
                 continue
@@ -137,8 +135,8 @@ class LatticeTest(unittest.TestCase):
             self.do_test_supras(train, 0, expected_supras, lattice_supplier)
 
     def test_clean_supra_timing(self):
-        """Test that BasicLattice.clean_supra() is only run after a subcontext
-        is inserted completely, not after each single insertion"""
+        """Test that :fun:`BasicLattice.clean_supra` is only run after a
+        subcontext is inserted completely, not after each single insertion."""
         expected_supras = ["[6x(00000|A|U,V,U,0,?,A)]",
                            "[3x(00000|A|U,V,U,0,?,A),(00100|A|U,V,I,0,?,A)]",
                            "[3x(00000|A|U,V,U,0,?,A),(01100|A|U,0,?,0,?,A),(00100|A|U,V,I,0,?,A)]"]

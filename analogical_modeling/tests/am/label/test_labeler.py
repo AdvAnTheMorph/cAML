@@ -22,10 +22,7 @@ class LabelerTest(unittest.TestCase):
         self.assertEqual(labeler.test_instance.all(), instance.all())
 
     def test_is_ignored(self):
-        """Test the default behavior for Labeler.is_ignored(int).
-
-        :return:
-        """
+        """Test the default behavior for :func:`Labeler.is_ignored`."""
         instance = test_utils.get_instance_from_file(test_utils.FINNVERB, 0)
         labeler = Labeler(instance, False, MissingDataCompare.MATCH)
         for i in range(instance.num_attributes()):
@@ -132,7 +129,7 @@ class LabelerTest(unittest.TestCase):
 
     def test_get_context_label_missing_data_compares(self):
         """Test that missing values are compared based on the input
-        MissingDataCompare value."""
+        `MissingDataCompare` value."""
         dataset = test_utils.six_cardinality_data()
         labeler = Labeler(dataset[6], False, MissingDataCompare.MATCH)
         self.assertEqual(Label({2}, 5), labeler.label(dataset[0]))

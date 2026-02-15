@@ -48,13 +48,13 @@ class TestLabel(unittest.TestCase):
         labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
         test_label = labeler.from_bits(0b001)
         matches = [False, True, True]
-        for i in range(len(matches)):
-            self.assertEqual(test_label.matches(i), matches[i])
+        for i, match_ in enumerate(matches):
+            self.assertEqual(test_label.matches(i), match_)
 
         matches = [False, True, False]
         test_label = labeler.from_bits(0b101)
-        for i in range(len(matches)):
-            self.assertEqual(test_label.matches(i), matches[i])
+        for i, match_ in enumerate(matches):
+            self.assertEqual(test_label.matches(i), match_)
 
     def test_intersect(self):
         labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
@@ -63,8 +63,8 @@ class TestLabel(unittest.TestCase):
         label2 = labeler.from_bits(0b100)
         matches = [False, True, False]
         intersected = label1.intersect(label2)
-        for i in range(len(matches)):
-            self.assertEqual(intersected.matches(i), matches[i])
+        for i, match_ in enumerate(matches):
+            self.assertEqual(intersected.matches(i), match_)
 
     def test_union(self):
         labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
@@ -99,7 +99,7 @@ class TestLabel(unittest.TestCase):
 
         expected_labels = {labeler.from_bits(0b101), labeler.from_bits(0b111),
                            labeler.from_bits(0b110)}
-        actual_labels = {el for el in label.descendant_iterator()}
+        actual_labels = set(label.descendant_iterator())
         self.assertEqual(expected_labels, actual_labels)
 
         # comparing:
@@ -123,7 +123,7 @@ class TestLabel(unittest.TestCase):
                            labeler.from_bits(0b1101111111),
                            labeler.from_bits(0b1101011111),
                            labeler.from_bits(0b1101001111)}
-        actual_labels = {el for el in label.descendant_iterator()}
+        actual_labels = set(label.descendant_iterator())
         self.assertEqual(expected_labels, actual_labels)
 
     def test_is_descendant_of(self):

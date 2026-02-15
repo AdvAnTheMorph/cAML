@@ -10,6 +10,7 @@ from analogical_modeling.utils import Dataset
 
 class TestMissingDataCompare(unittest.TestCase):
     def setUp(self):
+        # Ignore warnings due to too small dataset
         warnings.filterwarnings("ignore", module="analogical_modeling")
         self.dataset = Dataset([["="], [0]])
 

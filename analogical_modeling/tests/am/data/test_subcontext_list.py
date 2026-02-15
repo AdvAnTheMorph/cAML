@@ -15,7 +15,7 @@ class SubContextListTest(unittest.TestCase):
 
     @staticmethod
     def get_sub_list(subcontext_list: SubcontextList) -> list[Subcontext]:
-        return [s for s in subcontext_list]
+        return list(subcontext_list)
 
     def test_chapter_3_data(self):
         train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA)
