@@ -66,10 +66,11 @@ python3 aml.py -l <data.csv> -o <output>
 - `-i` or `--ignore_unknowns`
     - any attribute that includes unknown values will be ignored for all instances
 - `-D` `--debug` to run the classifier in debug mode (generates more outputs)
-- `-m` or `--missing_data` `<option>` where `<option>` is one out of {`match`, `mismatch`, `variable`} to determine the treatment of missing data
-    - match: missing values match anything
-    - mismatch: missing values don't match anything
-    - variable: missing values are treated like a variable, thus only matching other missing values
+- `-n` or `--non_specified_data` `<option>` where `<option>` is one out of {`match`, `mismatch`, `variable`} to
+ determine the treatment of non-specified data (marked by `=`)
+    - match: non-specified values match everything
+    - mismatch: non-specified values don't match anything
+    - variable: non-specified values are treated like a variable, thus only matching other non-specified values
 
 
 

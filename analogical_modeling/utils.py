@@ -67,14 +67,14 @@ class Instance(pd.Series):
         self.data_idx = idx
         self.weight = weight
 
-    def is_missing(self, idx: int) -> bool:
-        """Check if value is missing.
+    def is_unspecified(self, idx: int) -> bool:
+        """Check if value is non-specified.
 
-        Missing values are represented by an equals sign (=).
+        Non-specified values are represented by the non-specification sign
+        (`=`).
 
         :param idx: index of value
         """
-        # return self.isna().iloc[idx]
         return self.iloc[idx] == "="
 
     def num_attributes(self) -> int:
@@ -139,7 +139,7 @@ class Dataset:
         self.silent = False  # require ignored columns to be there
         if atts is None:
             self.data = pd.DataFrame()
-            self._class_index = None
+            self._class_index: int = None
             self.weights = []
             return
         self.data = pd.DataFrame(atts).replace(math.nan, None)

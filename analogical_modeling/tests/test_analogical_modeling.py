@@ -136,16 +136,16 @@ class AnalogicalModelingTest(unittest.TestCase):
         am = AnalogicalModeling()
         self.assertEqual(
             "Linear: False, Remove test exemplars: True, Ignore unknown "
-            "values: False, Missing data: variable\nDrop duplicates: False, "
+            "values: False, Non-specified data: variable\nDrop duplicates: False, "
             "Ignore columns: --",
             am.get_options())
 
         am.set_remove_test_exemplar(False)
-        am.set_missing_data_compare("mismatch")
+        am.set_nonspecified_data_compare("mismatch")
         am.set_ignore_unknowns(True)
         self.assertEqual(
             "Linear: False, Remove test exemplars: False, Ignore unknown "
-            "values: True, Missing data: mismatch\nDrop duplicates: False, "
+            "values: True, Non-specified data: mismatch\nDrop duplicates: False, "
             "Ignore columns: --",
             am.get_options())
 
@@ -231,9 +231,9 @@ class AnalogicalModelingTest(unittest.TestCase):
         data = pd.DataFrame({"attr1": ["a", math.nan], "attr2": [None, "="]})
         self.assertIsNotNone(Dataset(data))  # don't raise Errors
         data = Dataset(data)
-        self.assertFalse(data[0].is_missing(1), "None != missing")  # math.nan
-        self.assertFalse(data[1].is_missing(0), "None != missing")  # None
-        self.assertTrue(data[1].is_missing(1), "= == missing")  # =
+        self.assertFalse(data[0].is_unspecified(1), "None != missing")  # math.nan
+        self.assertFalse(data[1].is_unspecified(0), "None != missing")  # None
+        self.assertTrue(data[1].is_unspecified(1), "= == missing")  # =
 
     def test_headers(self):
         """Test header comparison.

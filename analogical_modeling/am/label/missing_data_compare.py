@@ -47,5 +47,5 @@ class MissingDataCompare(Enum):
         if self is self.MISMATCH:
             return False  # mismatch
         if self is self.VARIABLE:
-            return i1.is_missing(idx) and i2.is_missing(idx)
+            return i1.is_unspecified(idx) and i2.is_unspecified(idx)
         raise NotImplementedError(f"Unknown MissingDataCompare: {self}")

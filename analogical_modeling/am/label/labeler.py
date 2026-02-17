@@ -39,7 +39,7 @@ class Labeler:
         if self.ignore_unknowns:
             length = self.test_instance.num_attributes() - 1
             for i in range(length):
-                if self.test_instance.is_missing(i):
+                if self.test_instance.is_unspecified(i):
                     ignore_set.add(i)
         self.ignore_set = frozenset(ignore_set)
 
@@ -92,7 +92,7 @@ class Labeler:
                 continue
             att = self.test_instance.attribute_name(i)
             # use mdc if were are comparing a missing attribute
-            if self.test_instance.is_missing(i) or data.is_missing(i):
+            if self.test_instance.is_unspecified(i) or data.is_unspecified(i):
                 if not self.mdc.matches(
                         self.test_instance, data, i):
                     # use length-1-index instead of index so that in binary the

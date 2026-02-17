@@ -108,7 +108,7 @@ class AMWrapper:
         self.am.set_linear_count(self.linear.get())
         self.am.set_remove_test_exemplar(self.keep_test.get())
         self.am.set_ignore_unknowns(self.ignore_unknowns.get())
-        self.am.set_missing_data_compare(self.mdc.get())
+        self.am.set_nonspecified_data_compare(self.mdc.get())
         self.am.set_drop_duplicates(self.drop_duplicates.get())
         self.am.set_ignore_columns(self.ignored)
         self.am.threshold = (self.threshold.get(), self.inc_th.get())

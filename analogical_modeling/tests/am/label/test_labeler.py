@@ -30,7 +30,7 @@ class LabelerTest(unittest.TestCase):
 
         labeler = Labeler(instance, True, MissingDataCompare.MATCH)
         for i in range(instance.num_attributes()):
-            if instance.is_missing(i):
+            if instance.is_unspecified(i):
                 self.assertTrue(labeler.is_ignored(i))
             else:
                 self.assertFalse(labeler.is_ignored(i))

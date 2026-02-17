@@ -156,8 +156,8 @@ class AnalogicalModeling:
         #       raise ValueError("Upper threshold must be greater than lower threshold.")
         # self._threshold = tuple(threshold)
 
-    def set_missing_data_compare(self, new_mode: str) -> None:
-        """Set method to deal with missing data."""
+    def set_nonspecified_data_compare(self, new_mode: str) -> None:
+        """Set method to deal with non-specified data."""
         match new_mode:
             case "match":
                 self.mdc = MissingDataCompare.MATCH
@@ -178,7 +178,7 @@ class AnalogicalModeling:
         return f"Linear: {self.linear_count}, " \
                f"Remove test exemplars: {self.remove_test_exemplar}, " \
                f"Ignore unknown values: {self.ignore_unknowns}, " \
-               f"Missing data: {self.mdc.option_string}\n" \
+               f"Non-specified data: {self.mdc.option_string}\n" \
                f"Drop duplicates: {self.drop_duplicates}, " \
                f"Ignore columns: {self.ignore_columns or '--'}"
 
@@ -465,7 +465,7 @@ class AnalogicalModeling:
                 ["Judgement", "Expected", "Predicted"] + t_feats_list +
                 cls_header +
                 ["Train size", "Num feats", "Ignore unknown values",
-                 "Missing data compare", "Ignore given",
+                 "Non-specified data compare", "Ignore given",
                  "Count strategy", "Classified item index"])
 
         return gang_header, analog_header, distr_header
@@ -582,7 +582,7 @@ class AnalogicalModeling:
                 train_size,  # train size
                 num_feats,  # num feats
                 ignore,  # ignore unknown values
-                mdc,  # missing data compare
+                mdc,  # non-specified data compare
                 ignore_given,  # ignore given
                 count_strategy,  # count strategy
                 idx  # index
@@ -650,7 +650,7 @@ class AnalogicalModeling:
         """This is used to add more information to the classifier."""
         self.check_header(instance)
 
-        if instance.is_missing(instance.get_class_index()):
+        if instance.is_unspecified(instance.get_class_index()):
             return
         self.training_instances.add(instance)
         self.training_exemplars.append(instance)
@@ -695,19 +695,19 @@ if __name__ == "__main__":
     parser.add_argument("-D", "--debug", action="store_true",
                         help="Run classifier in debug mode; will write "
                              "additional information to .log")
-    parser.add_argument("-m", "--missing_data",
+    parser.add_argument("-n", "--non_specified_data",
                         choices=["match", "mismatch", "variable"],
                         default="variable",
-                        help="Method of dealing with missing data. The options "
-                             "are 'variable', 'match' or 'mismatch'; "
-                             "'variable' means to treat missing data as all "
-                             "one variable (matching only missing values), "
-                             "'match' means that missing data will be "
-                             "considered the same as whatever it is "
+                        help="Method of dealing with non-specified data. The "
+                             "options are 'variable', 'match' or 'mismatch'; "
+                             "'variable' means to treat non-specified data as "
+                             "all one variable (matching only non-specified "
+                             "values), 'match' means that non-specified data "
+                             "will be considered the same as whatever it is "
                              "compared with, and 'mismatch' means that "
-                             "missing data will always be unequal to "
+                             "non-specified data will always be unequal to "
                              "whatever it is compared with. Default is "
-                             "'variable'")
+                             "'variable'.")
 
     args = parser.parse_args()
 
@@ -725,7 +725,7 @@ if __name__ == "__main__":
     am.set_linear_count(args.linear)
     am.set_remove_test_exemplar(args.keep_test)
     am.set_ignore_unknowns(args.ignore_unknowns)
-    am.set_missing_data_compare(args.missing_data)
+    am.set_nonspecified_data_compare(args.non_specified_data)
     am.set_drop_duplicates(args.drop_duplicates)
     am.set_ignore_columns(args.ignore_columns)
 

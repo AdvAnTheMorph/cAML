@@ -79,10 +79,10 @@ The following behaviour can be controlled through parameters:
 3. [weights threshold](#3-weights-threshold)
 4. [count strategy](#4-count-strategy)
 5. [ignoring columns](#5-ignoring-columns)
-6. [handling missing data](#6-handling-missing-data)
+6. [handling non_specified data](#6-handling-non-specified-data)
 7. [keeping text exemplars](#7-keeping-test-exemplars)
 8. [handling duplicated instances](#8-handling-duplicated-instances)
-9. [handling attributes with missing values](#9-handling-attributes-with-missing-values)
+9. [handling attributes with non_specified values](#9-handling-attributes-with-non-specified-values)
 10. [debug mode](#10-debug-mode)
 
 #### 1. Test File
@@ -138,18 +138,18 @@ to be ignored.
 
 Weights and class columns must not be ignored.
 
-#### 6. Handling Missing Data
-If your data contains missing values (specified by `=`), you can define how
-to treat them.
+#### 6. Handling Non-Specified Data
+If your data contains non-specified values (specified by `=`), you can define
+how to treat them.
 
-**Usage**: Add `--missing_data <option>` or shorter `-m <option>` to the
+**Usage**: Add `--non_specififed_data <option>` or shorter `-n <option>` to the
 command.
 
 The options are:
-- `variable` (default): treat missing values as variables, thus only matching
-  other missing values
-- `match`: treat missing values as wildcards that match anything
-- `mismatch`: missing values do not match anything
+- `variable` (default): treat non-specified values as variables, thus only
+  matching other non-specified values
+- `match`: treat non-specified values as wildcards that match everything
+- `mismatch`: non-specified values do not match anything
 
 #### 7. Keeping Test Exemplars
 Per default, the algorithm ignores instances with the same attribute
@@ -168,8 +168,9 @@ values and the same class) from the lexicon.
 
 **Usage**: Add `--drop_duplicates` or simply `-d` to the command.
 
-#### 9. Handling Attributes with Missing Values
-Attributes that include unknown values (`=`) can be ignored for all instances.
+#### 9. Handling Attributes with Non-Specified Values
+Attributes that include non-specified values (`=`) can be ignored for all
+instances.
 
 **Usage**: Add `--ignore_unknowns` or shorter `-i` to the command.
 

@@ -6,7 +6,7 @@ from typing import Iterator, Union, Optional
 class Label:
     """This Label implementations stores match and mismatch data in a BitSet."""
 
-    def __init__(self, l: Union[set, 'Label'], c: Optional[int] = None):
+    def __init__(self, l: Union[set[int], 'Label'], c: Optional[int] = None):
         """Create a new label by storing match/mismatch information in the given
         bitset.
 
@@ -15,8 +15,8 @@ class Label:
         :param c: cardinality of the label
         """
         if isinstance(l, Label):
-            self.label_bits = l.label_bits
-            self.card = l.card
+            self.label_bits: set[int] = l.label_bits
+            self.card: int = l.card
         elif c is not None:
             self.label_bits = l
             self.card = c

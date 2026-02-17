@@ -75,18 +75,17 @@ class GUI:
         mdc_frame.pack(expand=True, fill=tk.BOTH)
         tk.Label(mdc_frame,
                  justify=tk.LEFT,
-                 anchor=tk.W,
-                 text=f"{'Consider missing values as:':{utils.LEN}s}\t").pack(
-            side=tk.LEFT,
-            expand=True, fill=tk.X)
+                 text=f"{'Consider non-specified values as:':{utils.LEN}s}\t",
+                 anchor=tk.W).pack(side=tk.LEFT, expand=True, fill=tk.X)
         mdc_selection = ttk.Combobox(mdc_frame,
                                      values=["match", "mismatch", "variable"],
                                      textvariable=wrapper.mdc, state="readonly")
         mdc_selection.current(2)
         mdc_selection.pack(side=tk.LEFT, expand=True, anchor=tk.W)
         utils.ToolTip(mdc_selection,
-                      "The strategy to use when comparing missing attribute values "
-                      "\nwith other values while filling subcontexts and supracontexts")
+                      "The strategy to use when comparing non-specified "
+                      "attribute values \nwith other values while filling "
+                      "subcontexts and supracontexts")
 
         # rest
         rest_frame = tk.Frame(options_frame)
