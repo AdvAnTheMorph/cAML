@@ -406,8 +406,8 @@ class AnalogicalModeling:
         :return: accuracy and confusion matrix
         """
         # inaccurate in the case of ties
-        preds = ["".join(map(str, res.predicted_classes)) for res in results]
-        golds = [inst.class_value() for inst in instances]
+        preds = ["|".join(map(str, res.predicted_classes)) for res in results]
+        golds = [str(inst.class_value()) for inst in instances]
 
         correct = sum(
             [inst.class_value() in res.predicted_classes
@@ -415,7 +415,7 @@ class AnalogicalModeling:
         acc = correct / len(results)
 
         cnf = confusion_matrix(golds, preds,
-                               labels=list(instances.get_classes()))
+                               labels=list(map(str, instances.get_classes())))
         disp = ConfusionMatrixDisplay(cnf, display_labels=list(
             instances.get_classes()))
 
