@@ -249,7 +249,8 @@ class AnalogicalModeling:
 
     def run_classifier(self, csv: PathLike | pd.DataFrame,
                        out_path: Optional[Path], test: str = None,
-                       weights: str = "", sheet: str = None, test_sheet: str = None) -> tuple[
+                       weights: str = "", sheet: str = None,
+                       test_sheet: str = None, cls_column: str = None) -> tuple[
         Optional[float], Optional[ConfusionMatrixDisplay], tuple]:
         """Run the classifier instance with the given options.
 
@@ -272,6 +273,7 @@ class AnalogicalModeling:
             instances = Dataset(csv, weights)
         else:
             instances = Dataset().from_file(csv, weights, sheet)
+        instances.set_class_column_by_name(cls_column)
 
         if self._threshold is not None:
             logger.debug(
@@ -404,7 +406,7 @@ class AnalogicalModeling:
         :return: accuracy and confusion matrix
         """
         # inaccurate in the case of ties
-        preds = ["".join(res.predicted_classes) for res in results]
+        preds = ["".join(map(str, res.predicted_classes)) for res in results]
         golds = [inst.class_value() for inst in instances]
 
         correct = sum(
@@ -669,6 +671,8 @@ if __name__ == "__main__":
                         help="sheet name for Excel sheet", required=False)
     parser.add_argument("-o", "--output",
                         help="output path", type=Path, required=True)
+    parser.add_argument("-c", "--class_column", required=False,
+                        help="name of class column")
     parser.add_argument("-w", "--weight_colum",
                         help="Name of column for weights")
     parser.add_argument("-th", "--threshold", type=float,
@@ -738,7 +742,8 @@ if __name__ == "__main__":
                                          args.test,
                                          args.weight_colum,
                                          args.sheet,
-                                         args.test_sheet)
+                                         args.test_sheet,
+                                         args.class_column)
         if matrix:
             matrix.plot()
             plt.xlabel("Predicted label\nTies are excluded from the plot")

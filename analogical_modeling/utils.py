@@ -244,6 +244,22 @@ class Dataset:
                              f"{self.num_attributes()} attributes.")
         self._class_index = idx
 
+    def set_class_column_by_name(self, name: str) -> None:
+        """Set class index by column name.
+
+        Defaults to -1 if no name given
+
+        :param name: name of column
+        :raise KeyError: if column name not in data
+        """
+        if name is None:
+            self.class_index = -1
+            return
+        try:
+            self.class_index = self.data.columns.get_loc(name)
+        except KeyError as e:
+            raise KeyError(f"Class column '{name}' not found in dataset.") from e
+
     def filter_threshold(self, threshold: float,
                          inclusive: bool = False) -> None:
         """Drop all instances with a weight below the given threshold.
