@@ -4,7 +4,7 @@ import unittest
 
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.label.labeler import Labeler
-from analogical_modeling.am.label.missing_data_compare import MissingDataCompare
+from analogical_modeling.am.label.missing_data_compare import NonspecifiedDataCompare
 from analogical_modeling.tests.am.test_utils import mock_instance
 
 
@@ -26,7 +26,7 @@ class TestLabel(unittest.TestCase):
             # technically not always true, but it's a good test on our small set
             self.assertTrue(hash(first_label) != hash(second_label))
 
-        labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(3), False, NonspecifiedDataCompare.MATCH)
 
         first_label = labeler.from_bits(0b001)
         second_label = labeler.from_bits(0b001)
@@ -40,12 +40,12 @@ class TestLabel(unittest.TestCase):
         assert_label_not_equivalent(second_label, third_label)
 
     def test_get_cardinality(self):
-        labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(3), False, NonspecifiedDataCompare.MATCH)
         test_label = labeler.from_bits(0b001)
         self.assertEqual(test_label.card, 3)
 
     def test_matches(self):
-        labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(3), False, NonspecifiedDataCompare.MATCH)
         test_label = labeler.from_bits(0b001)
         matches = [False, True, True]
         for i, match_ in enumerate(matches):
@@ -57,7 +57,7 @@ class TestLabel(unittest.TestCase):
             self.assertEqual(test_label.matches(i), match_)
 
     def test_intersect(self):
-        labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(3), False, NonspecifiedDataCompare.MATCH)
 
         label1 = labeler.from_bits(0b001)
         label2 = labeler.from_bits(0b100)
@@ -67,7 +67,7 @@ class TestLabel(unittest.TestCase):
             self.assertEqual(intersected.matches(i), match_)
 
     def test_union(self):
-        labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(3), False, NonspecifiedDataCompare.MATCH)
 
         label1 = labeler.from_bits(0b001)
         label2 = labeler.from_bits(0b100)
@@ -76,25 +76,25 @@ class TestLabel(unittest.TestCase):
             self.assertTrue(unioned.matches(i))
 
     def test_all_matching(self):
-        labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(3), False, NonspecifiedDataCompare.MATCH)
         self.assertTrue(labeler.from_bits(0b000).all_matching())
         for bits in [0b100, 0b010, 0b111]:
             self.assertFalse(labeler.from_bits(bits).all_matching())
 
     def test_matches_throws_exception_for_index_too_low(self):
-        labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(3), False, NonspecifiedDataCompare.MATCH)
         test_label = labeler.from_bits(0b001)
         with self.assertRaises(ValueError):
             test_label.matches(-10)
 
     def test_matches_throws_exception_for_index_too_high(self):
-        labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(3), False, NonspecifiedDataCompare.MATCH)
         test_label = labeler.from_bits(0b001)
         with self.assertRaises(ValueError):
             test_label.matches(3)
 
     def test_descendant_iterator(self):
-        labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(3), False, NonspecifiedDataCompare.MATCH)
         label = labeler.from_bits(0b100)
 
         expected_labels = {labeler.from_bits(0b101), labeler.from_bits(0b111),
@@ -105,7 +105,7 @@ class TestLabel(unittest.TestCase):
         # comparing:
         # V , O , V , I , 0 , ? , O , T , T , A , A
         # V , U , V , O , 0 , ? , 0 , ? , L , E , A
-        labeler = Labeler(mock_instance(10), False, MissingDataCompare.VARIABLE)
+        labeler = Labeler(mock_instance(10), False, NonspecifiedDataCompare.VARIABLE)
         label = labeler.from_bits(0b0101001111)
 
         expected_labels = {labeler.from_bits(0b0101011111),
@@ -127,7 +127,7 @@ class TestLabel(unittest.TestCase):
         self.assertEqual(expected_labels, actual_labels)
 
     def test_is_descendant_of(self):
-        labeler = Labeler(mock_instance(3), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(3), False, NonspecifiedDataCompare.MATCH)
         parent_label = labeler.from_bits(0b100)
         descendant_label = labeler.from_bits(0b101)
         self.assertTrue(descendant_label.is_descendant_of(parent_label))
@@ -137,17 +137,17 @@ class TestLabel(unittest.TestCase):
 
     def test_to_string(self):
         label_bits = 0b1010101000111
-        labeler = Labeler(mock_instance(13), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(13), False, NonspecifiedDataCompare.MATCH)
         label = labeler.from_bits(label_bits)
         self.assertEqual(bin(label_bits)[2:], str(label))
 
     def test_to_string_all_zeroes(self):
-        labeler = Labeler(mock_instance(13), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(13), False, NonspecifiedDataCompare.MATCH)
         label = labeler.from_bits(0)
         self.assertEqual("0000000000000", str(label))
 
     def test_to_string_no_attributes(self):
-        labeler = Labeler(mock_instance(0), False, MissingDataCompare.MATCH)
+        labeler = Labeler(mock_instance(0), False, NonspecifiedDataCompare.MATCH)
         label = labeler.from_bits(0)
         self.assertEqual("", str(label))
 

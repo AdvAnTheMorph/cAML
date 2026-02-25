@@ -70,19 +70,19 @@ class GUI:
         # count strategy
         self.count = utils.CountFrame(options_frame, wrapper)
 
-        # mdc
-        mdc_frame = tk.Frame(options_frame, width=utils.LEN * 2)
-        mdc_frame.pack(expand=True, fill=tk.BOTH)
-        tk.Label(mdc_frame,
+        # ndc
+        ndc_frame = tk.Frame(options_frame, width=utils.LEN * 2)
+        ndc_frame.pack(expand=True, fill=tk.BOTH)
+        tk.Label(ndc_frame,
                  justify=tk.LEFT,
                  text=f"{'Consider non-specified values as:':{utils.LEN}s}\t",
                  anchor=tk.W).pack(side=tk.LEFT, expand=True, fill=tk.X)
-        mdc_selection = ttk.Combobox(mdc_frame,
+        ndc_selection = ttk.Combobox(ndc_frame,
                                      values=["match", "mismatch", "variable"],
-                                     textvariable=wrapper.mdc, state="readonly")
-        mdc_selection.current(2)
-        mdc_selection.pack(side=tk.LEFT, expand=True, anchor=tk.W)
-        utils.ToolTip(mdc_selection,
+                                     textvariable=wrapper.ndc, state="readonly")
+        ndc_selection.current(2)
+        ndc_selection.pack(side=tk.LEFT, expand=True, anchor=tk.W)
+        utils.ToolTip(ndc_selection,
                       "The strategy to use when comparing non-specified "
                       "attribute values \nwith other values while filling "
                       "subcontexts and supracontexts")

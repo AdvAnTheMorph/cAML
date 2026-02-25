@@ -5,7 +5,7 @@ from unittest import mock
 
 from analogical_modeling.am.data.subcontext_list import SubcontextList
 from analogical_modeling.am.label.labeler import Labeler
-from analogical_modeling.am.label.missing_data_compare import MissingDataCompare
+from analogical_modeling.am.label.missing_data_compare import NonspecifiedDataCompare
 from analogical_modeling.am.lattice.heterogeneous_lattice import \
     HeterogeneousLattice
 from analogical_modeling.tests.am import test_utils
@@ -24,7 +24,7 @@ class HeterogeneousLatticeTest(unittest.TestCase):
         # Define a labeler which doesn't partition labels so that we can just
         # test with the chapter 3 data without it being reduced to a
         # cardinality of one
-        no_partition_labeler = Labeler(test, False, MissingDataCompare.MATCH)
+        no_partition_labeler = Labeler(test, False, NonspecifiedDataCompare.MATCH)
         no_partition_labeler = mock.Mock(wraps=no_partition_labeler)
         no_partition_labeler.num_partitions.return_value = 1
 

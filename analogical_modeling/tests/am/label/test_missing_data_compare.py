@@ -1,10 +1,10 @@
-"""Test handling of missing data"""
+"""Test handling of non-specified data"""
 
 import unittest
 import warnings
 
 from analogical_modeling.am.label.missing_data_compare import \
-    MissingDataCompare
+    NonspecifiedDataCompare
 from analogical_modeling.utils import Dataset
 
 
@@ -15,19 +15,19 @@ class TestMissingDataCompare(unittest.TestCase):
         self.dataset = Dataset([["="], [0]])
 
     def test_match(self):
-        mdc = MissingDataCompare.MATCH
-        self.assertTrue(mdc.matches(self.dataset[0], self.dataset[0], 0))
-        self.assertTrue(mdc.matches(self.dataset[0], self.dataset[1], 0))
-        self.assertTrue(mdc.matches(self.dataset[1], self.dataset[0], 0))
+        ndc = NonspecifiedDataCompare.MATCH
+        self.assertTrue(ndc.matches(self.dataset[0], self.dataset[0], 0))
+        self.assertTrue(ndc.matches(self.dataset[0], self.dataset[1], 0))
+        self.assertTrue(ndc.matches(self.dataset[1], self.dataset[0], 0))
 
     def test_mismatch(self):
-        mdc = MissingDataCompare.MISMATCH
-        self.assertFalse(mdc.matches(self.dataset[0], self.dataset[0], 0))
-        self.assertFalse(mdc.matches(self.dataset[0], self.dataset[1], 0))
-        self.assertFalse(mdc.matches(self.dataset[1], self.dataset[0], 0))
+        ndc = NonspecifiedDataCompare.MISMATCH
+        self.assertFalse(ndc.matches(self.dataset[0], self.dataset[0], 0))
+        self.assertFalse(ndc.matches(self.dataset[0], self.dataset[1], 0))
+        self.assertFalse(ndc.matches(self.dataset[1], self.dataset[0], 0))
 
     def test_variable(self):
-        mdc = MissingDataCompare.VARIABLE
-        self.assertTrue(mdc.matches(self.dataset[0], self.dataset[0], 0))
-        self.assertFalse(mdc.matches(self.dataset[0], self.dataset[1], 0))
-        self.assertFalse(mdc.matches(self.dataset[1], self.dataset[0], 0))
+        ndc = NonspecifiedDataCompare.VARIABLE
+        self.assertTrue(ndc.matches(self.dataset[0], self.dataset[0], 0))
+        self.assertFalse(ndc.matches(self.dataset[0], self.dataset[1], 0))
+        self.assertFalse(ndc.matches(self.dataset[1], self.dataset[0], 0))

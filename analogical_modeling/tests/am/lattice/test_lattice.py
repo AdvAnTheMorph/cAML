@@ -7,7 +7,7 @@ import analogical_modeling.tests.am.test_utils as test_utils
 from analogical_modeling.am.data.subcontext_list import SubcontextList
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.label.labeler import Labeler
-from analogical_modeling.am.label.missing_data_compare import MissingDataCompare
+from analogical_modeling.am.label.missing_data_compare import NonspecifiedDataCompare
 from analogical_modeling.am.lattice.basic_lattice import BasicLattice
 from analogical_modeling.am.lattice.distributed_lattice import \
     DistributedLattice
@@ -27,9 +27,9 @@ class FullSplitLabeler(Labeler):
     """Create a labeler which splits labels into labels of cardinality 1."""
 
     def __init__(self, test: Instance, ignore_unknowns: bool,
-                 mdc: MissingDataCompare):
-        super().__init__(test, ignore_unknowns, mdc)
-        self.wrapped = Labeler(test, False, MissingDataCompare.VARIABLE)
+                 ndc: NonspecifiedDataCompare):
+        super().__init__(test, ignore_unknowns, ndc)
+        self.wrapped = Labeler(test, False, NonspecifiedDataCompare.VARIABLE)
 
     def label(self, data):
         return self.wrapped.label(data)
@@ -58,7 +58,7 @@ class LatticeTest(unittest.TestCase):
     @staticmethod
     def get_full_split_labeler(test) -> Labeler:
         """create a labeler which splits labels into labels of cardinality 1"""
-        return FullSplitLabeler(test, False, MissingDataCompare.VARIABLE)
+        return FullSplitLabeler(test, False, NonspecifiedDataCompare.VARIABLE)
 
     def do_test_supras(self, train: Dataset, test_index: int,
                        expected_supras: list[str], lattice_supplier):

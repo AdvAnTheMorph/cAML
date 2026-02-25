@@ -1,20 +1,20 @@
-"""Specification of how to handle missing data."""
+"""Specification of how to handle non-specified data."""
 
 from enum import Enum
 
 from analogical_modeling.utils import Instance
 
 
-class MissingDataCompare(Enum):
-    """Enum specifying missing data comparison."""
-    MATCH = ("match", "Consider the missing attribute value to match anything")
+class NonspecifiedDataCompare(Enum):
+    """Enum specifying non-specified data comparison."""
+    MATCH = ("match", "Consider the non-specified attribute value to "
+             "match anything")
     MISMATCH = ("mismatch",
-                "Consider the missing attribute value to be a mismatch")
+                "Consider the non-specified attribute value to be a mismatch")
     VARIABLE = ("variable",
-                "Treat the the missing attribute value as an attribute value "
-                "of its own; "
-                "a missing value will match another missing value, "
-                "but nothing else."
+                "Treat the the non-specified attribute value as an attribute "
+                "value of its own; a non-specified value will match another "
+                "non-specified value, but nothing else."
                 )
 
     def __init__(self, option_string: str, description: str):
@@ -33,7 +33,7 @@ class MissingDataCompare(Enum):
     def matches(self, i1: Instance, i2: Instance, idx: int) -> bool:
         """Compare the two instances and return the comparison result.
 
-        It is assumed that the first instance has a missing value for the
+        It is assumed that the first instance has a non-specified value for the
         given attribute.
 
         :param i1: first instance
@@ -48,4 +48,4 @@ class MissingDataCompare(Enum):
             return False  # mismatch
         if self is self.VARIABLE:
             return i1.is_unspecified(idx) and i2.is_unspecified(idx)
-        raise NotImplementedError(f"Unknown MissingDataCompare: {self}")
+        raise NotImplementedError(f"Unknown NonspecifiedDataCompare: {self}")

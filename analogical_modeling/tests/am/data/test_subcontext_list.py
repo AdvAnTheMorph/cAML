@@ -6,7 +6,7 @@ from analogical_modeling.am.data.subcontext import Subcontext
 from analogical_modeling.am.data.subcontext_list import SubcontextList
 from analogical_modeling.am.label.label import Label
 from analogical_modeling.am.label.labeler import Labeler
-from analogical_modeling.am.label.missing_data_compare import MissingDataCompare
+from analogical_modeling.am.label.missing_data_compare import NonspecifiedDataCompare
 from analogical_modeling.tests.am import test_utils
 
 
@@ -23,7 +23,7 @@ class SubContextListTest(unittest.TestCase):
         # train.remove(0)
         train.data.drop(index=0, inplace=True)
 
-        labeler = Labeler(test, False, MissingDataCompare.MATCH)
+        labeler = Labeler(test, False, NonspecifiedDataCompare.MATCH)
         subs = SubcontextList(labeler, train, False)
         self.assertEqual(3, subs.get_cardinality())
 
@@ -50,7 +50,7 @@ class SubContextListTest(unittest.TestCase):
     def test_ignore_full_matches(self):
         train = test_utils.get_dataset(test_utils.CHAPTER_3_DATA)
         test = train[0]
-        labeler = Labeler(test, False, MissingDataCompare.MATCH)
+        labeler = Labeler(test, False, NonspecifiedDataCompare.MATCH)
         all_matching_sub = Subcontext(Label(set(), 3), "foo")
         all_matching_sub.add(train[0])  # 310e
 
@@ -68,7 +68,7 @@ class SubContextListTest(unittest.TestCase):
         test = train[0]
         train.data.drop(index=0, inplace=True)
 
-        labeler = Labeler(test, False, MissingDataCompare.MATCH)
+        labeler = Labeler(test, False, NonspecifiedDataCompare.MATCH)
 
         subs = SubcontextList(labeler, train, False)
         self.assertEqual(labeler, subs.labeler,

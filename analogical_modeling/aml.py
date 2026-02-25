@@ -30,7 +30,7 @@ from analogical_modeling.am.data.am_results import AMResults
 from analogical_modeling.am.data.subcontext_list import SubcontextList
 from analogical_modeling.am.label.labeler import Labeler
 from analogical_modeling.am.label.missing_data_compare import \
-    MissingDataCompare
+    NonspecifiedDataCompare
 from analogical_modeling.am.lattice.lattice_factory import \
     CardinalityBasedLatticeFactory
 from analogical_modeling.utils import Instance, Dataset, InvalidColumnError
@@ -73,7 +73,7 @@ class AnalogicalModeling:
         self.cardinality: int = 0
         # The Constant serialVersionUID.
         self.__serial_version_uid = 1212462913157286103
-        self.mdc = MissingDataCompare.VARIABLE
+        self.ndc = NonspecifiedDataCompare.VARIABLE
         self.random_provider: Random | None = None
 
         # instances with a weight below this threshold will be ignored
@@ -160,11 +160,11 @@ class AnalogicalModeling:
         """Set method to deal with non-specified data."""
         match new_mode:
             case "match":
-                self.mdc = MissingDataCompare.MATCH
+                self.ndc = NonspecifiedDataCompare.MATCH
             case "mismatch":
-                self.mdc = MissingDataCompare.MISMATCH
+                self.ndc = NonspecifiedDataCompare.MISMATCH
             case _:
-                self.mdc = MissingDataCompare.VARIABLE
+                self.ndc = NonspecifiedDataCompare.VARIABLE
 
     def set_random_provider(self, random_provider: Random) -> None:
         """Provide the source of randomness for algorithms that require it
@@ -178,7 +178,7 @@ class AnalogicalModeling:
         return f"Linear: {self.linear_count}, " \
                f"Remove test exemplars: {self.remove_test_exemplar}, " \
                f"Ignore unknown values: {self.ignore_unknowns}, " \
-               f"Non-specified data: {self.mdc.option_string}\n" \
+               f"Non-specified data: {self.ndc.option_string}\n" \
                f"Drop duplicates: {self.drop_duplicates}, " \
                f"Ignore columns: {self.ignore_columns or '--'}"
 
@@ -224,7 +224,7 @@ class AnalogicalModeling:
             for the given item
         """
         logger.debug(f"Classifying {test_item}")
-        labeler = Labeler(test_item, self.ignore_unknowns, self.mdc)
+        labeler = Labeler(test_item, self.ignore_unknowns, self.ndc)
 
         # 3 steps to assigning outcome probabilities:
 
@@ -565,7 +565,7 @@ class AnalogicalModeling:
         train_size = res.sub_list.considered_exemplar_count
         num_feats = instances.num_attributes() - 1  # - class attribute
         ignore = self.ignore_unknowns
-        mdc = self.mdc.name
+        ndc = self.ndc.name.title()
         ignore_given = self.remove_test_exemplar
         count_strategy = "linear" if self.linear_count else "quadratic"
 
@@ -582,7 +582,7 @@ class AnalogicalModeling:
                 train_size,  # train size
                 num_feats,  # num feats
                 ignore,  # ignore unknown values
-                mdc,  # non-specified data compare
+                ndc,  # non-specified data compare
                 ignore_given,  # ignore given
                 count_strategy,  # count strategy
                 idx  # index

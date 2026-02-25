@@ -212,7 +212,7 @@ class AnalogicalModelingTest(unittest.TestCase):
         - at least 1 instance
         - at least 1 attribute besides class
         - correct handling of empty cells (NaN -> None)
-        - distinction between empty cells and missing values
+        - distinction between empty cells and non-specified values
         """
         am = self.get_classifier()
         data = pd.DataFrame(columns=["attr1", "attr2"])
@@ -231,9 +231,9 @@ class AnalogicalModelingTest(unittest.TestCase):
         data = pd.DataFrame({"attr1": ["a", math.nan], "attr2": [None, "="]})
         self.assertIsNotNone(Dataset(data))  # don't raise Errors
         data = Dataset(data)
-        self.assertFalse(data[0].is_unspecified(1), "None != missing")  # math.nan
-        self.assertFalse(data[1].is_unspecified(0), "None != missing")  # None
-        self.assertTrue(data[1].is_unspecified(1), "= == missing")  # =
+        self.assertFalse(data[0].is_unspecified(1), "None != non-specified")  # math.nan
+        self.assertFalse(data[1].is_unspecified(0), "None != non-specified")  # None
+        self.assertTrue(data[1].is_unspecified(1), "= == non-specified")  # =
 
     def test_headers(self):
         """Test header comparison.

@@ -373,6 +373,8 @@ class MainConfigFrame:
         if not lex or not Path(lex).exists():
             return
         self.wrapper.lexicon = lex
+        self.wrapper.weights = ""
+        self.wrapper.threshold.set(0)
 
         if Path(self.wrapper.lexicon).suffix == ".xlsx":
             cols = list(pd.read_excel(self.wrapper.lexicon).columns)

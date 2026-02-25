@@ -3,7 +3,7 @@
 from math import ceil, floor
 
 from analogical_modeling.am.label.label import Label
-from analogical_modeling.am.label.missing_data_compare import MissingDataCompare
+from analogical_modeling.am.label.missing_data_compare import NonspecifiedDataCompare
 from analogical_modeling.utils import Instance
 
 # The default (max) size of a label partition
@@ -23,15 +23,15 @@ class Labeler:
     """
 
     def __init__(self, test: Instance, ignore_unknowns: bool,
-                 mdc: MissingDataCompare):
+                 ndc: NonspecifiedDataCompare):
         """
 
         :param test: instance being classified; used to label other instances
         :param ignore_unknowns: True if attributes with undefined values in the
             test item should be ignored during labeling; False otherwise
-        :param mdc: specifies how to compare missing attributes
+        :param ndc: specifies how to compare non-specified attributes
         """
-        self.mdc = mdc
+        self.ndc = ndc
         self.test_instance = test
         self.ignore_unknowns = ignore_unknowns
         ignore_set = set()
@@ -91,9 +91,9 @@ class Labeler:
             if self.is_ignored(i) or i == self.test_instance.class_index:
                 continue
             att = self.test_instance.attribute_name(i)
-            # use mdc if were are comparing a missing attribute
+            # use ndc if were are comparing a non-specified attribute
             if self.test_instance.is_unspecified(i) or data.is_unspecified(i):
-                if not self.mdc.matches(
+                if not self.ndc.matches(
                         self.test_instance, data, i):
                     # use length-1-index instead of index so that in binary the
                     # labels show left to right, first to last feature.
