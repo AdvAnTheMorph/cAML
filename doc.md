@@ -45,7 +45,7 @@ This will install the project and all its dependencies.
 ### a) Base Case
 The minimally required arguments are:
 1. Your **lexicon** file, which should be a CSV or Excel file with commas as
-   separators. Please make sure that the class column is the last one.
+   separators.
 <p align="center">
   <img src="img/ex_csv.png" alt="exemplary csv file" title=".csv File" width="30%"> →
   <img src="img/ex_csv_rendered.png" alt="exemplary csv file (rendered)" title="Rendered .csv File" width="55%">
@@ -75,15 +75,16 @@ The generated confusion matrix ignores ties and needs to be saved by hand.
 ### b) Setting additional Parameters
 The following behaviour can be controlled through parameters:
 1. [test file](#1-test-file)
-2. [weights column](#2-weights-column)
-3. [weights threshold](#3-weights-threshold)
-4. [count strategy](#4-count-strategy)
-5. [ignoring columns](#5-ignoring-columns)
-6. [handling non_specified data](#6-handling-non-specified-data)
-7. [keeping text exemplars](#7-keeping-test-exemplars)
-8. [handling duplicated instances](#8-handling-duplicated-instances)
-9. [handling attributes with non_specified values](#9-handling-attributes-with-non-specified-values)
-10. [debug mode](#10-debug-mode)
+2. [class column](#2-class-column)
+3. [weights column](#3-weights-column)
+4. [weights threshold](#4-weights-threshold)
+5. [count strategy](#5-count-strategy)
+6. [ignoring columns](#6-ignoring-columns)
+7. [handling non_specified data](#7-handling-non-specified-data)
+8. [keeping text exemplars](#8-keeping-test-exemplars)
+9. [handling duplicated instances](#9-handling-duplicated-instances)
+10. [handling attributes with non_specified values](#10-handling-attributes-with-non-specified-values)
+11. [debug mode](#11-debug-mode)
 
 #### 1. Test File
 The test file needs to be in the same format as the lexicon, with the same
@@ -99,7 +100,15 @@ If you don't provide a test file, the algorithm will perform leave-one-out
 classification on all instances of the lexicon.
 
 
-#### 2. Weights Column
+### 2. Class Column
+By default the algorithm will treat the last column as class column.
+If your class column is not the last one in your lexicon file you need to
+specify its name.
+
+**Usage**: Add `--class_column <column_name>` or `-c <column_name>` to the
+command.
+
+#### 3. Weights Column
 If you use weighted instances, you can specify a weights column which will
 then *not* be considered an attribute for classification. The weights need
 to be numerical and non-negative.
@@ -111,7 +120,7 @@ Instances with weight 0 will still affect the algorithm, as they impact the
 heterogeneity of a supracontext. Set a threshold if you want them to be
 ignored.
 
-#### 3. Weights Threshold
+#### 4. Weights Threshold
 If you want to ignore instances with small weights, you can include a
 threshold together with the weights column. This threshold can be any
 non-negative real number.
@@ -122,13 +131,13 @@ command.
 If you want the threshold to be **inclusive**, i.e. to ignore instances with
 a weight equal to the threshold, append `--inclusive` to the command. 
 
-#### 4. Count Strategy
+#### 5. Count Strategy
 The Analogical Modeling algorithm uses the **quadratic** count strategy for
 pointer values per default. You can change this to **linear**.
 
 **Usage**: Add `--linear` or simply `-L` to the command.
 
-#### 5. Ignoring Columns
+#### 6. Ignoring Columns
 If your data contains columns with additional information, e.g. for
 documentation or comments, or you want to investigate the impact of specific
 attributes without changing the lexicon every time, you can specify columns
@@ -138,7 +147,7 @@ to be ignored.
 
 Weights and class columns must not be ignored.
 
-#### 6. Handling Non-Specified Data
+#### 7. Handling Non-Specified Data
 If your data contains non-specified values (specified by `=`), you can define
 how to treat them.
 
@@ -151,7 +160,7 @@ The options are:
 - `match`: treat non-specified values as wildcards that match everything
 - `mismatch`: non-specified values do not match anything
 
-#### 7. Keeping Test Exemplars
+#### 8. Keeping Test Exemplars
 Per default, the algorithm ignores instances with the same attribute
 values as the instance to be classified (the class does not need to be the
 same).
@@ -162,19 +171,19 @@ well.
 
 **Usage**: Add `--keep_test` or simply `-k` to the command.
 
-#### 8. Handling Duplicated Instances
+#### 9. Handling Duplicated Instances
 You can remove all duplicated instances (instances with the same attribute
 values and the same class) from the lexicon.
 
 **Usage**: Add `--drop_duplicates` or simply `-d` to the command.
 
-#### 9. Handling Attributes with Non-Specified Values
+#### 10. Handling Attributes with Non-Specified Values
 Attributes that include non-specified values (`=`) can be ignored for all
 instances.
 
 **Usage**: Add `--ignore_unknowns` or shorter `-i` to the command.
 
-#### 10. Debug Mode
+#### 11. Debug Mode
 The debug mode logs additional information (classified instances, weights
 threshold) and any Exceptions that might occur.
 
