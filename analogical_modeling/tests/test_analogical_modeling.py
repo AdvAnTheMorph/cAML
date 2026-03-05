@@ -269,19 +269,25 @@ class AnalogicalModelingTest(unittest.TestCase):
         self.assertTrue(am.run_classifier(lex, None, test, ""))
 
 
-    def test_threshold(self):
-        """Test threshold.
+    def test_lower_threshold(self):
+        """Test lower threshold.
 
         - no impact if lower than min weight
         - error if higher than max weight (dropping all instances)
         - no dropping of instances if this would result in an error
         - inclusivity/exclusivity
+        - no impact if not specified
         """
         lex = Dataset(self.get_data(), weights="w")
 
         instances = list(lex)
         weights = lex.weights
         self.assertEqual(len(instances), 4)
+
+        # no threshold - no change
+        lex.filter_threshold(None, inclusive=True)
+        self.assertEqual(len(list(lex)), 4)
+        self.assertEqual(lex.weights, weights)
 
         # inclusive: drop all instances -> Exception
         with self.assertRaises(EmptyLexiconError):
@@ -316,6 +322,55 @@ class AnalogicalModelingTest(unittest.TestCase):
         self.assertEqual(len(list(lex)), 1)
         self.assertEqual(list(lex), instances[:1])
         self.assertEqual(lex.weights, weights[:1])
+
+
+    def test_upper_threshold(self):
+        """Test upper threshold.
+
+        - no impact if higher than max weight
+        - error if lower than min weight (dropping all instances)
+        - no dropping of instances if this would result in an error
+        - inclusivity/exclusivity
+        - no impact if not specified
+        """
+        lex = Dataset(self.get_data(), weights="w")
+
+        instances = list(lex)
+        weights = lex.weights
+        self.assertEqual(len(instances), 4)
+
+        # no threshold - no change
+        lex.filter_threshold(None, inclusive=True, upper=True)
+        self.assertEqual(len(list(lex)), 4)
+        self.assertEqual(lex.weights, weights)
+
+        # inclusive: drop all instances -> Exception
+        with self.assertRaises(EmptyLexiconError):
+            lex.filter_threshold(0.0, inclusive=True, upper=True)
+        # threshold above max weight -> Exception
+        with self.assertRaises(EmptyLexiconError):
+            lex.filter_threshold(-1, inclusive=False, upper=True)
+        # Exceptions raised -> no impact
+        self.assertEqual(list(lex), instances, "No change in case of Exception")
+        self.assertEqual(lex.weights, weights)
+
+        # exclusive threshold above any weight value
+        lex.filter_threshold(100, inclusive=False, upper=True)
+        self.assertEqual(len(list(lex)), 4)
+        self.assertEqual(list(lex), instances)
+        self.assertEqual(lex.weights, weights)
+
+        # inclusive: drop instance 0
+        lex.filter_threshold(0.4, inclusive=True, upper=True)
+        self.assertEqual(len(list(lex)), 3)
+        self.assertEqual(list(lex), instances[1:])
+        self.assertEqual(lex.weights, weights[1:])
+
+        # exclusive: drop all but instance 1
+        lex.filter_threshold(0.0, inclusive=False, upper=True)
+        self.assertEqual(len(list(lex)), 1)
+        self.assertEqual(list(lex), instances[1:2])
+        self.assertEqual(lex.weights, [weights[1]])
 
     def test_ignore(self):
         """Test ignoring of columns.

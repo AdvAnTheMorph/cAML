@@ -129,32 +129,29 @@ class AnalogicalModeling:
         return self._threshold
 
     @threshold.setter
-    def threshold(self, threshold: tuple[float, bool]) -> None:
-        self.set_threshold(*tuple(threshold))
+    def threshold(self, threshold: tuple[float, bool, float, bool]) -> None:
+        self.set_threshold(*threshold)
 
-    def set_threshold(self, th: float | None, inclusive: bool = False):#, max_th: Optional[float] = None, max_include: bool = False) -> None:
+    def set_threshold(self, th: float|None, inclusive: bool=False, max_th: Optional[float] = None, max_inclusive: bool = False) -> None:
         """Set upper and lower threshold.
 
         :param th: lower threshold
         :param inclusive: whether lower threshold should be inclusive
-        # :param max_th: upper threshold
-        # :param max_include: whether upper threshold should be inclusive
+        :param max_th: upper threshold
+        :param max_inclusive: whether upper threshold should be inclusive
         """
-        if th is None:# and max_th is None:
+        if th is None and max_th is None:
             self._threshold = None
             return
-        self._threshold = (max(th, 0.0), inclusive)
-        # threshold = [th, include, max_th, max_include]
-        #
-        # # no negative thresholds
-        # if th is not None:
-        #     threshold[0] = max(th, 0.0)
-        # if max_th is not None:
-        #     threshold[2] = min(0.0, max_th)
-        # if th is not None and max_th is not None:
-        #   if max_th <= th:
-        #       raise ValueError("Upper threshold must be greater than lower threshold.")
-        # self._threshold = tuple(threshold)
+        threshold = [th, inclusive, max_th, max_inclusive]
+
+        # no negative thresholds
+        if th is not None:
+            threshold[0] = max(th, 0.0)
+        if max_th is not None:
+            threshold[2] = max(0.0, max_th)
+        # if min threshold higher than max threshold: filtering will raise Error
+        self._threshold = tuple(threshold)
 
     def set_nonspecified_data_compare(self, new_mode: str) -> None:
         """Set method to deal with non-specified data."""
@@ -277,8 +274,9 @@ class AnalogicalModeling:
 
         if self._threshold is not None:
             logger.debug(
-                f"Threshold set to {self._threshold[0]}, filtering instances")
-            instances.filter_threshold(*self._threshold)
+                f"Thresholds set to {self._threshold}, filtering instances")
+            instances.filter_threshold(*self.threshold[:2], False)
+            instances.filter_threshold(*self.threshold[2:], True)
 
         instances.set_ignored(self.ignore_columns)
         if self.drop_duplicates:
@@ -733,7 +731,7 @@ if __name__ == "__main__":
     am.set_drop_duplicates(args.drop_duplicates)
     am.set_ignore_columns(args.ignore_columns)
 
-    am.threshold = (args.threshold, args.inclusive)#, args.max_threshold, args.max_inclusive)
+    am.threshold = (args.threshold, args.inclusive, args.max_threshold, args.max_inclusive)
 
     # running actual algorithm
     try:

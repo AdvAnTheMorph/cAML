@@ -261,20 +261,33 @@ class Dataset:
             raise KeyError(f"Class column '{name}' not found in dataset.") from e
 
     def filter_threshold(self, threshold: float,
-                         inclusive: bool = False) -> None:
+                         inclusive: bool = False, upper: bool = False) -> None:
         """Drop all instances with a weight below the given threshold.
 
         :param threshold: drop everything below this threshold
         :param inclusive: whether to include the threshold
+        :param upper: if the threshold should be an upper threshold
         :raise EmptyLexiconError: if lexicon would be empty after filtering
         """
+        # no need to change anything if threshold not given
+        if threshold is None:
+            return
+
         temp = pd.DataFrame(self.weights)
-        if inclusive:
-            new_data = self.data.drop(temp[temp[0] <= threshold].index)
-            weights = list(filter(lambda w: w > threshold, self.weights))
-        else:
-            new_data = self.data.drop(temp[temp[0] < threshold].index)
-            weights = list(filter(lambda w: w >= threshold, self.weights))
+        if not upper:  # lower threshold
+            if inclusive:
+                new_data = self.data.drop(temp[temp[0] <= threshold].index)
+                weights = list(filter(lambda w: w > threshold, self.weights))
+            else:
+                new_data = self.data.drop(temp[temp[0] < threshold].index)
+                weights = list(filter(lambda w: w >= threshold, self.weights))
+        else:  # upper threshold
+            if inclusive:
+                new_data = self.data.drop(temp[temp[0] >= threshold].index)
+                weights = list(filter(lambda w: w < threshold, self.weights))
+            else:
+                new_data = self.data.drop(temp[temp[0] > threshold].index)
+                weights = list(filter(lambda w: w <= threshold, self.weights))
         if len(new_data) == 0:
             raise EmptyLexiconError("No instances remaining.")
 
