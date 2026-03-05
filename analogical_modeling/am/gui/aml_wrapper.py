@@ -23,9 +23,12 @@ class AMWrapper:
         self.out_dir = Path("../..").resolve()
         self.out_name = tk.StringVar()
         self.weights = ""
-        self.threshold = tk.DoubleVar()
+        self.threshold = tk.DoubleVar(value=0.0)
+        self.max_threshold = tk.Variable(value="")
         self.inc_th = tk.BooleanVar()
+        self.inc_mth = tk.BooleanVar()
         self.threshold.trace_add('write', self.validate_threshold)
+        self.max_threshold.trace_add('write', self.validate_max_threshold)
         self.drop_duplicates = tk.BooleanVar()
         self.linear = tk.BooleanVar()
         self.keep_test = tk.BooleanVar()
@@ -64,6 +67,15 @@ class AMWrapper:
         except (ValueError, tk.TclError):
             self.threshold.set(0.0)  # reset
 
+    def validate_max_threshold(self, *_args) -> None:
+        """Make sure that threshold non-negative float."""
+        try:
+            value = float(self.max_threshold.get())
+            if value < 0:
+                self.max_threshold.set(0.0)  # reset
+        except (ValueError, tk.TclError):
+            self.max_threshold.set("")  # reset
+
     def validate(self) -> str:
         """Check that all required parameters are valid.
 
@@ -95,7 +107,7 @@ class AMWrapper:
         try:
             lex = self.adjust_data_to_class_idx()
             self.res = self.am.run_classifier(lex,
-                                              self.out or None,
+                                              None,  # never save here
                                               self.testset,
                                               self.weights)
         except Exception as e:
@@ -111,8 +123,16 @@ class AMWrapper:
         self.am.set_nonspecified_data_compare(self.ndc.get())
         self.am.set_drop_duplicates(self.drop_duplicates.get())
         self.am.set_ignore_columns(self.ignored)
-        self.am.threshold = (self.threshold.get(), self.inc_th.get())
+        try:
+            print(self.max_threshold.get())
+            max_th = float(self.max_threshold.get())
+        except ValueError:
+            max_th = None
+        print(max_th)
+        self.am.threshold = (self.threshold.get(), self.inc_th.get(), max_th, self.inc_mth.get())
         self.am.gui_queue = self.queue = Queue()
+
+        print(self.am.threshold)
 
         if self.debug.get():
             logger.setLevel(logging.DEBUG)

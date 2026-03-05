@@ -159,11 +159,13 @@ class WeightsFrame(VisOnCommandFrame):
         self.box.pack(side=tk.LEFT, expand=True, fill=tk.X)
 
         self.threshold_frame = ThresholdFrame(parent, self.wrapper)
+        self.max_threshold_frame = ThresholdFrame(parent, self.wrapper, True)
 
     def val_and_vis(self, _arg=None):
         """Validate weights column and visualize threshold selection."""
         value = self.box.get()
         if not value:  # = no weights
+            self.max_threshold_frame.invis()
             self.threshold_frame.invis()
             self.wrapper.weights = value
             return
@@ -173,12 +175,14 @@ class WeightsFrame(VisOnCommandFrame):
         try:
             temp.set_weights_by_column(value)
             self.wrapper.weights = value
+            self.max_threshold_frame.vis()
             self.threshold_frame.vis()
         except InvalidColumnError as e:
             messagebox.showerror(f"Invalid weights column '{value}'",
                                  e.message)
             self.box.current(0)
             self.wrapper.weights = ""
+            self.max_threshold_frame.invis()
             self.threshold_frame.invis()
 
     def fill(self, vals: list) -> None:
@@ -193,19 +197,23 @@ class WeightsFrame(VisOnCommandFrame):
 class ThresholdFrame(VisOnCommandFrame):
     """Frame for setting weight threshold."""
 
-    def __init__(self, parent: tk.Frame, wrapper):
+    def __init__(self, parent: tk.Frame, wrapper, upper=False):
         super().__init__(parent,
                          {"side": tk.BOTTOM, "fill": tk.X, "expand": True})
 
+
+        txt = f"Ignore instances with weights {'above' if upper else 'below'}:"
+        vars_ = (wrapper.inc_mth, wrapper.max_threshold) if upper else (wrapper.inc_th, wrapper.threshold)
+        vals = (0.0, 1.0, 0.01) if upper else (0.0, 1.0, 0.01)
         tk.Label(self.frame,
-                 text=f"{'Ignore instances with weights below:':{LEN}s}\t",
+                 text=f"{txt:{LEN}s}\t",
                  justify=tk.LEFT,
                  anchor=tk.W).pack(side=tk.LEFT, expand=True, fill=tk.X)
         tk.Checkbutton(self.frame,
                        text="inclusive",
-                       variable=wrapper.inc_th,).pack(side=tk.LEFT,)
-        tk.Spinbox(self.frame, increment=0.01, from_=0.0, to=1.0,
-                   textvariable=wrapper.threshold,
+                       variable=vars_[0]).pack(side=tk.LEFT,)
+        tk.Spinbox(self.frame, increment=vals[2], from_=vals[0], to=vals[1],
+                   textvariable=vars_[1],
                    validatecommand=(
                        self.frame.register(self.validate_numeric), '%P'),
                    validate='key').pack(side=tk.LEFT, expand=True, fill=tk.X)
@@ -375,6 +383,7 @@ class MainConfigFrame:
         self.wrapper.lexicon = lex
         self.wrapper.weights = ""
         self.wrapper.threshold.set(0)
+        self.wrapper.max_threshold.set(None)
 
         if Path(self.wrapper.lexicon).suffix == ".xlsx":
             cols = list(pd.read_excel(self.wrapper.lexicon).columns)
@@ -391,6 +400,7 @@ class MainConfigFrame:
         self.weights.fill(cols)
         self.weights.vis()
         self.weights.threshold_frame.invis()  # as no weight column selected
+        self.weights.max_threshold_frame.invis()
 
     def get_testset(self):
         """Get testset and update widgets accordingly."""

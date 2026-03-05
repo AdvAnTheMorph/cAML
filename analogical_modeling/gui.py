@@ -4,6 +4,7 @@ import os
 import sys
 
 import tkinter as tk
+from pathlib import Path
 from tkinter import messagebox
 from tkinter import ttk
 
@@ -182,7 +183,10 @@ class GUI:
         :param dataframes: Tuple containing dataframes for gang effects,
             analogical sets and distributions
         """
+        dest = Path(wrapper.out)
+
         if self.outs.gangs.get():
+            dataframes[0].to_csv(dest.with_name(dest.stem + "_gangs.csv"), index=False)
             if not hasattr(root, "gangs"):
                 root.gangs = ttk.Frame(self.notebook)
                 self.notebook.add(root.gangs, text="Gang Effects")
@@ -192,6 +196,8 @@ class GUI:
             self.make_table(root.gangs, dataframes[0])
 
         if self.outs.analog.get():
+
+            dataframes[1].to_csv(dest.with_name(dest.stem + "_analogical_sets.csv"), index=False)
             if not hasattr(root, "analog"):
                 root.analog = ttk.Frame(self.notebook)
                 self.notebook.add(root.analog, text="Analogical Sets")
@@ -201,6 +207,7 @@ class GUI:
             self.make_table(root.analog, dataframes[1])
 
         if self.outs.distr.get():
+            dataframes[2].to_csv(dest.with_name(dest.stem + "_distributions.csv"), index=False)
             if not hasattr(root, "distr"):
                 root.distr = ttk.Frame(self.notebook)
                 self.notebook.add(root.distr, text="Distribution")
