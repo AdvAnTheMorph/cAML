@@ -113,7 +113,7 @@ class IgnoreFrame(VisOnCommandFrame):
                                                                     expand=True,
                                                                     fill=tk.X)
         self.box = tk.Listbox(self.frame, selectmode=tk.MULTIPLE, height=4,
-                              width=LEN)
+                              width=LEN, exportselection=False)
         self.box.pack(side=tk.RIGHT, expand=True, fill=tk.X)
 
         scrollbar = tk.Scrollbar(self.frame, orient=tk.VERTICAL)
@@ -380,6 +380,7 @@ class MainConfigFrame:
         lex = self.get_file(self.lexicon_button)
         if not lex or not Path(lex).exists():
             return
+
         self.wrapper.lexicon = lex
         self.wrapper.weights = ""
         self.wrapper.threshold.set(0)

@@ -132,7 +132,6 @@ class AMWrapper:
         self.am.threshold = (self.threshold.get(), self.inc_th.get(), max_th, self.inc_mth.get())
         self.am.gui_queue = self.queue = Queue()
 
-        print(self.am.threshold)
 
         if self.debug.get():
             logger.setLevel(logging.DEBUG)
