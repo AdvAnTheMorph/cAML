@@ -267,16 +267,14 @@ class AnalogicalModeling:
             sys.exit()
 
         if isinstance(csv, pd.DataFrame):
-            instances = Dataset(csv, weights)
+            instances = Dataset(csv, weights, self.threshold)
         else:
-            instances = Dataset().from_file(csv, weights, sheet)
+            instances = Dataset().from_file(csv, weights, self.threshold, sheet)
         instances.set_class_column_by_name(cls_column)
 
         if self._threshold is not None:
             logger.debug(
                 f"Thresholds set to {self._threshold}, filtering instances")
-            instances.filter_threshold(*self.threshold[:2], False)
-            instances.filter_threshold(*self.threshold[2:], True)
 
         instances.set_ignored(self.ignore_columns)
         if self.drop_duplicates:

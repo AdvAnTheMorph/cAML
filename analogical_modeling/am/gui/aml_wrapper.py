@@ -124,11 +124,10 @@ class AMWrapper:
         self.am.set_drop_duplicates(self.drop_duplicates.get())
         self.am.set_ignore_columns(self.ignored)
         try:
-            print(self.max_threshold.get())
             max_th = float(self.max_threshold.get())
         except ValueError:
             max_th = None
-        print(max_th)
+
         self.am.threshold = (self.threshold.get(), self.inc_th.get(), max_th, self.inc_mth.get())
         self.am.gui_queue = self.queue = Queue()
 

@@ -33,8 +33,8 @@ class AnalogicalModelingTest(unittest.TestCase):
         return pd.DataFrame({'attr1': [3, 3, 2, 3],
                              'attr2': [1, 1, 1, 1],
                              'ignore': ['s', 't', 'r', 'i'],
-                             'w_neg': [-0.4, 0.0, 0.19, 0.106],
-                             'w': [0.4, 0.0, 0.19, 0.106],
+                             'w_neg': [-0.4, 0.1, 0.19, 0.106],
+                             'w': [0.4, 0.1, 0.19, 0.106],
                              'class': ['r', 'r', 'e', 'r']})
 
     def test_chapter_3_data(self):
@@ -197,7 +197,7 @@ class AnalogicalModelingTest(unittest.TestCase):
 
         self.assertEqual(Dataset(data).weights, [1] * 4)
         # should work
-        self.assertEqual(Dataset(data, "w").weights, [0.4, 0.0, 0.19, 0.106])
+        self.assertEqual(Dataset(data, "w").weights, [0.4, 0.1, 0.19, 0.106])
         self.assertEqual(Dataset(data, "w").data.shape, (4, 5))
 
         # shouldn't work
@@ -306,13 +306,13 @@ class AnalogicalModelingTest(unittest.TestCase):
         self.assertEqual(lex.weights, weights)
 
         # exclusive threshold below any weight value
-        lex.filter_threshold(0, inclusive=False)
+        lex.filter_threshold(0.1, inclusive=False)
         self.assertEqual(len(list(lex)), 4)
         self.assertEqual(list(lex), instances)
         self.assertEqual(lex.weights, weights)
 
         # inclusive: drop instance 1
-        lex.filter_threshold(0, inclusive=True)
+        lex.filter_threshold(0.1, inclusive=True)
         self.assertEqual(len(list(lex)), 3)
         self.assertEqual(list(lex), instances[:1] + instances[2:])
         self.assertEqual(lex.weights, weights[:1] + weights[2:])
@@ -346,7 +346,7 @@ class AnalogicalModelingTest(unittest.TestCase):
 
         # inclusive: drop all instances -> Exception
         with self.assertRaises(EmptyLexiconError):
-            lex.filter_threshold(0.0, inclusive=True, upper=True)
+            lex.filter_threshold(0.1, inclusive=True, upper=True)
         # threshold above max weight -> Exception
         with self.assertRaises(EmptyLexiconError):
             lex.filter_threshold(-1, inclusive=False, upper=True)
@@ -367,10 +367,31 @@ class AnalogicalModelingTest(unittest.TestCase):
         self.assertEqual(lex.weights, weights[1:])
 
         # exclusive: drop all but instance 1
-        lex.filter_threshold(0.0, inclusive=False, upper=True)
+        lex.filter_threshold(0.1, inclusive=False, upper=True)
         self.assertEqual(len(list(lex)), 1)
         self.assertEqual(list(lex), instances[1:2])
         self.assertEqual(lex.weights, [weights[1]])
+
+    def test_threshold_and_weights(self):
+        """Test correct interworking of threshold and weights.
+
+        - accept 0 weights if filtered out by threshold
+        - don't accept 0 weights otherwise
+        """
+
+        # no error, since weights filtered out
+        lex = Dataset(self.get_data(), weights="w_neg", threshold=(0, True))
+        instances = list(lex)
+        weights = lex.weights
+        self.assertEqual(len(instances), 3)
+        self.assertGreater(min(weights), 0)
+
+        # error, since negative weights not filtered out
+        with self.assertRaises(InvalidColumnError):
+            Dataset(self.get_data(), weights="w_neg", threshold=(None, True))
+
+        print(weights)
+        # TODO: more tests
 
     def test_ignore(self):
         """Test ignoring of columns.

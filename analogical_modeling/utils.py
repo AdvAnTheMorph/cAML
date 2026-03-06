@@ -8,9 +8,11 @@ import math
 import warnings
 from os import PathLike
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 
 import pandas as pd
+
+DoubleThreshold = Tuple[float|None, bool, float|None, bool]
 
 
 class InvalidColumnError(Exception):
@@ -127,34 +129,36 @@ class Dataset:
     """Dataset representation."""
 
     def __init__(self, atts: list | pd.DataFrame | None = None,
-                 weights: str = ""):
+                 weights: str = "", threshold: DoubleThreshold | None = None):
         """
 
         :param atts: if atts is None, call :func:`from_csv` to populate the
             dataset
         :param weights: name of column with weights, if given
+        :param threshold: lower and upper threshold for weights
         :raise EmptyLexiconError: if lexicon empty
         """
         self.ignored: list[str] = []
+        self.weights = []
         self.silent = False  # require ignored columns to be there
         if atts is None:
             self.data = pd.DataFrame()
             self._class_index: int = None
-            self.weights = []
             return
         self.data = pd.DataFrame(atts).replace(math.nan, None)
         if len(self.data) == 0:
             warnings.warn("The lexicon does not contain any Instances.")
 
-        self.weights = self.set_weights_by_column(weights)
+        self.set_weights_by_column(weights, threshold)
         self.class_index = self.num_attributes() - 1
 
-    def from_file(self, source: PathLike, weights: str = "",
+    def from_file(self, source: PathLike, weights: str = "", threshold: DoubleThreshold | None = None,
                   sheet: Optional[str] = None) -> 'Dataset':
         """Read dataset from csv file.
 
         :param source: path to csv or Excel file
         :param weights: name of column with weights, if given
+        :param threshold: lower and upper threshold for weights
         :param sheet: sheet name for Excel files
         :raise EmptyLexiconError: if lexicon empty
         """
@@ -168,19 +172,20 @@ class Dataset:
         if len(self.data) == 0:
             warnings.warn("The lexicon does not contain any Instances.")
 
-        self.weights = self.set_weights_by_column(weights)
+        self.set_weights_by_column(weights, threshold)
 
         # set class index only afterwards (possibly one column less than before)
         self.class_index = self.num_attributes() - 1
 
         return self
 
-    def set_weights_by_column(self, name: str) -> list:
+    def set_weights_by_column(self, name: str, threshold: DoubleThreshold|None = None) -> None:
         """Set instance weights.
 
         The weights column is then dropped from the dataset.
 
         :param name: name of column with weights, if given
+        :param threshold: lower and upper threshold for weights
         :raise InvalidColumnError: if weights column not in data or weights
             not numeric or weights negative
         """
@@ -190,11 +195,19 @@ class Dataset:
             try:
                 col = self.data[name]
                 if pd.api.types.is_numeric_dtype(col):
-                    if min(col) < 0:
-                        raise InvalidColumnError(
-                            "Weights must not be negative.")
-                    weights = col.tolist()
+                    temp = (self.data, self.weights)
+                    self.weights = col.tolist()
                     self.data.drop(columns=[name], inplace=True)
+
+                    if threshold is not None:
+                        # filter first
+                        self.filter_threshold(*threshold[:2] or (None,), upper=False)
+                        self.filter_threshold(*threshold[2:] or (None,), upper=True)
+                    # then check
+                    if min(self.weights) <= 0:
+                        self.data, self.weights = temp  # restore (Exception might be caught)
+                        raise InvalidColumnError(
+                            "Weights must be greater than 0.")
                 else:
                     raise InvalidColumnError(
                         f"Weights column '{name}' does not contain numeric "
@@ -203,8 +216,7 @@ class Dataset:
                 raise InvalidColumnError(
                     f"Weights column '{name}' not found in dataset.") from e
         else:
-            weights = [1] * self.data.shape[0]
-        return weights
+            self.weights = [1] * self.data.shape[0]
 
     def get_instance(self, idx) -> Instance:
         """Get an instance of the given index.
