@@ -1,4 +1,8 @@
-# Analogical Modeling Python - Step-by-Step Guide
+# cAML - Step-by-Step Guide
+
+<p align="right">
+  <img src="img/logo.jpeg" alt="A camel with the subtitle 'cAML'" width="20%">
+</p>
 
 You can choose between using the [graphical user interface (GUI)](#alternative-1-gui) and the
 [terminal](#alternative-2-terminal) version.

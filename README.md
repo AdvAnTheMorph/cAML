@@ -1,4 +1,4 @@
-# AnalogicalModelingPython
+# cAML
 
 
 ## Description
