@@ -173,7 +173,8 @@ class WeightsFrame(VisOnCommandFrame):
         # validate and set
         temp = Dataset().from_file(self.wrapper.lexicon)
         try:
-            temp.set_weights_by_column(value)
+            # use dummy threshold to filter out 0 weights
+            temp.set_weights_by_column(value, (0, True, None, False))
             self.wrapper.weights = value
             self.max_threshold_frame.vis()
             self.threshold_frame.vis()

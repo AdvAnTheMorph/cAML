@@ -111,25 +111,27 @@ command.
 #### 3. Weights Column
 If you use weighted instances, you can specify a weights column which will
 then *not* be considered an attribute for classification. The weights need
-to be numerical and non-negative.
+to be numerical and greater than 0. You can specify a threshold to 
+automatically filter out instances with a weight below or above a certain 
+value.
 
 **Usage**: Add `--weights_column <column_name>` or shorter `-w <column_name` to
 the command.
 
-Instances with weight 0 will still affect the algorithm, as they impact the
-heterogeneity of a supracontext. Set a threshold if you want them to be
-ignored.
+**Note** that the number of pointers will change according to the weights.
 
 #### 4. Weights Threshold
 If you want to ignore instances with small weights, you can include a
 threshold together with the weights column. This threshold can be any
-non-negative real number.
+positive real number.
 
-**Usage**: Add `--threshold <value>` or shorter `-th <value>` to the
-command.
+**Usage**: Add `--threshold <value>` or shorter `-th <value>` for a lower
+threshold and `--max_threshold <value>` or shorter `-mt <value>` for an upper
+threshold.
 
-If you want the threshold to be **inclusive**, i.e. to ignore instances with
-a weight equal to the threshold, append `--inclusive` to the command. 
+If you want the thresholds to be **inclusive**, i.e. to ignore instances with
+a weight equal to the thresholds, append `--inclusive` and `--max_inclusive`
+to the command. 
 
 #### 5. Count Strategy
 The Analogical Modeling algorithm uses the **quadratic** count strategy for

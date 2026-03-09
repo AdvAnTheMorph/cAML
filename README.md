@@ -56,6 +56,8 @@ python3 aml.py -l <data.csv> -o <output>
 - `-w` or `--weight_column` `column_name` specifies a column for weights
 - `-th` or `--threshold` `value` will drop any instances with a weight below that threshold
 - `--inclusive` to drop instances with a weight equal to the threshold (has no effect without threshold)
+- `-mt` or `--max_threshold` `value` will drop any instances with a weight above that threshold
+- `--max_inclusive` to drop instances with a weight equal to the threshold (has no effect without upper threshold)
 - `-c` or `--class_column` to specify the class column by name (defaults to last column)
 - `-d` or `--drop_duplicates`
     - any instance with the same features and the same class within the lexicon will be dropped
@@ -77,7 +79,11 @@ python3 aml.py -l <data.csv> -o <output>
 
 ## Alternative Versions
 - [weka version](https://github.com/garfieldnate/Weka_AnalogicalModeling) (Java) by Nathan Glenn
-- [TrAML](https://github.com/SabineArndtLappe/TrAML) (Perl) by ???
+- [TrAML](https://github.com/SabineArndtLappe/TrAML) (Perl)
 
 ## License
-Released under the MIT license (see the LICENSE file for details). Copyright Jasmin Wiese, 2025.
+Released under the GNU General Public Licence v.3 (see the LICENSE file for details). Copyright Jasmin Wiese, 2025.
+
+
+This project was funded by the **Deutsche Forschungsgemeinschaft** 
+(DFG, German Research Foundation, grant no. 549185879).
