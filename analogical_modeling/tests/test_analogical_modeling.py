@@ -390,8 +390,11 @@ class AnalogicalModelingTest(unittest.TestCase):
         with self.assertRaises(InvalidColumnError):
             Dataset(self.get_data(), weights="w_neg", threshold=(None, True))
 
-        print(weights)
-        # TODO: more tests
+        # error if lower threshold greater than upper threshold
+        with self.assertRaises(EmptyLexiconError):
+            Dataset(self.get_data(), weights="w", threshold=(0.02, False, 0.01, False))
+        with self.assertRaises(EmptyLexiconError):
+            Dataset(self.get_data(), weights="w", threshold=(0.106, False, 0.106, True))
 
     def test_ignore(self):
         """Test ignoring of columns.
