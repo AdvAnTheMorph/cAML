@@ -385,6 +385,8 @@ class AnalogicalModeling:
             :func:`distribution_for_instance` from this object
         """
         if self.results is None:
+            if len(self.training_instances) < 2:
+                raise RuntimeError("Not enough training instances!")
             raise RuntimeError(
                 "Call distributionForInstance before calling this")
         return self.results
