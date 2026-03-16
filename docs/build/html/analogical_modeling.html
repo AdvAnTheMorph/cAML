@@ -1,0 +1,1119 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="am package" href="analogical_modeling.am.html"><link rel="prev" title="AML documentation" href="index.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>analogical_modeling package - cAML 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">cAML 0.0.1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <span class="sidebar-brand-text">cAML 0.0.1 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">analogical_modeling package</a><input aria-label="Toggle navigation of analogical_modeling package" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="analogical_modeling.am.html">am package</a><input aria-label="Toggle navigation of am package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="analogical_modeling.am.data.html">am.data package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analogical_modeling.am.gui.html">am.gui package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analogical_modeling.am.label.html">am.label package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analogical_modeling.am.lattice.html">am.lattice package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/analogical_modeling.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="analogical-modeling-package">
+<h1>analogical_modeling package<a class="headerlink" href="#analogical-modeling-package" title="Link to this heading">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="analogical_modeling.am.html">am package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analogical_modeling.am.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="analogical_modeling.am.data.html">am.data package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.data.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.data.html#module-analogical_modeling.am.data.am_results">am.data.am_results module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.data.html#module-analogical_modeling.am.data.basic_supra">am.data.basic_supra module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.data.html#module-analogical_modeling.am.data.classified_supra">am.data.classified_supra module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.data.html#module-analogical_modeling.am.data.gang_effect">am.data.gang_effect module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.data.html#module-analogical_modeling.am.data.subcontext">am.data.subcontext module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.data.html#module-analogical_modeling.am.data.subcontext_list">am.data.subcontext_list module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.data.html#module-analogical_modeling.am.data.supracontext">am.data.supracontext module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.data.html#module-analogical_modeling.am.data">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="analogical_modeling.am.gui.html">am.gui package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.gui.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.gui.html#module-analogical_modeling.am.gui.aml_wrapper">am.gui.aml_wrapper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.gui.html#module-analogical_modeling.am.gui.gui_utils">am.gui.gui_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.gui.html#module-analogical_modeling.am.gui.vis">am.gui.vis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.gui.html#module-analogical_modeling.am.gui">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="analogical_modeling.am.label.html">am.label package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.label.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.label.html#module-analogical_modeling.am.label.label">am.label.label module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.label.html#module-analogical_modeling.am.label.labeler">am.label.labeler module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.label.html#module-analogical_modeling.am.label.missing_data_compare">am.label.missing_data_compare module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.label.html#module-analogical_modeling.am.label">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="analogical_modeling.am.lattice.html">am.lattice package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.lattice.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.lattice.html#module-analogical_modeling.am.lattice.basic_lattice">am.lattice.basic_lattice module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.lattice.html#module-analogical_modeling.am.lattice.canonicalizing_set">am.lattice.canonicalizing_set module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.lattice.html#module-analogical_modeling.am.lattice.distributed_lattice">am.lattice.distributed_lattice module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.lattice.html#module-analogical_modeling.am.lattice.heterogeneous_lattice">am.lattice.heterogeneous_lattice module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.lattice.html#module-analogical_modeling.am.lattice.johnsen_johansson_lattice">am.lattice.johnsen_johansson_lattice module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.lattice.html#module-analogical_modeling.am.lattice.lattice">am.lattice.lattice module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.lattice.html#module-analogical_modeling.am.lattice.lattice_factory">analogical_modeling.am.lattice.lattice_factory module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.lattice.html#module-analogical_modeling.am.lattice.linked_lattice_node">am.lattice.linked_lattice_node module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="analogical_modeling.am.lattice.html#module-analogical_modeling.am.lattice">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="analogical_modeling.am.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analogical_modeling.am.html#module-analogical_modeling.am.am_utils">am.am_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analogical_modeling.am.html#module-analogical_modeling.am">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-analogical_modeling.aml">
+<span id="aml-module"></span><h2>aml module<a class="headerlink" href="#module-analogical_modeling.aml" title="Link to this heading">¶</a></h2>
+<p>Analogical Modeling Algorithm</p>
+<p>Implements the Analogical Modeling algorithm, invented by Royal Skousen.
+Analogical modeling is an instance-based algorithm designed to model human
+behavior.</p>
+<p><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.run_classifier" title="analogical_modeling.aml.AnalogicalModeling.run_classifier"><code class="xref py py-func docutils literal notranslate"><span class="pre">AnalogicalModeling.run_classifier()</span></code></a> starts the algorithm. It calls
+<a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.classify" title="analogical_modeling.aml.AnalogicalModeling.classify"><code class="xref py py-func docutils literal notranslate"><span class="pre">AnalogicalModeling.classify()</span></code></a> which does the actual classification.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.aml.</span></span><span class="sig-name descname"><span class="pre">AnalogicalModeling</span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Implementation of the Analogical Modeling algorithm, invented by Royal
+Skousen.</p>
+<p>Analogical modeling is an instance-based algorithm designed to model human
+behavior.</p>
+<p><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.run_classifier" title="analogical_modeling.aml.AnalogicalModeling.run_classifier"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_classifier()</span></code></a> starts the algorithm. It calls
+<a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.classify" title="analogical_modeling.aml.AnalogicalModeling.classify"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify()</span></code></a> which does the actual classification.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.build_classifier">
+<span class="sig-name descname"><span class="pre">build_classifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instances</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.utils.Dataset" title="analogical_modeling.utils.Dataset"><span class="pre">Dataset</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.build_classifier" title="Link to this definition">¶</a></dt>
+<dd><p>This is used to build the classifier; it specifies the
+capabilities of the classifier and loads in exemplars to be used for
+prediction. No actual analysis happens here because AM is a lazy
+classifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instances</strong> – lexicon</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.check_header">
+<span class="sig-name descname"><span class="pre">check_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instances</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.check_header" title="Link to this definition">¶</a></dt>
+<dd><p>Headers of lexicon and test data must be equal.</p>
+<p>Ignored columns are ignored both in lexicon and test data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#analogical_modeling.aml.HeaderMismatchError" title="analogical_modeling.aml.HeaderMismatchError"><strong>HeaderMismatchError</strong></a> – if headers don’t match</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.classify">
+<span class="sig-name descname"><span class="pre">classify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.utils.Instance" title="analogical_modeling.utils.Instance"><span class="pre">Instance</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.am_results.AMResults" title="analogical_modeling.am.data.am_results.AMResults"><span class="pre">AMResults</span></a></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.classify" title="Link to this definition">¶</a></dt>
+<dd><p>This method is where all the action happens! Given a test item,
+it uses existing exemplars to assign outcome probabilities to it.</p>
+<p>Note that this method sets the results variable without any
+synchronization.
+This means that if you want to print results from multiple calls
+to this method, you should not call it in parallel. If you want
+to make multiple <a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.classify" title="analogical_modeling.aml.AnalogicalModeling.classify"><code class="xref py py-func docutils literal notranslate"><span class="pre">classify()</span></code></a> calls in parallel, you should
+create multiple classifier instances. This sort of parallelism
+for large-cardinality datasets is inadvisable, anyway, since a
+single classifier instance will attempt to saturate all available CPUs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>test_item</strong> – item to make context base on</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Analogical set which holds results of the classification
+for the given item</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.create_analogical_set">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">create_analogical_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.am_results.AMResults" title="analogical_modeling.am.data.am_results.AMResults"><span class="pre">AMResults</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">classified</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.utils.Instance" title="analogical_modeling.utils.Instance"><span class="pre">Instance</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.create_analogical_set" title="Link to this definition">¶</a></dt>
+<dd><p>Create list of analogical sets for output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>res</strong> – result of AnalogicalModeling</p></li>
+<li><p><strong>classified</strong> – instance for which to create analogical sets</p></li>
+<li><p><strong>idx</strong> – index of instance</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.create_distribution">
+<span class="sig-name descname"><span class="pre">create_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.am_results.AMResults" title="analogical_modeling.am.data.am_results.AMResults"><span class="pre">AMResults</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">classified</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.utils.Instance" title="analogical_modeling.utils.Instance"><span class="pre">Instance</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instances</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.utils.Dataset" title="analogical_modeling.utils.Dataset"><span class="pre">Dataset</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.create_distribution" title="Link to this definition">¶</a></dt>
+<dd><p>Create list of distribution information for output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>res</strong> – result of AnalogicalModeling</p></li>
+<li><p><strong>classified</strong> – instance for which to create distribution</p></li>
+<li><p><strong>classes</strong> – possible classes</p></li>
+<li><p><strong>idx</strong> – index of instance</p></li>
+<li><p><strong>instances</strong> – dataset from which the instance comes</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.create_gangs">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">create_gangs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.gang_effect.GangEffect" title="analogical_modeling.am.data.gang_effect.GangEffect"><span class="pre">GangEffect</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classified</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.utils.Instance" title="analogical_modeling.utils.Instance"><span class="pre">Instance</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.create_gangs" title="Link to this definition">¶</a></dt>
+<dd><p>Create list of gang effects for output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>effects</strong> – Gang effects for classified instance</p></li>
+<li><p><strong>classified</strong> – instance for which to store gang effects</p></li>
+<li><p><strong>classes</strong> – possible classes</p></li>
+<li><p><strong>idx</strong> – index of the instance</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.create_headers">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">create_headers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lex_feats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_feats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.create_headers" title="Link to this definition">¶</a></dt>
+<dd><p>Create headers for output files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lex_feats</strong> – attributes of lexicon</p></li>
+<li><p><strong>test_feats</strong> – attributes of test data (or lexicon, if no test data)</p></li>
+<li><p><strong>classes</strong> – possible class values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>headers for gang effects, analogical sets and distributions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.create_output_files">
+<span class="sig-name descname"><span class="pre">create_output_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.am_results.AMResults" title="analogical_modeling.am.data.am_results.AMResults"><span class="pre">AMResults</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instances</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.utils.Dataset" title="analogical_modeling.utils.Dataset"><span class="pre">Dataset</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.create_output_files" title="Link to this definition">¶</a></dt>
+<dd><p>Store information on analogical sets, gang effects and distributions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dest</strong> – start name for output files</p></li>
+<li><p><strong>results</strong> – list of AMResults</p></li>
+<li><p><strong>instances</strong> – dataset used for prediction</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.distribution_for_instance">
+<span class="sig-name descname"><span class="pre">distribution_for_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.utils.Instance" title="analogical_modeling.utils.Instance"><span class="pre">Instance</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.distribution_for_instance" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate class distribution for instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instance</strong> – instance to predict</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mapping between classes and their selection probability for
+the instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.evaluate">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instances</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.utils.Dataset" title="analogical_modeling.utils.Dataset"><span class="pre">Dataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.am_results.AMResults" title="analogical_modeling.am.data.am_results.AMResults"><span class="pre">AMResults</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ConfusionMatrixDisplay</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.evaluate" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate accuracy and plot confusion matrix.</p>
+<p>The confusion matrix can be inaccurate, as it does not
+consider ties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instances</strong> – dataset used for prediction</p></li>
+<li><p><strong>results</strong> – list of AMResults</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>accuracy and confusion matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.get_options">
+<span class="sig-name descname"><span class="pre">get_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.get_options" title="Link to this definition">¶</a></dt>
+<dd><p>Return options of the algorithm.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.get_results">
+<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.am_results.AMResults" title="analogical_modeling.am.data.am_results.AMResults"><span class="pre">AMResults</span></a></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.get_results" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classification results from the last call to
+<a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.distribution_for_instance" title="analogical_modeling.aml.AnalogicalModeling.distribution_for_instance"><code class="xref py py-func docutils literal notranslate"><span class="pre">distribution_for_instance()</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – if you’ve never called
+<a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.distribution_for_instance" title="analogical_modeling.aml.AnalogicalModeling.distribution_for_instance"><code class="xref py py-func docutils literal notranslate"><span class="pre">distribution_for_instance()</span></code></a> from this object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.run_classifier">
+<span class="sig-name descname"><span class="pre">run_classifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_sheet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ConfusionMatrixDisplay</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.run_classifier" title="Link to this definition">¶</a></dt>
+<dd><p>Run the classifier instance with the given options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>csv</strong> – lexicon</p></li>
+<li><p><strong>out_path</strong> – where to save output files</p></li>
+<li><p><strong>test</strong> – test data (use lexicon if not given)</p></li>
+<li><p><strong>weights</strong> – column name for weights in dataset, if given</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#analogical_modeling.utils.InvalidColumnError" title="analogical_modeling.utils.InvalidColumnError"><strong>InvalidColumnError</strong></a> – if column configuration invalid</p></li>
+<li><p><a class="reference internal" href="#analogical_modeling.aml.HeaderMismatchError" title="analogical_modeling.aml.HeaderMismatchError"><strong>HeaderMismatchError</strong></a> – if headers don’t match</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.set_drop_duplicates">
+<span class="sig-name descname"><span class="pre">set_drop_duplicates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drop_duplicates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.set_drop_duplicates" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.set_ignore_columns">
+<span class="sig-name descname"><span class="pre">set_ignore_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.set_ignore_columns" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.set_ignore_unknowns">
+<span class="sig-name descname"><span class="pre">set_ignore_unknowns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore_unknowns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.set_ignore_unknowns" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.set_linear_count">
+<span class="sig-name descname"><span class="pre">set_linear_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linear</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.set_linear_count" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>linear</strong> – True if counting of pointers should be linear; false
+if quadratic</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.set_nonspecified_data_compare">
+<span class="sig-name descname"><span class="pre">set_nonspecified_data_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.set_nonspecified_data_compare" title="Link to this definition">¶</a></dt>
+<dd><p>Set method to deal with non-specified data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.set_random_provider">
+<span class="sig-name descname"><span class="pre">set_random_provider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Random</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.set_random_provider" title="Link to this definition">¶</a></dt>
+<dd><p>Provide the source of randomness for algorithms that require it
+(e.g. <code class="xref py py-class docutils literal notranslate"><span class="pre">JohnsenJohanssonLattice</span></code>).</p>
+<p>The provider must be thread-safe.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.set_remove_test_exemplar">
+<span class="sig-name descname"><span class="pre">set_remove_test_exemplar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remove_test_exemplar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.set_remove_test_exemplar" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>remove_test_exemplar</strong> – True if we should remove a test instance
+from training before predicting its outcome</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.set_threshold">
+<span class="sig-name descname"><span class="pre">set_threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">th</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inclusive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_th</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_inclusive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.set_threshold" title="Link to this definition">¶</a></dt>
+<dd><p>Set upper and lower threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>th</strong> – lower threshold</p></li>
+<li><p><strong>inclusive</strong> – whether lower threshold should be inclusive</p></li>
+<li><p><strong>max_th</strong> – upper threshold</p></li>
+<li><p><strong>max_inclusive</strong> – whether upper threshold should be inclusive</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.threshold">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.threshold" title="Link to this definition">¶</a></dt>
+<dd><p>Get minimum weight threshold for instances to be considered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.aml.AnalogicalModeling.update_classifier">
+<span class="sig-name descname"><span class="pre">update_classifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.utils.Instance" title="analogical_modeling.utils.Instance"><span class="pre">Instance</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.aml.AnalogicalModeling.update_classifier" title="Link to this definition">¶</a></dt>
+<dd><p>This is used to add more information to the classifier.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="analogical_modeling.aml.HeaderMismatchError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.aml.</span></span><span class="sig-name descname"><span class="pre">HeaderMismatchError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.aml.HeaderMismatchError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception if headers don’t match.</p>
+</dd></dl>
+
+</section>
+<section id="module-analogical_modeling.gui">
+<span id="gui-module"></span><h2>gui module<a class="headerlink" href="#module-analogical_modeling.gui" title="Link to this heading">¶</a></h2>
+<p>Graphical user interface for analogical modeling.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.gui.GUI">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.gui.</span></span><span class="sig-name descname"><span class="pre">GUI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tk</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.gui.GUI" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Graphical User Interface for AnalogicalModeling.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.gui.GUI.clear_frame">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">clear_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.gui.GUI.clear_frame" title="Link to this definition">¶</a></dt>
+<dd><p>Remove all widgets from a frame.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.gui.GUI.make_table">
+<span class="sig-name descname"><span class="pre">make_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataframe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.gui.GUI.make_table" title="Link to this definition">¶</a></dt>
+<dd><p>Visualize dataframe as table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – parent widget</p></li>
+<li><p><strong>dataframe</strong> – dataframe to visualize</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.gui.GUI.on_completion">
+<span class="sig-name descname"><span class="pre">on_completion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.gui.GUI.on_completion" title="Link to this definition">¶</a></dt>
+<dd><p>Plot matrix and output files after completion.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.gui.GUI.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#analogical_modeling.gui.GUI.run" title="Link to this definition">¶</a></dt>
+<dd><p>Run AML through wrapper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if start successful, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.gui.GUI.vis_files">
+<span class="sig-name descname"><span class="pre">vis_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.gui.GUI.vis_files" title="Link to this definition">¶</a></dt>
+<dd><p>Visualize tables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dataframes</strong> – Tuple containing dataframes for gang effects,
+analogical sets and distributions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.gui.GUI.vis_matrix">
+<span class="sig-name descname"><span class="pre">vis_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConfusionMatrixDisplay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.gui.GUI.vis_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Visualize confusion matrix in separate tab.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>matrix</strong> – confusion matrix</p></li>
+<li><p><strong>acc</strong> – accuracy</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-analogical_modeling.utils">
+<span id="utils-module"></span><h2>utils module<a class="headerlink" href="#module-analogical_modeling.utils" title="Link to this heading">¶</a></h2>
+<p>Utility classes for reading data.</p>
+<p>remains from weka:
+- Attributes = columns
+- Instances = rows</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.utils.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.utils.Dataset" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Dataset representation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.utils.Instance" title="analogical_modeling.utils.Instance"><span class="pre">Instance</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.add" title="Link to this definition">¶</a></dt>
+<dd><p>Add an instance to the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>row</strong> – instance to add</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.add_class_column">
+<span class="sig-name descname"><span class="pre">add_class_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.add_class_column" title="Link to this definition">¶</a></dt>
+<dd><p>Add class column to data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.class_column_name">
+<span class="sig-name descname"><span class="pre">class_column_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.class_column_name" title="Link to this definition">¶</a></dt>
+<dd><p>Return the name of the class column.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.class_index">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">class_index</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.class_index" title="Link to this definition">¶</a></dt>
+<dd><p>Get class index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.delete_with_missing_class">
+<span class="sig-name descname"><span class="pre">delete_with_missing_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.delete_with_missing_class" title="Link to this definition">¶</a></dt>
+<dd><p>Delete instances without a class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.filter_threshold">
+<span class="sig-name descname"><span class="pre">filter_threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inclusive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.filter_threshold" title="Link to this definition">¶</a></dt>
+<dd><p>Drop all instances with a weight below the given threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>threshold</strong> – drop everything below this threshold</p></li>
+<li><p><strong>inclusive</strong> – whether to include the threshold</p></li>
+<li><p><strong>upper</strong> – if the threshold should be an upper threshold</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#analogical_modeling.utils.EmptyLexiconError" title="analogical_modeling.utils.EmptyLexiconError"><strong>EmptyLexiconError</strong></a> – if lexicon would be empty after filtering</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.from_file">
+<span class="sig-name descname"><span class="pre">from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#analogical_modeling.utils.Dataset" title="analogical_modeling.utils.Dataset"><span class="pre">Dataset</span></a></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.from_file" title="Link to this definition">¶</a></dt>
+<dd><p>Read dataset from csv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – path to csv or Excel file</p></li>
+<li><p><strong>weights</strong> – name of column with weights, if given</p></li>
+<li><p><strong>threshold</strong> – lower and upper threshold for weights</p></li>
+<li><p><strong>sheet</strong> – sheet name for Excel files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#analogical_modeling.utils.EmptyLexiconError" title="analogical_modeling.utils.EmptyLexiconError"><strong>EmptyLexiconError</strong></a> – if lexicon empty</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.get_classes">
+<span class="sig-name descname"><span class="pre">get_classes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.get_classes" title="Link to this definition">¶</a></dt>
+<dd><p>Return all class values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.get_instance">
+<span class="sig-name descname"><span class="pre">get_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#analogical_modeling.utils.Instance" title="analogical_modeling.utils.Instance"><span class="pre">Instance</span></a></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.get_instance" title="Link to this definition">¶</a></dt>
+<dd><p>Get an instance of the given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> – index of the instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.num_attributes">
+<span class="sig-name descname"><span class="pre">num_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.num_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Return the number of attributes (whether ignored or not).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.num_classes">
+<span class="sig-name descname"><span class="pre">num_classes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.num_classes" title="Link to this definition">¶</a></dt>
+<dd><p>Return the number of classes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.num_counted_attributes">
+<span class="sig-name descname"><span class="pre">num_counted_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.num_counted_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Return the number of attributes that are not ignored.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.set_class_column_by_name">
+<span class="sig-name descname"><span class="pre">set_class_column_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.set_class_column_by_name" title="Link to this definition">¶</a></dt>
+<dd><p>Set class index by column name.</p>
+<p>Defaults to -1 if no name given</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – name of column</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – if column name not in data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.set_ignored">
+<span class="sig-name descname"><span class="pre">set_ignored</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.set_ignored" title="Link to this definition">¶</a></dt>
+<dd><p>Set ignored columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ignore</strong> – columns to ignore</p></li>
+<li><p><strong>silent</strong> – if True, ignore if columns not in data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#analogical_modeling.utils.InvalidColumnError" title="analogical_modeling.utils.InvalidColumnError"><strong>InvalidColumnError</strong></a> – if not silent and columns not in data</p></li>
+<li><p><a class="reference internal" href="#analogical_modeling.utils.InvalidColumnError" title="analogical_modeling.utils.InvalidColumnError"><strong>InvalidColumnError</strong></a> – if class column in ignored columns</p></li>
+<li><p><a class="reference internal" href="#analogical_modeling.utils.TooFewAttributesError" title="analogical_modeling.utils.TooFewAttributesError"><strong>TooFewAttributesError</strong></a> – if less than two considered attributes
+remaining</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Dataset.set_weights_by_column">
+<span class="sig-name descname"><span class="pre">set_weights_by_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Dataset.set_weights_by_column" title="Link to this definition">¶</a></dt>
+<dd><p>Set instance weights.</p>
+<p>The weights column is then dropped from the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – name of column with weights, if given</p></li>
+<li><p><strong>threshold</strong> – lower and upper threshold for weights</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#analogical_modeling.utils.InvalidColumnError" title="analogical_modeling.utils.InvalidColumnError"><strong>InvalidColumnError</strong></a> – if weights column not in data or weights
+not numeric or weights negative</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="analogical_modeling.utils.EmptyLexiconError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.utils.</span></span><span class="sig-name descname"><span class="pre">EmptyLexiconError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.utils.EmptyLexiconError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception if a lexicon is empty.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Instance">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.utils.</span></span><span class="sig-name descname"><span class="pre">Instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.utils.Instance" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></p>
+<p>Instance Representation</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Instance.attribute_name">
+<span class="sig-name descname"><span class="pre">attribute_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Instance.attribute_name" title="Link to this definition">¶</a></dt>
+<dd><p>Return the name of the attribute at a given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> – index of the attribute</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Instance.class_value">
+<span class="sig-name descname"><span class="pre">class_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Instance.class_value" title="Link to this definition">¶</a></dt>
+<dd><p>Return the value of the class attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Instance.is_unspecified">
+<span class="sig-name descname"><span class="pre">is_unspecified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Instance.is_unspecified" title="Link to this definition">¶</a></dt>
+<dd><p>Check if value is non-specified.</p>
+<p>Non-specified values are represented by the non-specification sign
+(<cite>=</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> – index of value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Instance.num_all_attributes">
+<span class="sig-name descname"><span class="pre">num_all_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Instance.num_all_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Return the number of attributes, including ignored ones.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Instance.num_attributes">
+<span class="sig-name descname"><span class="pre">num_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Instance.num_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Return the number of considered attributes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Instance.string_value">
+<span class="sig-name descname"><span class="pre">string_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.utils.Instance.string_value" title="Link to this definition">¶</a></dt>
+<dd><p>Return the value of an attributed specified by index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> – index of the attribute</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.utils.Instance.value">
+<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#analogical_modeling.utils.Instance.value" title="Link to this definition">¶</a></dt>
+<dd><p>Return the value of the given attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>attr</strong> – attribute name</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="analogical_modeling.utils.InvalidColumnError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.utils.</span></span><span class="sig-name descname"><span class="pre">InvalidColumnError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.utils.InvalidColumnError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception if a column configuration is invalid.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="analogical_modeling.utils.TooFewAttributesError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.utils.</span></span><span class="sig-name descname"><span class="pre">TooFewAttributesError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.utils.TooFewAttributesError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception if less than 2 attributes (class + 1 other)</p>
+</dd></dl>
+
+</section>
+<section id="module-analogical_modeling">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-analogical_modeling" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="analogical_modeling.am.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">am package</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Home</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Jasmin Wiese
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">analogical_modeling package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-analogical_modeling.aml">aml module</a><ul>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.build_classifier"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.build_classifier()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.check_header"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.check_header()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.classify"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.classify()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.create_analogical_set"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.create_analogical_set()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.create_distribution"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.create_distribution()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.create_gangs"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.create_gangs()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.create_headers"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.create_headers()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.create_output_files"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.create_output_files()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.distribution_for_instance"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.distribution_for_instance()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.evaluate"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.evaluate()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.get_options"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.get_options()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.get_results"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.get_results()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.run_classifier"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.run_classifier()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.set_drop_duplicates"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.set_drop_duplicates()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.set_ignore_columns"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.set_ignore_columns()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.set_ignore_unknowns"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.set_ignore_unknowns()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.set_linear_count"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.set_linear_count()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.set_nonspecified_data_compare"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.set_nonspecified_data_compare()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.set_random_provider"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.set_random_provider()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.set_remove_test_exemplar"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.set_remove_test_exemplar()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.set_threshold"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.set_threshold()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.threshold"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.threshold</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.aml.AnalogicalModeling.update_classifier"><code class="docutils literal notranslate"><span class="pre">AnalogicalModeling.update_classifier()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analogical_modeling.aml.HeaderMismatchError"><code class="docutils literal notranslate"><span class="pre">HeaderMismatchError</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-analogical_modeling.gui">gui module</a><ul>
+<li><a class="reference internal" href="#analogical_modeling.gui.GUI"><code class="docutils literal notranslate"><span class="pre">GUI</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.gui.GUI.clear_frame"><code class="docutils literal notranslate"><span class="pre">GUI.clear_frame()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.gui.GUI.make_table"><code class="docutils literal notranslate"><span class="pre">GUI.make_table()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.gui.GUI.on_completion"><code class="docutils literal notranslate"><span class="pre">GUI.on_completion()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.gui.GUI.run"><code class="docutils literal notranslate"><span class="pre">GUI.run()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.gui.GUI.vis_files"><code class="docutils literal notranslate"><span class="pre">GUI.vis_files()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.gui.GUI.vis_matrix"><code class="docutils literal notranslate"><span class="pre">GUI.vis_matrix()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-analogical_modeling.utils">utils module</a><ul>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset"><code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.add"><code class="docutils literal notranslate"><span class="pre">Dataset.add()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.add_class_column"><code class="docutils literal notranslate"><span class="pre">Dataset.add_class_column()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.class_column_name"><code class="docutils literal notranslate"><span class="pre">Dataset.class_column_name()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.class_index"><code class="docutils literal notranslate"><span class="pre">Dataset.class_index</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.delete_with_missing_class"><code class="docutils literal notranslate"><span class="pre">Dataset.delete_with_missing_class()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.filter_threshold"><code class="docutils literal notranslate"><span class="pre">Dataset.filter_threshold()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.from_file"><code class="docutils literal notranslate"><span class="pre">Dataset.from_file()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.get_classes"><code class="docutils literal notranslate"><span class="pre">Dataset.get_classes()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.get_instance"><code class="docutils literal notranslate"><span class="pre">Dataset.get_instance()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.num_attributes"><code class="docutils literal notranslate"><span class="pre">Dataset.num_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.num_classes"><code class="docutils literal notranslate"><span class="pre">Dataset.num_classes()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.num_counted_attributes"><code class="docutils literal notranslate"><span class="pre">Dataset.num_counted_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.set_class_column_by_name"><code class="docutils literal notranslate"><span class="pre">Dataset.set_class_column_by_name()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.set_ignored"><code class="docutils literal notranslate"><span class="pre">Dataset.set_ignored()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Dataset.set_weights_by_column"><code class="docutils literal notranslate"><span class="pre">Dataset.set_weights_by_column()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analogical_modeling.utils.EmptyLexiconError"><code class="docutils literal notranslate"><span class="pre">EmptyLexiconError</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Instance"><code class="docutils literal notranslate"><span class="pre">Instance</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.utils.Instance.attribute_name"><code class="docutils literal notranslate"><span class="pre">Instance.attribute_name()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Instance.class_value"><code class="docutils literal notranslate"><span class="pre">Instance.class_value()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Instance.is_unspecified"><code class="docutils literal notranslate"><span class="pre">Instance.is_unspecified()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Instance.num_all_attributes"><code class="docutils literal notranslate"><span class="pre">Instance.num_all_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Instance.num_attributes"><code class="docutils literal notranslate"><span class="pre">Instance.num_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Instance.string_value"><code class="docutils literal notranslate"><span class="pre">Instance.string_value()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.Instance.value"><code class="docutils literal notranslate"><span class="pre">Instance.value()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analogical_modeling.utils.InvalidColumnError"><code class="docutils literal notranslate"><span class="pre">InvalidColumnError</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.utils.TooFewAttributesError"><code class="docutils literal notranslate"><span class="pre">TooFewAttributesError</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-analogical_modeling">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

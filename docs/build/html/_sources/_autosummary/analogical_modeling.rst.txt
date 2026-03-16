@@ -1,0 +1,6 @@
+﻿analogical\_modeling
+====================
+
+.. automodule:: analogical_modeling
+
+   

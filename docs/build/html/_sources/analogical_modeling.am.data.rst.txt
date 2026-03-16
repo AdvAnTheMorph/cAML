@@ -1,0 +1,69 @@
+am.data package
+====================================
+
+Submodules
+----------
+
+am.data.am\_results module
+-----------------------------------------------
+
+.. automodule:: analogical_modeling.am.data.am_results
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+am.data.basic\_supra module
+------------------------------------------------
+
+.. automodule:: analogical_modeling.am.data.basic_supra
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+am.data.classified\_supra module
+-----------------------------------------------------
+
+.. automodule:: analogical_modeling.am.data.classified_supra
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+am.data.gang\_effect module
+------------------------------------------------
+
+.. automodule:: analogical_modeling.am.data.gang_effect
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+am.data.subcontext module
+----------------------------------------------
+
+.. automodule:: analogical_modeling.am.data.subcontext
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+am.data.subcontext\_list module
+----------------------------------------------------
+
+.. automodule:: analogical_modeling.am.data.subcontext_list
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+am.data.supracontext module
+------------------------------------------------
+
+.. automodule:: analogical_modeling.am.data.supracontext
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: analogical_modeling.am.data
+   :members:
+   :show-inheritance:
+   :undoc-members:

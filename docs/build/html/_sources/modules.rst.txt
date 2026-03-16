@@ -1,0 +1,7 @@
+analogical_modeling
+===================
+
+.. toctree::
+   :maxdepth: 4
+
+   analogical_modeling

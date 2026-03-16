@@ -1,0 +1,12 @@
+##############
+API Reference
+##############
+:orphan:
+
+.. currentmodule:: analogical_modeling
+
+.. autosummary::
+    :toctree: _autosummary/
+    :template: module.rst
+    :recursive:
+    :nosignatures:

@@ -1,0 +1,45 @@
+analogical\_modeling package
+============================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   analogical_modeling.am
+
+Submodules
+----------
+
+aml module
+-------------------------------
+
+.. automodule:: analogical_modeling.aml
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+gui module
+-------------------------------
+
+.. automodule:: analogical_modeling.gui
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+utils module
+---------------------------------
+
+.. automodule:: analogical_modeling.utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: analogical_modeling
+   :members:
+   :show-inheritance:
+   :undoc-members:

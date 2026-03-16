@@ -1,0 +1,37 @@
+am.label package
+=====================================
+
+Submodules
+----------
+
+am.label.label module
+------------------------------------------
+
+.. automodule:: analogical_modeling.am.label.label
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+am.label.labeler module
+--------------------------------------------
+
+.. automodule:: analogical_modeling.am.label.labeler
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+am.label.missing\_data\_compare module
+-----------------------------------------------------------
+
+.. automodule:: analogical_modeling.am.label.missing_data_compare
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: analogical_modeling.am.label
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,1058 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>am.lattice package - cAML 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">cAML 0.0.1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <span class="sidebar-brand-text">cAML 0.0.1 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/analogical_modeling.am.lattice.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="am-lattice-package">
+<h1>am.lattice package<a class="headerlink" href="#am-lattice-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-analogical_modeling.am.lattice.basic_lattice">
+<span id="am-lattice-basic-lattice-module"></span><h2>am.lattice.basic_lattice module<a class="headerlink" href="#module-analogical_modeling.am.lattice.basic_lattice" title="Link to this heading">¶</a></h2>
+<p>Basic Lattice</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.basic_lattice.BasicLattice">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.basic_lattice.</span></span><span class="sig-name descname"><span class="pre">BasicLattice</span></span><a class="headerlink" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#analogical_modeling.am.lattice.lattice.Lattice" title="analogical_modeling.am.lattice.lattice.Lattice"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lattice</span></code></a></p>
+<p>This class holds the supracontextual lattice and does the work of filling
+itself during classification.</p>
+<p>This class represents the supracontextual lattice. The supractontextual
+lattice is a boolean algebra which models supra- and subcontexts for the AM
+algorithm. Using boolean algebra allows efficient computation of these as
+well as traversal of all subcontexts within a supracontext.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.basic_lattice.BasicLattice.add_to_context">
+<span class="sig-name descname"><span class="pre">add_to_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext.Subcontext" title="analogical_modeling.am.data.subcontext.Subcontext"><span class="pre">Subcontext</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.label.html#analogical_modeling.am.label.label.Label" title="analogical_modeling.am.label.label.Label"><span class="pre">Label</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.add_to_context" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sub</strong> – subcontext to be added</p></li>
+<li><p><strong>label</strong> – label of supracontext to add the subcontext to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.basic_lattice.BasicLattice.clean_supra">
+<span class="sig-name descname"><span class="pre">clean_supra</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.clean_supra" title="Link to this definition">¶</a></dt>
+<dd><p>Cycle through the supracontexts and delete all with count 0.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.basic_lattice.BasicLattice.dump_lattice">
+<span class="sig-name descname"><span class="pre">dump_lattice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.dump_lattice" title="Link to this definition">¶</a></dt>
+<dd><p>Transform lattice into informative string for debugging.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.basic_lattice.BasicLattice.fill">
+<span class="sig-name descname"><span class="pre">fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext_list.SubcontextList" title="analogical_modeling.am.data.subcontext_list.SubcontextList"><span class="pre">SubcontextList</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.fill" title="Link to this definition">¶</a></dt>
+<dd><p>Fill the lattice with given subcontexts. This is meant to be done
+only once for a given Lattice instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if the lattice was already filled</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.basic_lattice.BasicLattice.get_supracontexts">
+<span class="sig-name descname"><span class="pre">get_supracontexts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.get_supracontexts" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of supracontexts that were created by filling the
+supracontextual lattice. From this, you can compute the analogical
+set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.basic_lattice.BasicLattice.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext.Subcontext" title="analogical_modeling.am.data.subcontext.Subcontext"><span class="pre">Subcontext</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.insert" title="Link to this definition">¶</a></dt>
+<dd><p>Insert sub into the lattice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sub</strong> – Subcontext to be inserted</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.basic_lattice.BasicLattice.no_zero_supras">
+<span class="sig-name descname"><span class="pre">no_zero_supras</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.no_zero_supras" title="Link to this definition">¶</a></dt>
+<dd><p>Check for presence of supracontexts with count 0.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-analogical_modeling.am.lattice.canonicalizing_set">
+<span id="am-lattice-canonicalizing-set-module"></span><h2>am.lattice.canonicalizing_set module<a class="headerlink" href="#module-analogical_modeling.am.lattice.canonicalizing_set" title="Link to this heading">¶</a></h2>
+<p>Canonicalizing Set</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.canonicalizing_set.</span></span><span class="sig-name descname"><span class="pre">CanonicalizingSet</span></span><a class="headerlink" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A set implementation that can be used to retrieve canonical versions of
+objects; this is not possible with <cite>Set</cite> because of the lack of a <cite>get</cite>
+method.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.add" title="Link to this definition">¶</a></dt>
+<dd><p>Add element to Set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.empty_set">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">empty_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet" title="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet"><span class="pre">CanonicalizingSet</span></a></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.empty_set" title="Link to this definition">¶</a></dt>
+<dd><p>Create empty CanonicalizingSet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.get" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None if t is not contained in the set; otherwise the object
+contained in the set for which t == the_object is True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.is_empty">
+<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.is_empty" title="Link to this definition">¶</a></dt>
+<dd><p>Check if the canonicalizing set is empty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.merge">
+<span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remapping_function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.merge" title="Link to this definition">¶</a></dt>
+<dd><p>Key and value are the same, otherwise the same as Java’s <cite>Map.merge</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.unwrap">
+<span class="sig-name descname"><span class="pre">unwrap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.unwrap" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the underlying set</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-analogical_modeling.am.lattice.distributed_lattice">
+<span id="am-lattice-distributed-lattice-module"></span><h2>am.lattice.distributed_lattice module<a class="headerlink" href="#module-analogical_modeling.am.lattice.distributed_lattice" title="Link to this heading">¶</a></h2>
+<p>Distributed Lattice</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.distributed_lattice.DistributedLattice">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.distributed_lattice.</span></span><span class="sig-name descname"><span class="pre">DistributedLattice</span></span><a class="headerlink" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#analogical_modeling.am.lattice.lattice.Lattice" title="analogical_modeling.am.lattice.lattice.Lattice"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lattice</span></code></a></p>
+<p>This class manages several smaller, heterogeneous lattices. The
+supracontexts of smaller lattices are combined to create the final
+Supracontexts.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.fill">
+<span class="sig-name descname"><span class="pre">fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext_list.SubcontextList" title="analogical_modeling.am.data.subcontext_list.SubcontextList"><span class="pre">SubcontextList</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.fill" title="Link to this definition">¶</a></dt>
+<dd><p>The number of sub-lattices is determined via
+<code class="xref py py-func docutils literal notranslate"><span class="pre">sub_list.labeler.num_partitions()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sub_list</strong> – list of Subcontexts to add to the lattice</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if the lattice was already filled</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.fill_lattice_partition">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">fill_lattice_partition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext_list.SubcontextList" title="analogical_modeling.am.data.subcontext_list.SubcontextList"><span class="pre">SubcontextList</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">partition_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.fill_lattice_partition" title="Link to this definition">¶</a></dt>
+<dd><p>Fills a heterogeneous lattice with subcontexts using the given label
+partition index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.get_supracontexts">
+<span class="sig-name descname"><span class="pre">get_supracontexts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.get_supracontexts" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the list of homogeneous supracontexts created with this lattice</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.lattice_product">
+<span class="sig-name descname"><span class="pre">lattice_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supras1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">supras2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">supra_product_constructor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet" title="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet"><span class="pre">CanonicalizingSet</span></a></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.lattice_product" title="Link to this definition">¶</a></dt>
+<dd><p>Combines two sets of Supracontexts to make a new List representing the
+intersection of two lattices. The lattice-combining step is partitioned
+and run in several threads.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>supra_product_constructor</strong> – the constructor of the task which will
+produce the product of one supracontext with a set of supracontexts</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.remove_duplicate_results">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">remove_duplicate_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supras1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet" title="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet"><span class="pre">CanonicalizingSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">supras2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet" title="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet"><span class="pre">CanonicalizingSet</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet" title="analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet"><span class="pre">CanonicalizingSet</span></a></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.remove_duplicate_results" title="Link to this definition">¶</a></dt>
+<dd><p>Find duplicate supracontexts in supras1 and supras2 and return a single
+set of supracontexts with the combined counts from both sets.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.distributed_lattice.FinalizingProduct">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.distributed_lattice.</span></span><span class="sig-name descname"><span class="pre">FinalizingProduct</span></span><a class="headerlink" href="#analogical_modeling.am.lattice.distributed_lattice.FinalizingProduct" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.distributed_lattice.FinalizingProduct.product">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supra1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">supra2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.classified_supra.ClassifiedSupra" title="analogical_modeling.am.data.classified_supra.ClassifiedSupra"><span class="pre">ClassifiedSupra</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.distributed_lattice.FinalizingProduct.product" title="Link to this definition">¶</a></dt>
+<dd><p>Combine this partial supracontext with another to make a
+ClassifiedSupra object.</p>
+<p>The new one contains the subcontexts found in both, and the pointer
+count is set to the product of the two pointer counts. If it turns
+out that the resulting supracontext would be heterogeneous or empty,
+then return None instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>supra1</strong> – first partial supracontext to combine</p></li>
+<li><p><strong>supra2</strong> – second partial supracontext to combine</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a combined supracontext, or None if supra1 and supra2 had no
+data in common or if the new supracontext is heterogeneous</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.distributed_lattice.IntermediateProduct">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.distributed_lattice.</span></span><span class="sig-name descname"><span class="pre">IntermediateProduct</span></span><a class="headerlink" href="#analogical_modeling.am.lattice.distributed_lattice.IntermediateProduct" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.distributed_lattice.IntermediateProduct.product">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supra1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">supra2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.basic_supra.BasicSupra" title="analogical_modeling.am.data.basic_supra.BasicSupra"><span class="pre">BasicSupra</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.distributed_lattice.IntermediateProduct.product" title="Link to this definition">¶</a></dt>
+<dd><p>Combine this partial supracontext with another to make a third which
+contains the subcontexts in common between the two, and a count which is
+set to the product of the two counts. Return None if the resulting
+object would have no subcontexts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>supra1</strong> – first partial supracontext to combine</p></li>
+<li><p><strong>supra2</strong> – second partial supracontext to combine</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>new partial supracontext, or None if it would have been empty</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.distributed_lattice.merge_counts">
+<span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.distributed_lattice.</span></span><span class="sig-name descname"><span class="pre">merge_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.distributed_lattice.merge_counts" title="Link to this definition">¶</a></dt>
+<dd><p>Merge supracontext counts.</p>
+</dd></dl>
+
+</section>
+<section id="module-analogical_modeling.am.lattice.heterogeneous_lattice">
+<span id="am-lattice-heterogeneous-lattice-module"></span><h2>am.lattice.heterogeneous_lattice module<a class="headerlink" href="#module-analogical_modeling.am.lattice.heterogeneous_lattice" title="Link to this heading">¶</a></h2>
+<p>Heterogeneous Lattice</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.heterogeneous_lattice.</span></span><span class="sig-name descname"><span class="pre">HeterogeneousLattice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partition_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#analogical_modeling.am.lattice.lattice.Lattice" title="analogical_modeling.am.lattice.lattice.Lattice"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lattice</span></code></a></p>
+<p>Same as a normal lattice, except no supracontext is deemed heterogeneous and
+hence everything is kept.</p>
+<p>Represents a lattice which is to be combined with other sublattices to
+determine predictions later on. When a sublattice is filled, there are two
+main differences:</p>
+<ul class="simple">
+<li><p>Only a part of an exemplar’s features are used to assign lattice
+locations.</p></li>
+<li><p>No supracontext is ever determined to be heterogeneous. This is, of
+course, less efficient in some ways.</p></li>
+</ul>
+<p>Inefficiencies brought about by not eliminating heterogeneous supracontexts
+and by having to combine sublattices are a compromise to the alternative,
+using a single lattice for any size exemplars. Remember that the underlying
+structure of a lattice is an array of size <span class="math notranslate nohighlight">\(2^n\)</span>, n being the size of
+the exemplars contained. So if the exemplars are 20 features long, a single
+lattice would be <span class="math notranslate nohighlight">\(2^{20}\)</span> or 1M elements long. On the other hand, if
+the exemplars are split in 4, then 4 sublattices of size <span class="math notranslate nohighlight">\(2^5\)</span>, or 32,
+can be used instead, making for close to 100,000 times less memory used.</p>
+<p>In terms of processing power, more is required to use sublattices. However,
+using threads the processing of each can be done in parallel.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.add_to_context">
+<span class="sig-name descname"><span class="pre">add_to_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext.Subcontext" title="analogical_modeling.am.data.subcontext.Subcontext"><span class="pre">Subcontext</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.label.html#analogical_modeling.am.label.label.Label" title="analogical_modeling.am.label.label.Label"><span class="pre">Label</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.add_to_context" title="Link to this definition">¶</a></dt>
+<dd><p>Add the given subcontext to the supracontext with the given label.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.clean_supra">
+<span class="sig-name descname"><span class="pre">clean_supra</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.clean_supra" title="Link to this definition">¶</a></dt>
+<dd><p>Cycle through the supracontexts and delete all with count 0.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.fill">
+<span class="sig-name descname"><span class="pre">fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext_list.SubcontextList" title="analogical_modeling.am.data.subcontext_list.SubcontextList"><span class="pre">SubcontextList</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.fill" title="Link to this definition">¶</a></dt>
+<dd><p>Fill the lattice with given subcontexts. This is meant to be done
+only once for a given Lattice instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if the lattice was already filled</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.get_supracontexts">
+<span class="sig-name descname"><span class="pre">get_supracontexts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.get_supracontexts" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of supracontexts that were created by filling the
+supracontextual lattice. From this, you can compute the analogical
+set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext.Subcontext" title="analogical_modeling.am.data.subcontext.Subcontext"><span class="pre">Subcontext</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.label.html#analogical_modeling.am.label.label.Label" title="analogical_modeling.am.label.label.Label"><span class="pre">Label</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.insert" title="Link to this definition">¶</a></dt>
+<dd><p>Insert sub into the lattice, into location given by label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sub</strong> – Subcontext to be inserted</p></li>
+<li><p><strong>label</strong> – label to be assigned to the subcontext</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.no_zero_supras">
+<span class="sig-name descname"><span class="pre">no_zero_supras</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.no_zero_supras" title="Link to this definition">¶</a></dt>
+<dd><p>Check for presence of supracontexts with count 0.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.supra_list_to_string">
+<span class="sig-name descname"><span class="pre">supra_list_to_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.supra_list_to_string" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string representation of the list of Supracontexts created
+when the Lattice was filled</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-analogical_modeling.am.lattice.johnsen_johansson_lattice">
+<span id="am-lattice-johnsen-johansson-lattice-module"></span><h2>am.lattice.johnsen_johansson_lattice module<a class="headerlink" href="#module-analogical_modeling.am.lattice.johnsen_johansson_lattice" title="Link to this heading">¶</a></h2>
+<p>Johnsen-Johansson Lattice</p>
+<p>The approximation algorithm from “Efficient Modeling of Analogy”, Johnsen and
+Johansson, DOI 10.1007/978-3-540-30586-6_77.</p>
+<p>Terminology from the paper is as follows:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(p\)</span>: the subcontext whose count is being approximated</p></li>
+<li><p><span class="math notranslate nohighlight">\(size(p)\)</span>: the size of the subcontext <span class="math notranslate nohighlight">\(p\)</span>; or, the number of 0’s
+in its label</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathcal{H}(p)\)</span>: the sets found by intersecting <span class="math notranslate nohighlight">\(p\)</span> with any
+subcontext that has a different outcome; the labels of such intersections</p></li>
+<li><p><span class="math notranslate nohighlight">\(max(p)\)</span>: the cardinality of the union of all <span class="math notranslate nohighlight">\(x\in\mathcal{H}(p)\)</span>;
+the number of 0’s in the union of the labels of all subcontexts in
+<span class="math notranslate nohighlight">\(\mathcal{H}(p)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathcal{H}_{limit(p)}\)</span>: the heterogeneous elements under <span class="math notranslate nohighlight">\(p\)</span>
+in the lattice</p></li>
+<li><p><span class="math notranslate nohighlight">\(min(p)\)</span>: the size of the largest child of <span class="math notranslate nohighlight">\(p\)</span>; or, the number of
+0’s in the label of the subcontext whose label has the most 0’s and matches
+all the 1’s in <span class="math notranslate nohighlight">\(p\)</span>’s label.</p></li>
+</ul>
+<p>We estimate the count of each subcontext by randomly unioning sets of
+subcontexts from <span class="math notranslate nohighlight">\(\{x_s\}\)</span> and checking for heterogeneity (union means
+OR’ing labels). The count of a subcontext <span class="math notranslate nohighlight">\(p\)</span> is the size of its power
+set minus the heterogeneous elements in this set
+(or <span class="math notranslate nohighlight">\(|\wp(p)| - |\mathcal{H}_{limit(p)}|\)</span>).
+We use these bounds in approximating <span class="math notranslate nohighlight">\(|\mathcal{H}_{limit(p)}|\)</span>:</p>
+<ul class="simple">
+<li><p>lower bound (<span class="math notranslate nohighlight">\(lb(p)\)</span>): the cardinality of the powerset of <span class="math notranslate nohighlight">\(min(p)\)</span>.</p></li>
+<li><p>upper bound (<span class="math notranslate nohighlight">\(ub(p)\)</span>): <span class="math notranslate nohighlight">\(\sum_{k=1}^{min(p)}{max(p)\choose k}\)</span></p></li>
+</ul>
+<p>The estimate <span class="math notranslate nohighlight">\(\hat{h}_p\)</span> of <span class="math notranslate nohighlight">\(|\mathcal{H}_{limit(p)}|\)</span> is computed
+by sampling random sets of subcontexts <span class="math notranslate nohighlight">\({x_s}\)</span> and combining them with:</p>
+<p><span class="math notranslate nohighlight">\(\frac{|\{x_s \in \mathcal{H}(p)|}{|\{x_s\}|}=\frac{\hat{h}_p}{ub(p)}\)</span></p>
+<p>or</p>
+<p><span class="math notranslate nohighlight">\(\hat{h}_p = \frac{ub(p)|x_s\in \mathcal{H}(p)|}{|\{x_s\}|}\)</span></p>
+<dl class="simple">
+<dt>TODO: maybe if H(p) is small enough we could do exact counting with</dt><dd><p>include-exclude</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.johnsen_johansson_lattice.JohnsenJohanssonLattice">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.johnsen_johansson_lattice.</span></span><span class="sig-name descname"><span class="pre">JohnsenJohanssonLattice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Random</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.JohnsenJohanssonLattice" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#analogical_modeling.am.lattice.lattice.Lattice" title="analogical_modeling.am.lattice.lattice.Lattice"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lattice</span></code></a></p>
+<p>Lattice for high cardinality data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.johnsen_johansson_lattice.JohnsenJohanssonLattice.fill">
+<span class="sig-name descname"><span class="pre">fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext_list.SubcontextList" title="analogical_modeling.am.data.subcontext_list.SubcontextList"><span class="pre">SubcontextList</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.JohnsenJohanssonLattice.fill" title="Link to this definition">¶</a></dt>
+<dd><p>Fill the lattice with given subcontexts. This is meant to be done
+only once for a given Lattice instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if the lattice was already filled</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.johnsen_johansson_lattice.JohnsenJohanssonLattice.get_supracontexts">
+<span class="sig-name descname"><span class="pre">get_supracontexts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.JohnsenJohanssonLattice.get_supracontexts" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of supracontexts that were created by filling the
+supracontextual lattice. From this, you can compute the analogical
+set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.johnsen_johansson_lattice.Pair">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.johnsen_johansson_lattice.</span></span><span class="sig-name descname"><span class="pre">Pair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">first</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">second</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.Pair" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.johnsen_johansson_lattice.SupraApproximator">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.johnsen_johansson_lattice.</span></span><span class="sig-name descname"><span class="pre">SupraApproximator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lattice</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.JohnsenJohanssonLattice" title="analogical_modeling.am.lattice.johnsen_johansson_lattice.JohnsenJohanssonLattice"><span class="pre">JohnsenJohanssonLattice</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext.Subcontext" title="analogical_modeling.am.data.subcontext.Subcontext"><span class="pre">Subcontext</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">outcome_sub_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.label.html#analogical_modeling.am.label.label.Label" title="analogical_modeling.am.label.label.Label"><span class="pre">Label</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Random</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.SupraApproximator" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Approximator for Supracontexts</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.johnsen_johansson_lattice.SupraApproximator.approximate_supra">
+<span class="sig-name descname"><span class="pre">approximate_supra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext.Subcontext" title="analogical_modeling.am.data.subcontext.Subcontext"><span class="pre">Subcontext</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">outcome_sub_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.label.html#analogical_modeling.am.label.label.Label" title="analogical_modeling.am.label.label.Label"><span class="pre">Label</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.SupraApproximator.approximate_supra" title="Link to this definition">¶</a></dt>
+<dd><p>Approximate supracontext.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.johnsen_johansson_lattice.SupraApproximator.estimate_hetero_ratio">
+<span class="sig-name descname"><span class="pre">estimate_hetero_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.label.html#analogical_modeling.am.label.label.Label" title="analogical_modeling.am.label.label.Label"><span class="pre">Label</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hp_union</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.label.html#analogical_modeling.am.label.label.Label" title="analogical_modeling.am.label.label.Label"><span class="pre">Label</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_experiments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.SupraApproximator.estimate_hetero_ratio" title="Link to this definition">¶</a></dt>
+<dd><p>Estimate heterogeneous ratio.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.johnsen_johansson_lattice.binomial_coefficient">
+<span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.johnsen_johansson_lattice.</span></span><span class="sig-name descname"><span class="pre">binomial_coefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.Pair" title="analogical_modeling.am.lattice.johnsen_johansson_lattice.Pair"><span class="pre">Pair</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.binomial_coefficient" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate binomial coefficient.</p>
+</dd></dl>
+
+</section>
+<section id="module-analogical_modeling.am.lattice.lattice">
+<span id="am-lattice-lattice-module"></span><h2>am.lattice.lattice module<a class="headerlink" href="#module-analogical_modeling.am.lattice.lattice" title="Link to this heading">¶</a></h2>
+<p>Lattice ABC</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.lattice.Lattice">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.lattice.</span></span><span class="sig-name descname"><span class="pre">Lattice</span></span><a class="headerlink" href="#analogical_modeling.am.lattice.lattice.Lattice" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract base class for lattices.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.lattice.Lattice.fill">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext_list.SubcontextList" title="analogical_modeling.am.data.subcontext_list.SubcontextList"><span class="pre">SubcontextList</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.lattice.Lattice.fill" title="Link to this definition">¶</a></dt>
+<dd><p>Fill the lattice with given subcontexts. This is meant to be done
+only once for a given Lattice instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if the lattice was already filled</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.lattice.Lattice.get_supracontexts">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_supracontexts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.lattice.Lattice.get_supracontexts" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of supracontexts that were created by filling the
+supracontextual lattice. From this, you can compute the analogical
+set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-analogical_modeling.am.lattice.lattice_factory">
+<span id="analogical-modeling-am-lattice-lattice-factory-module"></span><h2>analogical_modeling.am.lattice.lattice_factory module<a class="headerlink" href="#module-analogical_modeling.am.lattice.lattice_factory" title="Link to this heading">¶</a></h2>
+<p>Lattice Factory</p>
+<p>Creates suitable lattice based on cardinality.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.lattice_factory.CardinalityBasedLatticeFactory">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.lattice_factory.</span></span><span class="sig-name descname"><span class="pre">CardinalityBasedLatticeFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cardinality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_partitions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Random</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.am.lattice.lattice_factory.CardinalityBasedLatticeFactory" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#analogical_modeling.am.lattice.lattice_factory.LatticeFactory" title="analogical_modeling.am.lattice.lattice_factory.LatticeFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">LatticeFactory</span></code></a></p>
+<p>Choose the lattice implementation based on the cardinality of
+the instances in the subcontext list.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.lattice_factory.CardinalityBasedLatticeFactory.create_lattice">
+<span class="sig-name descname"><span class="pre">create_lattice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#analogical_modeling.am.lattice.lattice.Lattice" title="analogical_modeling.am.lattice.lattice.Lattice"><span class="pre">Lattice</span></a></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.lattice_factory.CardinalityBasedLatticeFactory.create_lattice" title="Link to this definition">¶</a></dt>
+<dd><p>Create lattice based on cardinality.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.lattice_factory.LatticeFactory">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.lattice_factory.</span></span><span class="sig-name descname"><span class="pre">LatticeFactory</span></span><a class="headerlink" href="#analogical_modeling.am.lattice.lattice_factory.LatticeFactory" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>“Factory for creating Lattices.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.lattice_factory.LatticeFactory.create_lattice">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">create_lattice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#analogical_modeling.am.lattice.lattice.Lattice" title="analogical_modeling.am.lattice.lattice.Lattice"><span class="pre">Lattice</span></a></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.lattice_factory.LatticeFactory.create_lattice" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Lattice implementation</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-analogical_modeling.am.lattice.linked_lattice_node">
+<span id="am-lattice-linked-lattice-node-module"></span><h2>am.lattice.linked_lattice_node module<a class="headerlink" href="#module-analogical_modeling.am.lattice.linked_lattice_node" title="Link to this heading">¶</a></h2>
+<p>Lattice wrapper</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">analogical_modeling.am.lattice.linked_lattice_node.</span></span><span class="sig-name descname"><span class="pre">LinkedLatticeNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><code class="xref py py-class docutils literal notranslate"><span class="pre">Supracontext</span></code></a></p>
+<p>This class is a decorator which wraps a Supracontext and adds the
+functionality of a linked node used in certain lattice-filling algorithms.
+An index is also provided for use in determining when the node was created.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext.Subcontext" title="analogical_modeling.am.data.subcontext.Subcontext"><span class="pre">Subcontext</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.add" title="Link to this definition">¶</a></dt>
+<dd><p>Add subcontext to contained supracontext.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.supracontext.Supracontext" title="analogical_modeling.am.data.supracontext.Supracontext"><span class="pre">Supracontext</span></a></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.copy" title="Link to this definition">¶</a></dt>
+<dd><p>Return an exact, deep copy of the supracontext.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>deep copy of this supracontext</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.count">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">count</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.count" title="Link to this definition">¶</a></dt>
+<dd><p>the number of copies of this supracontext contained in the
+lattice</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>return</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.decrement_count">
+<span class="sig-name descname"><span class="pre">decrement_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.decrement_count" title="Link to this definition">¶</a></dt>
+<dd><p>Decreases the count by one.</p>
+<p>If this reaches 0, then this Supracontext should be discarded
+(by the caller).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if the count is already zero</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_context">
+<span class="sig-name descname"><span class="pre">get_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="analogical_modeling.am.label.html#analogical_modeling.am.label.label.Label" title="analogical_modeling.am.label.label.Label"><span class="pre">Label</span></a></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_context" title="Link to this definition">¶</a></dt>
+<dd><p>Get context of contained supracontext</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">frozenset</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext.Subcontext" title="analogical_modeling.am.data.subcontext.Subcontext"><span class="pre">Subcontext</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_data" title="Link to this definition">¶</a></dt>
+<dd><p>Get data of contained supracontext.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_index">
+<span class="sig-name descname"><span class="pre">get_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_index" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>index of this node</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_supracontext">
+<span class="sig-name descname"><span class="pre">get_supracontext</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_supracontext" title="Link to this definition">¶</a></dt>
+<dd><p>Return supracontext.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.increment_count">
+<span class="sig-name descname"><span class="pre">increment_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.increment_count" title="Link to this definition">¶</a></dt>
+<dd><p>Increases count by one</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.insert_after">
+<span class="sig-name descname"><span class="pre">insert_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="analogical_modeling.am.data.html#analogical_modeling.am.data.subcontext.Subcontext" title="analogical_modeling.am.data.subcontext.Subcontext"><span class="pre">Subcontext</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode" title="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode"><span class="pre">LinkedLatticeNode</span></a></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.insert_after" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new node by copying this one, adding the given subcontext
+and setting the index to that provided.</p>
+<p>Insert the new node between this node and its next node by setting
+the new node to be the next node and setting the previous next node
+to be the new node’s next node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sub</strong> – Subcontext to insert into the copied Supracontext</p></li>
+<li><p><strong>ind</strong> – index of new node</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.is_empty">
+<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.is_empty" title="Link to this definition">¶</a></dt>
+<dd><p>Check if contained supracontext is empty.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-analogical_modeling.am.lattice">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-analogical_modeling.am.lattice" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Jasmin Wiese
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">am.lattice package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-analogical_modeling.am.lattice.basic_lattice">am.lattice.basic_lattice module</a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice"><code class="docutils literal notranslate"><span class="pre">BasicLattice</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.add_to_context"><code class="docutils literal notranslate"><span class="pre">BasicLattice.add_to_context()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.clean_supra"><code class="docutils literal notranslate"><span class="pre">BasicLattice.clean_supra()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.dump_lattice"><code class="docutils literal notranslate"><span class="pre">BasicLattice.dump_lattice()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.fill"><code class="docutils literal notranslate"><span class="pre">BasicLattice.fill()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.get_supracontexts"><code class="docutils literal notranslate"><span class="pre">BasicLattice.get_supracontexts()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.insert"><code class="docutils literal notranslate"><span class="pre">BasicLattice.insert()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.basic_lattice.BasicLattice.no_zero_supras"><code class="docutils literal notranslate"><span class="pre">BasicLattice.no_zero_supras()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-analogical_modeling.am.lattice.canonicalizing_set">am.lattice.canonicalizing_set module</a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet"><code class="docutils literal notranslate"><span class="pre">CanonicalizingSet</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.add"><code class="docutils literal notranslate"><span class="pre">CanonicalizingSet.add()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.empty_set"><code class="docutils literal notranslate"><span class="pre">CanonicalizingSet.empty_set()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.get"><code class="docutils literal notranslate"><span class="pre">CanonicalizingSet.get()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.is_empty"><code class="docutils literal notranslate"><span class="pre">CanonicalizingSet.is_empty()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.merge"><code class="docutils literal notranslate"><span class="pre">CanonicalizingSet.merge()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.canonicalizing_set.CanonicalizingSet.unwrap"><code class="docutils literal notranslate"><span class="pre">CanonicalizingSet.unwrap()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-analogical_modeling.am.lattice.distributed_lattice">am.lattice.distributed_lattice module</a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice"><code class="docutils literal notranslate"><span class="pre">DistributedLattice</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.fill"><code class="docutils literal notranslate"><span class="pre">DistributedLattice.fill()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.fill_lattice_partition"><code class="docutils literal notranslate"><span class="pre">DistributedLattice.fill_lattice_partition()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.get_supracontexts"><code class="docutils literal notranslate"><span class="pre">DistributedLattice.get_supracontexts()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.lattice_product"><code class="docutils literal notranslate"><span class="pre">DistributedLattice.lattice_product()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.distributed_lattice.DistributedLattice.remove_duplicate_results"><code class="docutils literal notranslate"><span class="pre">DistributedLattice.remove_duplicate_results()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.distributed_lattice.FinalizingProduct"><code class="docutils literal notranslate"><span class="pre">FinalizingProduct</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.distributed_lattice.FinalizingProduct.product"><code class="docutils literal notranslate"><span class="pre">FinalizingProduct.product()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.distributed_lattice.IntermediateProduct"><code class="docutils literal notranslate"><span class="pre">IntermediateProduct</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.distributed_lattice.IntermediateProduct.product"><code class="docutils literal notranslate"><span class="pre">IntermediateProduct.product()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.distributed_lattice.merge_counts"><code class="docutils literal notranslate"><span class="pre">merge_counts()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-analogical_modeling.am.lattice.heterogeneous_lattice">am.lattice.heterogeneous_lattice module</a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice"><code class="docutils literal notranslate"><span class="pre">HeterogeneousLattice</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.add_to_context"><code class="docutils literal notranslate"><span class="pre">HeterogeneousLattice.add_to_context()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.clean_supra"><code class="docutils literal notranslate"><span class="pre">HeterogeneousLattice.clean_supra()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.fill"><code class="docutils literal notranslate"><span class="pre">HeterogeneousLattice.fill()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.get_supracontexts"><code class="docutils literal notranslate"><span class="pre">HeterogeneousLattice.get_supracontexts()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.insert"><code class="docutils literal notranslate"><span class="pre">HeterogeneousLattice.insert()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.no_zero_supras"><code class="docutils literal notranslate"><span class="pre">HeterogeneousLattice.no_zero_supras()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.heterogeneous_lattice.HeterogeneousLattice.supra_list_to_string"><code class="docutils literal notranslate"><span class="pre">HeterogeneousLattice.supra_list_to_string()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-analogical_modeling.am.lattice.johnsen_johansson_lattice">am.lattice.johnsen_johansson_lattice module</a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.JohnsenJohanssonLattice"><code class="docutils literal notranslate"><span class="pre">JohnsenJohanssonLattice</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.JohnsenJohanssonLattice.fill"><code class="docutils literal notranslate"><span class="pre">JohnsenJohanssonLattice.fill()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.JohnsenJohanssonLattice.get_supracontexts"><code class="docutils literal notranslate"><span class="pre">JohnsenJohanssonLattice.get_supracontexts()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.Pair"><code class="docutils literal notranslate"><span class="pre">Pair</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.SupraApproximator"><code class="docutils literal notranslate"><span class="pre">SupraApproximator</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.SupraApproximator.approximate_supra"><code class="docutils literal notranslate"><span class="pre">SupraApproximator.approximate_supra()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.SupraApproximator.estimate_hetero_ratio"><code class="docutils literal notranslate"><span class="pre">SupraApproximator.estimate_hetero_ratio()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.johnsen_johansson_lattice.binomial_coefficient"><code class="docutils literal notranslate"><span class="pre">binomial_coefficient()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-analogical_modeling.am.lattice.lattice">am.lattice.lattice module</a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.lattice.Lattice"><code class="docutils literal notranslate"><span class="pre">Lattice</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.lattice.Lattice.fill"><code class="docutils literal notranslate"><span class="pre">Lattice.fill()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.lattice.Lattice.get_supracontexts"><code class="docutils literal notranslate"><span class="pre">Lattice.get_supracontexts()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-analogical_modeling.am.lattice.lattice_factory">analogical_modeling.am.lattice.lattice_factory module</a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.lattice_factory.CardinalityBasedLatticeFactory"><code class="docutils literal notranslate"><span class="pre">CardinalityBasedLatticeFactory</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.lattice_factory.CardinalityBasedLatticeFactory.create_lattice"><code class="docutils literal notranslate"><span class="pre">CardinalityBasedLatticeFactory.create_lattice()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.lattice_factory.LatticeFactory"><code class="docutils literal notranslate"><span class="pre">LatticeFactory</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.lattice_factory.LatticeFactory.create_lattice"><code class="docutils literal notranslate"><span class="pre">LatticeFactory.create_lattice()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-analogical_modeling.am.lattice.linked_lattice_node">am.lattice.linked_lattice_node module</a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode</span></code></a><ul>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.add"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode.add()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.copy"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode.copy()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.count"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode.count</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.decrement_count"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode.decrement_count()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_context"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode.get_context()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_data"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode.get_data()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_index"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode.get_index()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.get_supracontext"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode.get_supracontext()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.increment_count"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode.increment_count()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.insert_after"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode.insert_after()</span></code></a></li>
+<li><a class="reference internal" href="#analogical_modeling.am.lattice.linked_lattice_node.LinkedLatticeNode.is_empty"><code class="docutils literal notranslate"><span class="pre">LinkedLatticeNode.is_empty()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-analogical_modeling.am.lattice">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>

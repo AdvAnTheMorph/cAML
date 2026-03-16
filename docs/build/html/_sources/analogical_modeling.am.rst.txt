@@ -1,0 +1,32 @@
+am package
+===============================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   analogical_modeling.am.data
+   analogical_modeling.am.gui
+   analogical_modeling.am.label
+   analogical_modeling.am.lattice
+
+Submodules
+----------
+
+am.am\_utils module
+----------------------------------------
+
+.. automodule:: analogical_modeling.am.am_utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: analogical_modeling.am
+   :members:
+   :show-inheritance:
+   :undoc-members:

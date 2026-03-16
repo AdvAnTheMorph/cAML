@@ -1,0 +1,37 @@
+am.gui package
+===================================
+
+Submodules
+----------
+
+am.gui.aml\_wrapper module
+-----------------------------------------------
+
+.. automodule:: analogical_modeling.am.gui.aml_wrapper
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+am.gui.gui\_utils module
+---------------------------------------------
+
+.. automodule:: analogical_modeling.am.gui.gui_utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+am.gui.vis module
+--------------------------------------
+
+.. automodule:: analogical_modeling.am.gui.vis
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: analogical_modeling.am.gui
+   :members:
+   :show-inheritance:
+   :undoc-members:
