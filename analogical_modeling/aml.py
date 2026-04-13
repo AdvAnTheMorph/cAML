@@ -432,8 +432,7 @@ class AnalogicalModeling:
         return string
 
     # following methods for output files
-    @staticmethod
-    def create_headers(lex_feats: pd.Index, test_feats, classes: list) -> tuple[
+    def create_headers(self, lex_feats: pd.Index, test_feats, classes: list) -> tuple[
         list, list, list]:
         """Create headers for output files.
 
@@ -445,6 +444,9 @@ class AnalogicalModeling:
 
         l_feats_list = lex_feats.tolist()
         t_feats_list = test_feats.tolist()
+        # add gang features
+        gf_feats_list = [f"GF: {feat}" for feat in t_feats_list]
+        gf_feats_list.pop(self.training_exemplars[0].class_index)  # no class
         cls_header = ([f"Class {i + 1}" for i in range(len(classes))] +
                       sum([[f"{cls}: pointers", f"{cls}: pct"]
                            for cls in classes], []))
@@ -452,7 +454,8 @@ class AnalogicalModeling:
             [[f"{cls}: pointers", f"{cls}: pct", f"{cls}: size"]
              for cls in classes], [])
 
-        gang_header = (l_feats_list + ["Weight"] + cls_header_gang +
+        gang_header = (l_feats_list + ["Weight"] + gf_feats_list +
+                       cls_header_gang +
                        ["Gang pointers", "Gang pct", "Rank", "Size",
                         "Total pointers", "Classified item index",
                         "Classified item class"] +
@@ -472,13 +475,14 @@ class AnalogicalModeling:
 
     @staticmethod
     def create_gangs(effects: Iterable[GangEffect], classified: Instance,
-                     classes: Iterable[str], idx: int) -> list:
+                     classes: Iterable[str], idx: int, labeler: Labeler) -> list:
         """Create list of gang effects for output.
 
         :param effects: Gang effects for classified instance
         :param classified: instance for which to store gang effects
         :param classes: possible classes
         :param idx: index of the instance
+        :param labeler: Labeler
         """
 
         def get_cls_pct(effect, cls, pointers, gang_pct):
@@ -513,7 +517,9 @@ class AnalogicalModeling:
             ], []) for inst in effect.subcontext.data}
 
             gangs += [
-                inst.real_data.tolist() + [inst.weight] + cls_info[inst] + [
+                inst.real_data.tolist() + [inst.weight] +
+                    labeler.get_context_list(effect.subcontext.label, "*")
+                    + cls_info[inst] + [
                     effect_pointers,  # gang pointers
                     round(gang_pct, 3),  # gang pct
                     rank,  # rank
@@ -619,7 +625,7 @@ class AnalogicalModeling:
 
             # gang effects
             gangs += self.create_gangs(res.get_gang_effects(), classified,
-                                       classes, idx)
+                                       classes, idx, res.labeler)
             # analogical sets
             analogs += self.create_analogical_set(res, classified, idx)
             # distribution
