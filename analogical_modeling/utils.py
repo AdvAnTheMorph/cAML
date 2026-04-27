@@ -168,7 +168,7 @@ class Dataset:
             case _:
                 fun = pd.read_csv
 
-        self.data = fun(Path(__file__).parent / source).replace(math.nan, None)
+        self.data = fun(source).replace(math.nan, None)
         if len(self.data) == 0:
             warnings.warn("The lexicon does not contain any Instances.")
 

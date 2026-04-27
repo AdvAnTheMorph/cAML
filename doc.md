@@ -88,7 +88,8 @@ The following behaviour can be controlled through parameters:
 8. [keeping text exemplars](#8-keeping-test-exemplars)
 9. [handling duplicated instances](#9-handling-duplicated-instances)
 10. [handling attributes with non_specified values](#10-handling-attributes-with-non-specified-values)
-11. [debug mode](#11-debug-mode)
+11. [suppressing outputs](#11-suppressing-outputs)
+12. [debug mode](#12-debug-mode)
 
 #### 1. Test File
 The test file needs to be in the same format as the lexicon, with the same
@@ -189,7 +190,16 @@ instances.
 
 **Usage**: Add `--ignore_unknowns` or shorter `-i` to the command.
 
-#### 11. Debug Mode
+#### 11. Suppressing Outputs
+The algorithm normally generates a matrix and stores information on gang effects, analogical sets and distribution.
+You can disable each one individually using the following flags:
+
+- `--disable_matrix`
+- `--disable_gangs`
+- `--disable_analogical_sets`
+- `--disable_distributions`
+
+#### 12. Debug Mode
 The debug mode logs additional information (classified instances, weights
 threshold) and any Exceptions that might occur.
 

@@ -12,6 +12,8 @@ numerical parameter to modify each exemplar's weight.
 This README contains a brief overview on how to run the algorithm.
 The [Step-by-Step Guide](doc.md) gives more detailed instructions.
 
+**The API documentation** is available [here](https://advanthemorph.github.io/cAML/).
+
 ## Installation
 
 After downloading the repository, you can install the project like this:
@@ -74,6 +76,8 @@ python3 aml.py -l <data.csv> -o <output>
     - match: non-specified values match everything
     - mismatch: non-specified values don't match anything
     - variable: non-specified values are treated like a variable, thus only matching other non-specified values
+- `--disable_gangs`, `--disable_analogical_sets`, `--disable_distributions`, `--disable_matrix` to prevent the
+gang effects, analogical sets, distributions or matrix from being stored/created
 
 
 

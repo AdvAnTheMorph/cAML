@@ -94,6 +94,9 @@ class AnalogicalModeling:
         # indices of columns to ignore
         self.ignore_columns = []
 
+        # used to suppress outputs
+        self.drop_outputs = {"gang": 0, "analog": 0, "distribution": 0}
+
         # used by GUI to cancel program
         self.cancel_event = False
         self.gui_queue = None
@@ -132,7 +135,9 @@ class AnalogicalModeling:
     def threshold(self, threshold: tuple[float, bool, float, bool]) -> None:
         self.set_threshold(*threshold)
 
-    def set_threshold(self, th: float|None, inclusive: bool=False, max_th: Optional[float] = None, max_inclusive: bool = False) -> None:
+    def set_threshold(self, th: float | None, inclusive: bool = False,
+                      max_th: Optional[float] = None,
+                      max_inclusive: bool = False) -> None:
         """Set upper and lower threshold.
 
         :param th: lower threshold
@@ -432,7 +437,9 @@ class AnalogicalModeling:
         return string
 
     # following methods for output files
-    def create_headers(self, lex_feats: pd.Index, test_feats, classes: list) -> tuple[
+    def create_headers(self, lex_feats: pd.Index, test_feats, classes: list) \
+            -> \
+    tuple[
         list, list, list]:
         """Create headers for output files.
 
@@ -447,8 +454,10 @@ class AnalogicalModeling:
         # add gang features
         gf_feats_list = [f"GF: {feat}" for feat in t_feats_list]
         gf_feats_list.pop(self.training_exemplars[0].class_index)  # no class
+
+        pointers_name = "occurrences" if self.linear_count else "pointers"
         cls_header = ([f"Class {i + 1}" for i in range(len(classes))] +
-                      sum([[f"{cls}: pointers", f"{cls}: pct"]
+                      sum([[f"{cls}: {pointers_name}", f"{cls}: pct"]
                            for cls in classes], []))
         cls_header_gang = sum(
             [[f"{cls}: pointers", f"{cls}: pct", f"{cls}: size"]
@@ -475,7 +484,8 @@ class AnalogicalModeling:
 
     @staticmethod
     def create_gangs(effects: Iterable[GangEffect], classified: Instance,
-                     classes: Iterable[str], idx: int, labeler: Labeler) -> list:
+                     classes: Iterable[str], idx: int,
+                     labeler: Labeler) -> list:
         """Create list of gang effects for output.
 
         :param effects: Gang effects for classified instance
@@ -518,8 +528,8 @@ class AnalogicalModeling:
 
             gangs += [
                 inst.real_data.tolist() + [inst.weight] +
-                    labeler.get_context_list(effect.subcontext.label, "*")
-                    + cls_info[inst] + [
+                labeler.get_context_list(effect.subcontext.label, "*")
+                + cls_info[inst] + [
                     effect_pointers,  # gang pointers
                     round(gang_pct, 3),  # gang pct
                     rank,  # rank
@@ -606,6 +616,11 @@ class AnalogicalModeling:
             logger.info("Cancelled by user before generating output")
             sys.exit()
 
+        if self.drop_outputs.get("gang") and self.drop_outputs.get(
+                "analog") and self.drop_outputs.get("distribution"):
+            print("All outputs disabled.")
+            return None, None, None
+
         print("Generating output files...")
 
         # headers
@@ -645,11 +660,17 @@ class AnalogicalModeling:
             out_analog = dest.with_name(dest.stem + "_analogical_sets.csv")
             out_distribution = dest.with_name(dest.stem + "_distributions.csv")
 
-            gang.to_csv(out_gang, index=False)
-            analog.to_csv(out_analog, index=False)
-            distr.to_csv(out_distribution, index=False)
-            print(f"Outputs saved to {out_gang}, {out_analog}, "
-                  f"{out_distribution}.")
+            dests = []
+            if not self.drop_outputs.get("gang"):
+                gang.to_csv(out_gang, index=False)
+                dests += [out_gang]
+            if not self.drop_outputs.get("analog"):
+                analog.to_csv(out_analog, index=False)
+                dests += [out_analog]
+            if not self.drop_outputs.get("distribution"):
+                distr.to_csv(out_distribution, index=False)
+                dests += [out_distribution]
+            print(f"Outputs saved to {', '.join(map(str, dests))}.")
         return gang, analog, distr
 
     def update_classifier(self, instance: Instance) -> None:
@@ -716,6 +737,14 @@ if __name__ == "__main__":
                              "non-specified data will always be unequal to "
                              "whatever it is compared with. Default is "
                              "'variable'.")
+    parser.add_argument("--disable_gangs", action="store_true",
+                        help="Don't save gang effects.")
+    parser.add_argument("--disable_analogical_sets",
+                        action="store_true", help="Don't save analogical sets.")
+    parser.add_argument("--disable_distributions",
+                        action="store_true", help="Don't save distributions.")
+    parser.add_argument("--disable_matrix", action="store_true",
+                        help="Don't save matrix.")
 
     args = parser.parse_args()
 
@@ -737,7 +766,12 @@ if __name__ == "__main__":
     am.set_drop_duplicates(args.drop_duplicates)
     am.set_ignore_columns(args.ignore_columns)
 
-    am.threshold = (args.threshold, args.inclusive, args.max_threshold, args.max_inclusive)
+    am.drop_outputs = {"gang": args.disable_gangs,
+                       "analog": args.disable_analogical_sets,
+                       "distribution": args.disable_distributions}
+
+    am.threshold = (
+    args.threshold, args.inclusive, args.max_threshold, args.max_inclusive)
 
     # running actual algorithm
     try:
@@ -748,7 +782,7 @@ if __name__ == "__main__":
                                          args.sheet,
                                          args.test_sheet,
                                          args.class_column)
-        if matrix:
+        if matrix and not args.disable_matrix:
             matrix.plot()
             plt.xlabel("Predicted label\nTies are excluded from the plot")
             plt.tight_layout()
