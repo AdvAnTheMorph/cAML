@@ -437,22 +437,23 @@ class AnalogicalModeling:
         return string
 
     # following methods for output files
-    def create_headers(self, lex_feats: pd.Index, test_feats, classes: list) \
+    def create_headers(self, lex_feats: pd.Index, test_data, classes: list) \
             -> \
     tuple[
         list, list, list]:
         """Create headers for output files.
 
         :param lex_feats: attributes of lexicon
-        :param test_feats: attributes of test data (or lexicon, if no test data)
+        :param test_data: test data (or lexicon, if no test data)
         :param classes: possible class values
         :return: headers for gang effects, analogical sets and distributions
         """
 
         l_feats_list = lex_feats.tolist()
-        t_feats_list = test_feats.tolist()
-        # add gang features
-        gf_feats_list = [f"GF: {feat}" for feat in t_feats_list]
+        t_feats_list = test_data.real_data.keys().tolist()
+        test_feats = test_data.real_data.keys()
+        # add gang features (without ignored columns!)
+        gf_feats_list = [f"GF: {feat}" for feat in test_data.keys().tolist()]
         gf_feats_list.pop(self.training_exemplars[0].class_index)  # no class
 
         pointers_name = "occurrences" if self.linear_count else "pointers"
@@ -627,7 +628,7 @@ class AnalogicalModeling:
         classes = list(self.training_instances.get_classes())
         gang_header, analog_header, distr_header = self.create_headers(
             self.training_instances[0].real_data.keys(),
-            results[0].classified_exemplar.real_data.keys(), classes)
+            results[0].classified_exemplar, classes)
 
         gangs = []
         analogs = []
